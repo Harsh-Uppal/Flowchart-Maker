@@ -6,7 +6,7 @@ class Inspector {
         if (val)
             this.loadProperties();
 
-        this.node.style.marginTop = val ? '0' : '100%';
+        this.node.style.bottom = val ? '0' : '-100vh';
         this.active = val;
     }
     static setInspectorProperties(props) {
@@ -19,9 +19,9 @@ class Inspector {
         const propertyObjContainer = document.querySelector('.inspector > .properties');
         propertyObjContainer.innerHTML = '';
         this.numProperties = 0;
-        for (let property in this.inspectingProperties) {
+        for (const property in this.inspectingProperties) {
 
-            if (property == 'default')
+            if (property == 'default' || property == 'setProperty')
                 continue;
 
             let newPropertyContainer = document.createElement('div');
@@ -33,6 +33,8 @@ class Inspector {
             input.type = this.inspectingProperties[property].type || 'text';
             input.value = this.inspectingProperties[property].val || '';
             input.className = input.type + 'Input';
+            input.onkeyup =
+                input.onchange = () => { Inspector.propertyChanged(property, input.value) };
 
             newPropertyContainer.appendChild(propertyLabel);
             newPropertyContainer.appendChild(input);
@@ -49,12 +51,18 @@ class Inspector {
 
         let i = 0;
         for (const currentProperty in this.inspectingProperties) {
+            if (currentProperty == 'setProperty')
+                continue;
+
             const currentInput = inputs.children[i].querySelector('input');
             currentInput.value = this.inspectingProperties[currentProperty].val;
             i++;
         }
 
         this.inspectingProperties.default = { ...this.inspectingProperties };
+    }
+    static propertyChanged(name, val) {
+        this.inspectingProperties.setProperty(name, val);
     }
 }
 

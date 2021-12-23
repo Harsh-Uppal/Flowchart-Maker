@@ -1,8 +1,6 @@
 class CubicBezierCurve {
     constructor(p1, p2) {
         this.p = [p1, vector(p2.x, p1.y), vector(p1.x, p2.y), p2];
-
-        console.log(this.p);
     }
 
     changeP1(newP1){

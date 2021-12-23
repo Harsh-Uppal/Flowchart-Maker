@@ -1,6 +1,6 @@
 .inspector{
-    margin-top:100%;
     position: absolute;
+    bottom:-100vh;
     right:0;
     display:flex;
     flex-direction: column;
@@ -79,7 +79,7 @@
     font-weight: bold;
 }
 
-.inspector > .properties > * > .textInput{
+.inspector > .properties > * > .textInput, .numberInput{
     font-family: 'Open Sans';
     font-weight: bold;
     font-size:1vw;

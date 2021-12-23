@@ -1,0 +1,54 @@
+body{
+    margin:0;
+    padding:0;
+    overflow: hidden;
+}
+
+.container{
+    display:flex;
+    align-items: center;
+    height:84vh;
+}
+
+.titleBar{
+    position:relative;
+    z-index: 1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #444;
+    width:100vw;
+    height:8vh;
+}
+
+.titleBar > .title{
+    color:White;
+    font-family: Quicksand;
+    font-size: 3vw;
+}
+
+.titleOptions{
+    display:flex;
+    position: absolute;
+    align-items: center;
+    right:0;
+    width:max-content;
+    height:6vh;
+}
+
+.titleOptions > button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: gray;
+    border:none;
+    height:90%;
+    width:5.4vh;
+    margin-right:.6vh;
+    border-radius: .75vmin;
+    cursor: pointer;
+}
+
+.titleOptions > button > .img{
+    height:80%;
+}

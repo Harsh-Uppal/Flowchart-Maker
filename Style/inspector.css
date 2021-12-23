@@ -1,0 +1,78 @@
+.inspector{
+    margin-top:100%;
+    position: absolute;
+    right:0;
+    display:flex;
+    z-index: 1;
+    width:20vw;
+    height:84vh;
+    background-color: darkgrey;
+    transition: 1s;
+    justify-content: center;
+}
+
+.inspector > .saveBtn{
+    position: absolute;
+    bottom:1%;
+    width:80%;
+    height:8%;
+    padding:2%;
+    border-radius: 2vmin;
+    font-size: 2vw;
+    background-color: #FFF8;
+    border-style: none;
+    cursor: pointer;
+    transition:.2s;
+}
+
+.inspector > .saveBtn:hover{
+    background-color: #FFFA;
+}
+
+.inspector > .saveBtn:active{
+    background-color: #FFF8;
+}
+
+.inspector > .titlebar{
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    height:8%;
+    width:100%;
+}
+
+.inspector > .titlebar > .header{
+    display:flex;
+    justify-content: center;
+    font-family: Quicksand;
+    font-size: 3vw;
+    width:80%;
+}
+
+.inspector > .titlebar > .hideBtn{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border:none;
+    border-radius: 100%;
+    width:6vmin;
+    height:6vmin;
+    cursor: pointer;
+    background-color: #fff3;
+    transition: .2s;
+}
+
+.inspector > .titlebar > .hideBtn > .hideArrowImg{
+    margin-top:5%;
+    transform: rotate(90deg);
+    width:70%;
+    height:70%;
+}
+
+.inspector > .titlebar > .hideBtn:hover{
+    background-color: #fff5;
+}
+
+.inspector > .titlebar > .hideBtn:active{
+    background-color: #fff3;
+}

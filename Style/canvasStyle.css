@@ -1,0 +1,68 @@
+canvas{
+    position: absolute;
+    z-index: 0;
+    top:0;
+    left:0;
+    margin:0;
+    padding:0;
+}
+
+.canvas{
+    display:flex;
+}
+
+.flowchartItem{
+    position: absolute;
+    background-color: lightblue;
+    border-radius: 2vmin;
+    transform: translate(-50%, -50%);
+}
+
+.flowchartItem > .dataContainer{
+    position:relative;
+    width:100%;
+    height:100%;
+    border-radius: inherit;
+}
+
+.flowchartItem > .dataContainer > .topBar{
+    width:100%;
+    height:2rem;
+    background-color: lightseagreen;
+    border-radius: 2vmin 2vmin 0 0;
+    cursor: move;
+    margin:0 !important;
+}
+
+.flowchartItem > .dataContainer > *{
+    white-space: nowrap;
+    margin:2vh 2vw 2vh 2vw;
+    font: bold 2vw 'Open Sans';
+}
+
+.flowchartItem > .dataContainer > .connector{
+    position:  absolute;
+    border:none;
+    margin:0 !important;
+    width:15px;
+    height:15px;
+    background-color: gold;
+    border-radius: 100%;
+    left:100%;
+    top:50%;
+    transform: translate(-50%, calc(-50% + 0.5vw));
+}
+
+.flowchartItem > .dataContainer > .connector::before{
+    display:block;
+    content:'';
+    background-color: rgb(4, 141, 22);
+    width:70%;
+    height:70%;
+    border-radius: 100%;
+    margin:15% 0 0 15%;
+}
+
+.flowchartItem > .dataContainer > .connector:hover::before{
+    background-color: rgb(8, 199, 34);
+}

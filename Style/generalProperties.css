@@ -1,0 +1,25 @@
+.generalProperties{
+    display:grid;
+    position:relative;
+    z-index: 5;
+    width:100vw;
+    height:8vh;
+    background-color: rgb(91, 108, 117);
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.generalProperties > *{
+    display: flex;
+    align-items:center;
+    justify-content:center;
+} 
+
+.generalProperties > * > .title{
+    font-size: 1.5vw;
+    font-family: Quicksand;
+}
+
+.generalProperties > * > input{
+    height:75%;
+    margin-left:1vw;
+}

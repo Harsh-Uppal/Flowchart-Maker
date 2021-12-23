@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowchart Maker</title>
+
+    <link rel="stylesheet" type="text/css" href="Style/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="Style/style.css" />
+    <link rel="stylesheet" type="text/css" href="Style/canvasStyle.css" />
+    <link rel="stylesheet" type="text/css" href="Style/generalProperties.css" />
+    <link rel="stylesheet" type="text/css" href="Style/toolbar.css" />
+    <link rel="stylesheet" type="text/css" href="Style/inspector.css" />
+
+    <script src="./Scripts/util.js"></script>
+    <script src="./Scripts/app.js"></script>
+    <script src="./Scripts/toolbar.js"></script>
+    <script src="./Scripts/flowchartItem.js"></script>
+    <script src="./Scripts/bezierCurve.js"></script>
+    <script src="./Scripts/inspector.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+
+<body>
+    <div class="titleBar">
+        <div class="title">Flow Chart Maker</div>
+        <div class="titleOptions">
+            <button>
+                <img class="img" src="Assets/Save.png" alt="Save" />
+            </button>
+        </div>
+    </div>
+
+    <div class="generalProperties">
+        <div class="zoom">
+            <div class="title">Zoom</div>
+            <input type="range" onchange="changeZoom()" />
+        </div>
+        <div class="gridlines">
+            <div class="title">Gridlines</div>
+            <input type="checkbox" checked="true" onchange="update()" />
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="toolbar" style="margin-left: 0;">
+            <div class="toolbarContent">
+                <div class="header">Toolbar</div>
+
+                <div class="tools">
+                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
+                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
+                            alt=""></button>
+
+                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
+                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
+                            alt=""></button>
+
+                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
+                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
+                            alt=""></button>
+
+                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
+                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
+                            alt=""></button>
+                </div>
+            </div>
+            <button class="arrow" onclick="moveToolbar()">
+                <img class="image" src="Assets/Arrow.png" />
+            </button>
+        </div>
+
+        <div class="canvas">
+            <main></main>
+            <div class="flowchartItems">
+            </div>
+        </div>
+
+        <div class="inspector">
+            <div class="titlebar">
+                <label class="header">Inspector</label>
+                <button class="hideBtn" onclick="Inspector.activate(false)">
+                    <img src="./Assets/Arrow.png" class="hideArrowImg" />
+                </button>
+            </div>
+            <div class="properties">
+                <div id="1"></div>
+            </div>
+
+            <button class="saveBtn">Save</button>
+        </div>
+    </div>
+</body>
+
+</html>

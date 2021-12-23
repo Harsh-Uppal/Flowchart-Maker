@@ -55,24 +55,7 @@ class FlowchartItem {
 
         this.node = newItem;
 
-        this.properties = {
-            color: createProperty('color', '#ADD8E6'),
-            headColor: createProperty('color', '#20B2AA'),
-            heading: createProperty('text', ''),
-            width: createProperty('num', this.node.offsetWidth),
-            height: createProperty('num', this.node.offsetHeight)
-        };
-
-        switch (type) {
-            case 'text':
-                this.properties.text = 'Write something here...';
-                this.properties.fontSize = 10;
-                this.properties.fontColor = 'black';
-                break;
-            case 'image':
-                this.properties.imageURL = '.Assets/ImageIcon.png';
-                break;
-        }
+        this.resetProperties();
     }
     mouseClicked = () => {
         if (!this.added)
@@ -121,5 +104,27 @@ class FlowchartItem {
     }
     setProperty(property, val) {
         this.properties[property] = val;
+    }
+    resetProperties() {
+        this.properties = {
+            color: createProperty('Color', 'color', '#ADD8E6'),
+            headColor: createProperty('Heading Color', 'color', '#20B2AA'),
+            heading: createProperty('Heading', 'text', ''),
+            width: createProperty('Width', 'num', this.node.offsetWidth),
+            height: createProperty('Height', 'num', this.node.offsetHeight),
+        };
+
+        switch (this.type) {
+            case 'text':
+                this.properties.text = createProperty('Text', 'text', 'Write something here...');
+                this.properties.fontSize = createProperty('Font Size', 'num', 10);
+                this.properties.fontColor = createProperty('Font Color', 'color', '#000000');
+                break;
+            case 'image':
+                this.properties.imageURL = createProperty('Image Source', 'text', './Assets/ImageIcon.png');
+                break;
+        }
+
+        this.properties.default = { ...this.properties };
     }
 }

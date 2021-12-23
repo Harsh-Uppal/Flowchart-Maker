@@ -3,34 +3,13 @@
     position: absolute;
     right:0;
     display:flex;
+    flex-direction: column;
     z-index: 1;
     width:20vw;
     height:84vh;
     background-color: darkgrey;
     transition: 1s;
-    justify-content: center;
-}
-
-.inspector > .saveBtn{
-    position: absolute;
-    bottom:1%;
-    width:80%;
-    height:8%;
-    padding:2%;
-    border-radius: 2vmin;
-    font-size: 2vw;
-    background-color: #FFF8;
-    border-style: none;
-    cursor: pointer;
-    transition:.2s;
-}
-
-.inspector > .saveBtn:hover{
-    background-color: #FFFA;
-}
-
-.inspector > .saveBtn:active{
-    background-color: #FFF8;
+    align-items: center;
 }
 
 .inspector > .titlebar{
@@ -39,6 +18,7 @@
     align-items:center;
     height:8%;
     width:100%;
+    margin-bottom: 7%;
 }
 
 .inspector > .titlebar > .header{
@@ -75,4 +55,67 @@
 
 .inspector > .titlebar > .hideBtn:active{
     background-color: #fff3;
+}
+
+.inspector > .properties{
+    display:flex;
+    flex-direction: column;
+    flex-grow:1;
+}
+
+.inspector > .properties > *{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+    height:7%;
+}
+
+.inspector > .properties > * > label{
+    display:flex;
+    align-items: center;
+    font-size:1.3vw;
+    font-family: 'Open Sans';
+    font-weight: bold;
+}
+
+.inspector > .properties > * > .textInput{
+    font-family: 'Open Sans';
+    font-weight: bold;
+    font-size:1vw;
+    max-width: 50%;
+}
+
+.inspector > .properties > * > .colorInput{
+    padding:.5%;
+}
+
+.inspector > .buttons{
+    display:flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.inspector > .buttons > *{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width:40%;
+    height:60%;
+    padding:7%;
+    border-radius: 2vmin;
+    font-size: 1.6vw;
+    background-color: #FFF8;
+    border-style: none;
+    cursor: pointer;
+    transition:.2s;
+}
+
+.inspector > .buttons > *:hover{
+    background-color: #FFFC;
+}
+
+.inspector > .buttons > *:active{
+    background-color: #FFF8;
 }

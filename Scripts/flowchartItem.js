@@ -102,6 +102,9 @@ class FlowchartItem {
             this.connector.changeP1(vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop));
     }
     setProperty = (property, val) => {
+        if(property == 'setProperty' || property == 'default')
+            return;
+
         const propertyObj = this.properties[property];
         this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
 
@@ -162,5 +165,8 @@ class FlowchartItem {
         }
 
         this.properties.default = { ...this.properties };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
     }
 }

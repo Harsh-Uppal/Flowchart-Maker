@@ -57,8 +57,12 @@ class Inspector {
             if (currentProperty == 'setProperty')
                 continue;
 
+            const propVal = this.inspectingProperties[currentProperty].val;
+
+            this.inspectingProperties.setProperty(currentProperty, propVal);
+
             const currentInput = inputs.children[i].querySelector('input');
-            currentInput.value = this.inspectingProperties[currentProperty].val;
+            currentInput.value = propVal;
             i++;
         }
 

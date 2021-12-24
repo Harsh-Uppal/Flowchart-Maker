@@ -57,11 +57,10 @@ class FlowchartItem {
         this.resetProperties();
     }
     mouseClicked = () => {
-        if (!this.added)
-            Inspector.setInspectorProperties(this.properties);
+        if(!this.added)
+            this.added = true;
 
-        this.added = true;
-
+        Inspector.setInspectorProperties(this.properties);
         Inspector.activate(true);
     }
     mouseDragStart = () => {

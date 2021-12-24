@@ -35,13 +35,13 @@ canvas{
     border-radius: 2vmin 2vmin 0 0;
     cursor: move;
     margin:0 !important;
-    font-size: 2vw;
+    font-size: 1.5vw;
 }
 
 .flowchartItem > .dataContainer > *{
     white-space: nowrap;
     margin:2vh 2vw 2vh 2vw;
-    font: bold 2vw 'Open Sans';
+    font: bold 1.2vw 'Open Sans';
 }
 
 .flowchartItem > .dataContainer > .connector{

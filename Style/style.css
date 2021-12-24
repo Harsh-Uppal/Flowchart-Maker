@@ -7,7 +7,20 @@ body{
 .container{
     display:flex;
     align-items: center;
-    height:84vh;
+    height:80vh;
+}
+
+.copyright{
+    display:flex;       
+    position: relative;
+    align-items: center;
+    justify-content: space-evenly;
+    z-index: 1;
+    width:100vw;
+    height:4vh;
+    background-color: gray;
+    font: 1vw 'Poppins';
+    color:blue;
 }
 
 .titleBar{

@@ -6,7 +6,7 @@ class Inspector {
         if (val)
             this.loadProperties();
 
-        this.node.style.bottom = val ? '0' : '-100vh';
+        this.node.style.bottom = val ? '4vh' : '-100vh';
         this.active = val;
     }
     static setInspectorProperties(props) {

@@ -24,14 +24,17 @@ class Inspector {
             if (property == 'default' || property == 'setProperty')
                 continue;
 
+            const currentProp = this.inspectingProperties[property];
+
             let newPropertyContainer = document.createElement('div');
             let propertyLabel = document.createElement('label');
             let input = document.createElement('input');
 
             newPropertyContainer.id = this.numProperties++;
-            propertyLabel.textContent = this.inspectingProperties[property].name;
-            input.type = this.inspectingProperties[property].type || 'text';
-            input.value = this.inspectingProperties[property].val || '';
+            propertyLabel.textContent = currentProp.name;
+
+            input.type = currentProp.type || 'text';
+            input.value = currentProp.val || '';
             input.className = input.type + 'Input';
             input.onkeyup =
                 input.onchange = () => { Inspector.propertyChanged(property, input.value) };

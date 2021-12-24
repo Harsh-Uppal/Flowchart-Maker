@@ -23,5 +23,7 @@ function moveToolbar() {
 function newFlowchartItem(type) {
     toolBar.node.style.marginLeft = '-17vw';
 
-    flowchartItems.push(new FlowchartItem(type, vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize)));
+    flowchartItems.push(
+        new FlowchartItem(type, vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize), flowchartItems.length)
+    );
 }

@@ -1,11 +1,12 @@
 class FlowchartItem {
-    constructor(type, pos) {
+    constructor(type, pos, index) {
         this.pos = pos;
         this.type = type;
         this.added = false;
         this.connector = null;
         this.connected = false;
         this.itemConnector = document.createElement('div');
+        this.index = index;
 
         let itemsContainer = document.querySelector('.flowchartItems');
         let newItem = document.createElement('div');
@@ -57,7 +58,7 @@ class FlowchartItem {
         this.resetProperties();
     }
     mouseClicked = () => {
-        if(!this.added)
+        if (!this.added)
             this.added = true;
 
         Inspector.setInspectorProperties(this.properties);
@@ -90,7 +91,7 @@ class FlowchartItem {
         if (!this.added)
             this.pos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
 
-        this.node.style.transform = `translate(-50%, -50%) scale(${cellSize / 50 * this.properties.scale})`;
+        this.node.style.transform = `translate(-50%, -50%) scale(${cellSize / 50 * this.properties.scale.val})`;
         this.updatePosition();
     }
     updatePosition() {
@@ -101,7 +102,8 @@ class FlowchartItem {
             this.connector.changeP1(vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop));
     }
     setProperty = (property, val) => {
-        this.properties[property] = val;
+        const propertyObj = this.properties[property];
+        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
 
         switch (property) {
             case 'color':
@@ -117,6 +119,11 @@ class FlowchartItem {
                 this.topBar.style.color = val;
                 break;
             case 'scale':
+                if(val == 0){
+                    flowchartItems.splice(this.index, 1);
+                    Inspector.activate(false);
+                    Inspector.setInspectorProperties(null);
+                }
                 this.update();
                 break;
             case 'text':
@@ -126,14 +133,13 @@ class FlowchartItem {
                 this.innerNode.style.color = val;
                 break;
             case 'fontSize':
-                this.innerNode.style.fontSize = val + 'px';
+                this.innerNode.style.fontSize = val + 'vw';
                 break;
             case 'imageSrc':
                 this.innerNode.setAttribute('src', val);
                 break;
         }
     }
-
     resetProperties() {
         this.properties = {
             color: createProperty('Background Color', 'color', '#ADD8E6'),
@@ -147,7 +153,7 @@ class FlowchartItem {
         switch (this.type) {
             case 'text':
                 this.properties.text = createProperty('Text', 'text', 'Write something here...');
-                this.properties.fontSize = createProperty('Font Size', 'number', 10);
+                this.properties.fontSize = createProperty('Font Size', 'number', 1.2);
                 this.properties.fontColor = createProperty('Font Color', 'color', '#000000');
                 break;
             case 'image':

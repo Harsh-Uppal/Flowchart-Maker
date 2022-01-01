@@ -27,7 +27,7 @@
 
 <body>
     <div class="titleBar">
-        <div class="title">Flow Chart Maker</div>
+        <div class="title">Flowchart Maker</div>
         <div class="titleOptions">
             <button title="Save flowchart">
                 <img class="img" src="Assets/Save.png" alt="Save" />
@@ -38,11 +38,19 @@
     <div class="generalProperties">
         <div class="zoom">
             <div class="title">Zoom</div>
-            <input type="range" onchange="changeZoom()" />
+            <input type="range" onmousemove="changeZoom()" onchange="changeZoom()" />
         </div>
         <div class="gridlines">
             <div class="title">Gridlines</div>
             <input type="checkbox" checked="true" onchange="update()" />
+        </div>
+        <div class="gridlinesColor">
+            <div class="title">Grid Color</div>
+            <input type="color" value="#32CD32" onchange="update()" />
+        </div>
+        <div class="backgroundColor">
+            <div class="title">Background</div>
+            <input type="color" value="#111111" onchange="update()" />
         </div>
     </div>
 

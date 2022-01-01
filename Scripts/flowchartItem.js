@@ -100,8 +100,6 @@ class FlowchartItem {
 
                 this.connectors[this.newConnector].style.top = 100 - Math.abs(roundedAngle) + '%';
                 this.connectors[this.newConnector].style.left = 100 + roundedAngle % 100 - 50 + '%';
-
-                console.log(roundedAngle);
             }
         }
     }

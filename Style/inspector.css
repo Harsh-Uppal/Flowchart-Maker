@@ -90,6 +90,13 @@
     padding:.5%;
 }
 
+.inspector > .properties > * > .buttonInput{
+    height:8vmin;
+    width:8vmin;
+    font-size: 7vmin;
+    transform: scale(.5);
+}
+
 .inspector > .buttons{
     display:flex;
     align-items: center;

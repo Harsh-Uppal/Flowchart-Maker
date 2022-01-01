@@ -3,10 +3,12 @@ class FlowchartItem {
         this.pos = pos;
         this.type = type;
         this.added = false;
-        this.connector = null;
+        this.connectors = [];
+        this.newConnector = null;
         this.connected = false;
-        this.itemConnector = document.createElement('div');
         this.index = index;
+        this.connectors = [];
+        this.lastMouseAngle = vector(Infinity, Infinity);
 
         let itemsContainer = document.querySelector('.flowchartItems');
         let newItem = document.createElement('div');
@@ -24,9 +26,6 @@ class FlowchartItem {
         this.topBar.ondragenter = this.mouseDragStart;
         this.topBar.ondrag = this.mouseDragged;
         this.topBar.ondragend = this.mouseDragEnd;
-
-        this.itemConnector.className = 'connector';
-        this.itemConnector.onclick = this.connectorClicked;
 
         dataContainer.className = 'dataContainer';
 
@@ -48,7 +47,6 @@ class FlowchartItem {
 
         dataContainer.appendChild(this.topBar);
         dataContainer.appendChild(this.innerNode);
-        dataContainer.appendChild(this.itemConnector);
 
         newItem.appendChild(dataContainer);
         itemsContainer.appendChild(newItem);
@@ -76,16 +74,13 @@ class FlowchartItem {
         this.lastDragPos = vector(mouseX, mouseY);
         dragEnabled = true;
     }
-    connectorClicked = () => {
-        this.connector = new CubicBezierCurve(
-            vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop),
-            vector(mouseX, mouseY)
-        );
+    connectorClicked = (index) => {
+        if (index == null || this.connectors == null || this.connectors.length == 0)
+            return;
 
-        if (newConnector != null)
-            removeNewConnector();
-        newConnector = { index: flowchartConnectors.length };
-        flowchartConnectors.push(this.connector);
+        if (index === this.newConnector)
+            this.newConnector = null;
+
     }
     update() {
         if (!this.added)
@@ -93,6 +88,22 @@ class FlowchartItem {
 
         this.node.style.transform = `translate(-50%, -50%) scale(${cellSize / 50 * this.properties.scale.val})`;
         this.updatePosition();
+
+        if(this.newConnector != null){
+            const dirVec = vector(mouseX, mouseY).sub(this.pos.mult(cellSize));
+            const angle = Math.atan2(dirVec.x, dirVec.y);
+            const roundedAngle = Math.round(angle / (Math.PI / 2)) * 50;
+            
+            if(roundedAngle != this.lastMouseAngle)
+            {
+                this.lastMouseAngle = roundedAngle;
+
+                this.connectors[this.newConnector].style.top = 100 - Math.abs(roundedAngle) + '%';
+                this.connectors[this.newConnector].style.left = 100 + roundedAngle % 100 - 50 + '%';
+
+                console.log(roundedAngle);
+            }
+        }
     }
     updatePosition() {
         this.node.style.top = this.pos.y * cellSize + pos.y + 'px';
@@ -102,7 +113,7 @@ class FlowchartItem {
             this.connector.changeP1(vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop));
     }
     setProperty = (property, val) => {
-        if(property == 'setProperty' || property == 'default')
+        if (property == 'setProperty' || property == 'default')
             return;
 
         const propertyObj = this.properties[property];
@@ -122,7 +133,7 @@ class FlowchartItem {
                 this.topBar.style.color = val;
                 break;
             case 'scale':
-                if(val == 0){
+                if (val == 0) {
                     flowchartItems.splice(this.index, 1);
                     Inspector.activate(false);
                     Inspector.setInspectorProperties(null);
@@ -142,6 +153,15 @@ class FlowchartItem {
                 this.innerNode.setAttribute('src', val);
                 break;
         }
+    }
+    addConnector = () => {
+        Inspector.activate(false);
+
+        this.newConnector = this.connectors.length;
+        this.connectors.push(document.createElement('div'));
+        this.connectors[this.newConnector].className = 'connector temp';
+        this.connectors[this.newConnector].onclick = () => this.connectorClicked(this.newConnector);
+        this.node.appendChild(this.connectors[this.newConnector]);
     }
     resetProperties() {
         this.properties = {
@@ -164,6 +184,7 @@ class FlowchartItem {
                 break;
         }
 
+        this.properties.addConnector = createProperty('Add Connector', 'Button', this.addConnector);
         this.properties.default = { ...this.properties };
 
         for (const prop in this.properties)

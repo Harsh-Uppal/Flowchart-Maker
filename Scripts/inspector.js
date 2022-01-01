@@ -26,15 +26,19 @@ class Inspector {
 
             const currentProp = this.inspectingProperties[property];
 
-            let newPropertyContainer = document.createElement('div');
-            let propertyLabel = document.createElement('label');
-            let input = document.createElement('input');
+            const newPropertyContainer = document.createElement('div');
+            const propertyLabel = document.createElement('label');
+            const input = document.createElement('input');
 
             newPropertyContainer.id = this.numProperties++;
             propertyLabel.textContent = currentProp.name;
 
             input.type = currentProp.type || 'text';
-            input.value = currentProp.val || '';
+            
+            if (input.type.toLowerCase() == 'button')
+                input.onclick = currentProp.val;
+
+            input.value = input.type.toLowerCase() == 'button' ? '+' : currentProp.val || '';
             input.className = input.type + 'Input';
             input.onkeyup =
                 input.onchange = () => { Inspector.propertyChanged(property, input.value) };

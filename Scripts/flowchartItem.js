@@ -78,9 +78,19 @@ class FlowchartItem {
         if (index == null || this.connectors == null || this.connectors.length == 0)
             return;
 
-        if (index === this.newConnector)
+        if (index === this.newConnector){
+            this.connectors[this.newConnector].className = 'connector'
+            this.connectors.forEach((connector, i) => {
+                if(i != this.newConnector){
+                    if(connector.rotation == this.connectors[this.newConnector].rotation){
+                        this.connectors[this.newConnector].remove();
+                        this.connectors.splice(this.newConnector, 1);
+                        return true;
+                    }
+                }
+            });
             this.newConnector = null;
-
+        }
     }
     update() {
         if (!this.added)
@@ -100,6 +110,7 @@ class FlowchartItem {
 
                 this.connectors[this.newConnector].style.top = 100 - Math.abs(roundedAngle) + '%';
                 this.connectors[this.newConnector].style.left = 100 + roundedAngle % 100 - 50 + '%';
+                this.connectors[this.newConnector].rotation = roundedAngle;
             }
         }
     }

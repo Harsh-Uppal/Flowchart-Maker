@@ -34,14 +34,16 @@ class Inspector {
             propertyLabel.textContent = currentProp.name;
 
             input.type = currentProp.type || 'text';
-            
+
             if (input.type.toLowerCase() == 'button')
                 input.onclick = currentProp.val;
 
             input.value = input.type.toLowerCase() == 'button' ? '+' : currentProp.val || '';
             input.className = input.type + 'Input';
             input.onkeyup =
-                input.onchange = () => { Inspector.propertyChanged(property, input.value) };
+                input.onchange = () => {
+                    Inspector.propertyChanged(property, input.value)
+                };
 
             newPropertyContainer.appendChild(propertyLabel);
             newPropertyContainer.appendChild(input);
@@ -66,11 +68,13 @@ class Inspector {
             this.inspectingProperties.setProperty(currentProperty, propVal);
 
             const currentInput = inputs.children[i].querySelector('input');
-            currentInput.value = propVal;
+            currentInput.value = currentInput.type == 'button' ? '+' : propVal;
             i++;
         }
 
-        this.inspectingProperties.default = { ...this.inspectingProperties };
+        this.inspectingProperties.default = {
+            ...this.inspectingProperties
+        };
     }
     static propertyChanged(name, val) {
         this.inspectingProperties.setProperty(name, val);
@@ -78,5 +82,9 @@ class Inspector {
 }
 
 function createProperty(name, type, value) {
-    return { name: name, type: type, val: value };
+    return {
+        name: name,
+        type: type,
+        val: value
+    };
 }

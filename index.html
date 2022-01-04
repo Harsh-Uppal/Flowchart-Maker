@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,8 +16,7 @@
     <script src="./Scripts/util.js"></script>
     <script src="./Scripts/app.js"></script>
     <script src="./Scripts/toolbar.js"></script>
-    <script src="./Scripts/flowchartItem.js"></script>
-    <script src="./Scripts/bezierCurve.js"></script>
+    <script src="./Scripts/flowchart.js"></script>
     <script src="./Scripts/inspector.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
@@ -60,25 +58,21 @@
                 <div class="header">Toolbar</div>
 
                 <div class="tools">
-                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
-                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
-                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
-                            alt=""></button>
+                    <button title="Add Text Node" onclick="newFlowchartItem('text')"  id="TextNode">Text</button>
+                    <button title="Add Image Node" onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button title="Add Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"></button>
 
-                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
-                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
-                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
-                            alt=""></button>
+                    <button title="Add List Node" onclick="newFlowchartItem('list')" id="ListNode"><img src="Assets/ListIcon.png" /></button>
+                    <button title="Add Image Node" onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button title="Add Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"></button>
 
-                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
-                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
-                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
-                            alt=""></button>
+                    <button title="Add Text Node" onclick="newFlowchartItem('text')" id="TextNode">Text</button>
+                    <button title="Add Image Node" onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button title="Add Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"></button>
 
-                    <button onclick="newFlowchartItem('text')" id="TextNode">Text</button>
-                    <button onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
-                    <button onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"
-                            alt=""></button>
+                    <button title="Add Text Node" onclick="newFlowchartItem('text')" id="TextNode">Text</button>
+                    <button title="Add Image Node" onclick="newFlowchartItem('image')" id="Image"><img src="Assets/ImageIcon.png" /></button>
+                    <button title="Add Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph"><img src="Assets/BarGraph.png"></button>
                 </div>
             </div>
             <button class="arrow" onclick="moveToolbar()">
@@ -112,7 +106,7 @@
 
     <footer>
         <div class="copyright">
-            &copy; Copyright 2021 PowerNet Corporation All Rights reserved
+            &copy; Copyright 2021 All Rights reserved
         </div>
     </footer>
 </body>

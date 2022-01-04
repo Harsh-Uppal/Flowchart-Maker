@@ -3,12 +3,13 @@ class FlowchartItem {
         this.pos = pos;
         this.type = type;
         this.added = false;
-        this.connectors = [];
         this.newConnector = null;
-        this.connected = false;
         this.index = index;
+        this.connectingCurves = [];
         this.connectors = [];
+        this.clickEnabled = true;
         this.lastMouseAngle = vector(Infinity, Infinity);
+        this.scale = () => cellSize / 50;
 
         let itemsContainer = document.querySelector('.flowchartItems');
         let newItem = document.createElement('div');
@@ -56,6 +57,10 @@ class FlowchartItem {
         this.resetProperties();
     }
     mouseClicked = () => {
+        if (!this.clickEnabled) {
+            this.clickEnabled = true;
+            return;
+        }
         if (!this.added)
             this.added = true;
 
@@ -74,42 +79,77 @@ class FlowchartItem {
         this.lastDragPos = vector(mouseX, mouseY);
         dragEnabled = true;
     }
-    connectorClicked = (index) => {
+    calculateConnectorPos = connectorAngle => vector(
+        100 + connectorAngle % 100 - 50,
+        100 - Math.abs(connectorAngle)
+    );
+    connectorClicked = index => {
+        this.clickEnabled = false;
+        if (FlowchartItem.connecting != null) {
+            FlowchartItem.connecting.connectTo(this.index, () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
+                this.node.offsetWidth / 100,
+                this.node.offsetHeight / 100
+            ).mult(this.scale()))));
+            return;
+        }
+
         if (index == null || this.connectors == null || this.connectors.length == 0)
             return;
 
-        if (index === this.newConnector){
+        if (this.connectingCurves.length > 0 && !this.connectingCurves[this.connectingCurves.length - 1].connected)
+            this.connectingCurves.splice(this.connectingCurves.length - 1, 1);
+
+        if (index === this.newConnector) {
             this.connectors[this.newConnector].className = 'connector'
             this.connectors.forEach((connector, i) => {
-                if(i != this.newConnector){
-                    if(connector.rotation == this.connectors[this.newConnector].rotation){
-                        this.connectors[this.newConnector].remove();
-                        this.connectors.splice(this.newConnector, 1);
-                        return true;
-                    }
+                if (i != this.newConnector && connector.rotation == this.connectors[this.newConnector].rotation) {
+                    this.connectors[this.newConnector].remove();
+                    this.connectors.splice(this.newConnector, 1);
+                    return true;
                 }
             });
             this.newConnector = null;
+            return;
         }
+
+        this.connectingCurves.push({
+            curve: new Curve(
+                () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
+                    this.node.offsetWidth / 100,
+                    this.node.offsetHeight / 100
+                ).mult(this.scale()))),
+                () => vector(mouseX, mouseY)
+            ),
+            connected: false
+        });
+
+        FlowchartItem.connecting = this;
     }
     update() {
         if (!this.added)
             this.pos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
 
-        this.node.style.transform = `translate(-50%, -50%) scale(${cellSize / 50 * this.properties.scale.val})`;
+        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
+
         this.updatePosition();
 
-        if(this.newConnector != null){
-            const dirVec = vector(mouseX, mouseY).sub(this.pos.mult(cellSize));
+        this.connectingCurves.forEach(({
+            curve
+        }) => {
+            curve.display();
+        });
+
+        if (this.newConnector != null) {
+            const dirVec = vector(mouseX, mouseY).sub(this.pos.mult(cellSize).add(pos));
             const angle = Math.atan2(dirVec.x, dirVec.y);
             const roundedAngle = Math.round(angle / (Math.PI / 2)) * 50;
-            
-            if(roundedAngle != this.lastMouseAngle)
-            {
+
+            if (roundedAngle != this.lastMouseAngle) {
                 this.lastMouseAngle = roundedAngle;
 
-                this.connectors[this.newConnector].style.top = 100 - Math.abs(roundedAngle) + '%';
-                this.connectors[this.newConnector].style.left = 100 + roundedAngle % 100 - 50 + '%';
+                const calculatedPos = this.calculateConnectorPos(roundedAngle);
+                this.connectors[this.newConnector].style.top = calculatedPos.y + '%';
+                this.connectors[this.newConnector].style.left = calculatedPos.x + '%';
                 this.connectors[this.newConnector].rotation = roundedAngle;
             }
         }
@@ -127,7 +167,6 @@ class FlowchartItem {
 
         const propertyObj = this.properties[property];
         this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
-
         switch (property) {
             case 'color':
                 this.node.style.backgroundColor = val;
@@ -141,13 +180,11 @@ class FlowchartItem {
             case 'headFontColor':
                 this.topBar.style.color = val;
                 break;
-            case 'scale':
-                if (val == 0) {
-                    flowchartItems.splice(this.index, 1);
-                    Inspector.activate(false);
-                    Inspector.setInspectorProperties(null);
-                }
-                this.update();
+            case 'width':
+                this.innerNode.style.width = val + 'px';
+                break;
+            case 'height':
+                this.innerNode.style.height = val + 'px';
                 break;
             case 'text':
                 this.innerNode.textContent = val;
@@ -166,11 +203,12 @@ class FlowchartItem {
     addConnector = () => {
         Inspector.activate(false);
 
-        this.newConnector = this.connectors.length;
+        const newConnector = this.connectors.length;
+        this.newConnector = newConnector;
         this.connectors.push(document.createElement('div'));
-        this.connectors[this.newConnector].className = 'connector temp';
-        this.connectors[this.newConnector].onclick = () => this.connectorClicked(this.newConnector);
-        this.node.appendChild(this.connectors[this.newConnector]);
+        this.connectors[newConnector].className = 'connector temp';
+        this.connectors[newConnector].onclick = () => this.connectorClicked(newConnector);
+        this.node.appendChild(this.connectors[newConnector]);
     }
     resetProperties() {
         this.properties = {
@@ -178,7 +216,6 @@ class FlowchartItem {
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
             headFontColor: createProperty('Heading Color', 'color', '#000000'),
-            scale: createProperty('Scale', 'number', 1),
             setProperty: this.setProperty
         };
 
@@ -190,13 +227,40 @@ class FlowchartItem {
                 break;
             case 'image':
                 this.properties.imageSrc = createProperty('Image Source', 'text', './Assets/ImageIcon.png');
+                this.properties.width = createProperty('Image Width', 'number', 25);
+                this.properties.height = createProperty('Image Height', 'number', 25);
                 break;
         }
 
         this.properties.addConnector = createProperty('Add Connector', 'Button', this.addConnector);
-        this.properties.default = { ...this.properties };
+        this.properties.default = {
+            ...this.properties
+        };
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
+    }
+    connectTo = (flowchartIndex, pos2Calculator) => {
+        FlowchartItem.connecting = null;
+
+        if (flowchartIndex == this.index)
+            this.connectingCurves.splice(this.connectingCurves.length - 1, 1);
+        else {
+            this.connectingCurves[this.connectingCurves.length - 1].curve.p2 = pos2Calculator;
+            this.connectingCurves[this.connectingCurves.length - 1].connected = true;
+        }
+    }
+}
+
+class Curve {
+    constructor(p1, p2) {
+        this.p1 = p1;
+        this.p2 = p2;
+    }
+    display() {
+        const p1 = this.p1();
+        const p2 = this.p2();
+
+        line(p1.x, p1.y, p2.x, p2.y);
     }
 }

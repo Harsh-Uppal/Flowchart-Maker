@@ -1,8 +1,15 @@
-let pos = vector(0, 0), cellSize = 50, panSpeed = .5, cellSizeSpeed = .02,
-    maxCellSize = 200, minCellSize = 10, bezierQuality = 30;
-let canvas;
-let flowchartItems = [], flowchartConnectors = [], generalInputs = [];
-let dragEnabled = true, newConnector = null;
+let pos = vector(0, 0),
+    cellSize = 50,
+    panSpeed = .5,
+    cellSizeSpeed = .02,
+    maxCellSize = 200,
+    minCellSize = 10,
+    dragEnabled = true,
+    generalInputs,
+    canvas;
+
+const flowchartItems = [],
+    connectorQuality = 30;
 
 window.addEventListener('resize', setup);
 
@@ -13,7 +20,7 @@ function setup() {
     generalInputs = loadInputs();
     generalInputs.zoom.max = maxCellSize;
     generalInputs.zoom.min = minCellSize;
-    
+
     canvas = document.querySelector('canvas');
 
     strokeWeight(2);
@@ -21,6 +28,7 @@ function setup() {
     update();
     noLoop();
 }
+
 function loadInputs() {
     return {
         zoom: document.querySelector('.generalProperties > .zoom > input'),
@@ -29,6 +37,7 @@ function loadInputs() {
         bgColor: document.querySelector('.generalProperties > .backgroundColor > input')
     };
 }
+
 function drawGridlines() {
     for (let x = pos.x % cellSize; x < width; x += cellSize)
         line(x, 0, x, height);
@@ -36,6 +45,7 @@ function drawGridlines() {
     for (let y = pos.y % cellSize; y < height; y += cellSize)
         line(0, y, width, y);
 }
+
 function mouseDragged(e) {
     if (e.srcElement.nodeName != 'CANVAS' || !dragEnabled)
         return;
@@ -47,24 +57,25 @@ function mouseDragged(e) {
 
     setCursor('grabbing');
 }
+
 function mouseMoved() {
     pmouseX = mouseX;
     pmouseY = mouseY;
     update();
 }
+
 function mouseClicked(e) {
     if (e.srcElement.nodeName != 'CANVAS')
         return;
-
-    if (newConnector != null)
-        removeNewConnector();
 }
+
 function mouseReleased(e) {
     if (e.srcElement.nodeName != 'CANVAS')
         return;
 
     setCursor('grab');
 }
+
 function changeZoom(event) {
     cellSize = Math.round(
         Math.max(Math.min(event == undefined ? parseInt(generalInputs.zoom.value) : cellSize - event.deltaY * cellSizeSpeed,
@@ -73,10 +84,12 @@ function changeZoom(event) {
 
     update();
 }
+
 function setCursor(type) {
     if (canvas.style.cursor != type)
         canvas.style.cursor = type;
 }
+
 function update() {
     background(generalInputs.bgColor.value);
 
@@ -84,13 +97,7 @@ function update() {
     if (generalInputs.gridlines.checked)
         drawGridlines();
 
+    stroke('#fff');
     for (let i = 0; i < flowchartItems.length; i++)
         flowchartItems[i].update();
-
-    stroke('#fff');
-    if (newConnector != null)
-        flowchartConnectors[newConnector.index].changeP2(vector(mouseX, mouseY));
-
-    for (let i = 0; i < flowchartConnectors.length; i++)
-        flowchartConnectors[i].display();
 }

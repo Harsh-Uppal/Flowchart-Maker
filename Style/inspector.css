@@ -5,7 +5,8 @@
     display:flex;
     flex-direction: column;
     z-index: 1;
-    width:20vw;
+    width:max-content;
+    padding:0 1vw;
     height:80vh;
     background-color: darkgrey;
     transition: 1s;
@@ -82,12 +83,12 @@
 .inspector > .properties > * > .textInput, .numberInput{
     font-family: 'Open Sans';
     font-weight: bold;
-    font-size:1vw;
     max-width: 50%;
 }
 
 .inspector > .properties > * > .colorInput{
-    padding:.5%;
+    border:none;
+    padding:0;
 }
 
 .inspector > .properties > * > .buttonInput{

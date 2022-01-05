@@ -11,14 +11,15 @@ class FlowchartItem {
         this.lastMouseAngle = vector(Infinity, Infinity);
         this.scale = () => cellSize / 50;
 
-        let itemsContainer = document.querySelector('.flowchartItems');
-        let newItem = document.createElement('div');
+        const itemsContainer = document.querySelector('.flowchartItems');
+        const newItem = document.createElement('div');
+        const dataContainer = document.createElement('div');
         this.topBar = document.createElement('div');
-        let dataContainer = document.createElement('div');
 
         newItem.className = 'flowchartItem';
-        newItem.id = flowchartItems.length;
+        newItem.tabIndex = 0;
         newItem.onclick = this.mouseClicked;
+        newItem.onkeydown = this.keyPressed;
         newItem.style.top = this.pos.y + 'px';
         newItem.style.left = this.pos.x + 'px';
 
@@ -55,6 +56,14 @@ class FlowchartItem {
         this.node = newItem;
 
         this.resetProperties();
+    }
+    keyPressed = key => {
+        if(key.key == 'Delete')
+        {
+            Inspector.activate(false);
+            flowchartItems.splice(this.index, 1);
+            this.node.remove();
+        }
     }
     mouseClicked = () => {
         if (!this.clickEnabled) {

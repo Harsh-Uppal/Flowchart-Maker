@@ -49,7 +49,7 @@
     display:grid;
     grid-template-columns: repeat(3, 1fr);
     gap:3%;
-    height:78%;
+    height:48%;
     width:90%;
     user-select: none;
 }
@@ -78,4 +78,5 @@
 
 .toolbarContent > .tools > * > img{
     width:70%;
+    height:auto;
 }

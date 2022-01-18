@@ -28,31 +28,38 @@ class Inspector {
 
             const newPropertyContainer = document.createElement('div');
             const propertyLabel = document.createElement('label');
-            const input = document.createElement('input');
 
             newPropertyContainer.id = this.numProperties++;
             propertyLabel.textContent = currentProp.name;
-
-            input.type = currentProp.type || 'text';
-
-            if (input.type.toLowerCase() == 'button')
-                input.onclick = currentProp.val;
-
-            input.value = input.type.toLowerCase() == 'button' ? '+' : currentProp.val || '';
-            input.className = input.type + 'Input';
-            input.onkeyup =
-                input.onchange = () => {
-                    Inspector.propertyChanged(property, input.value)
-                };
-
             newPropertyContainer.appendChild(propertyLabel);
-            newPropertyContainer.appendChild(input);
+
+            if (currentProp.type != 'header') {
+                const input = document.createElement('input');
+
+                input.type = currentProp.type || 'text';
+
+                if (input.type.toLowerCase() == 'button')
+                    input.onclick = currentProp.val;
+
+                input.value = input.type.toLowerCase() == 'button' ? '+' : currentProp.val || '';
+                input.className = input.type + 'Input';
+                input.onkeyup = input.onchange =
+                    () => {
+                        Inspector.propertyChanged(property, input.value)
+                    };
+
+                newPropertyContainer.appendChild(input);
+            }
+            else
+            {
+                propertyLabel.className = 'inspectorHeader';
+                newPropertyContainer.classList.add('no-flex');
+                const seperator = document.createElement('hr');
+                newPropertyContainer.appendChild(seperator);
+            }
 
             propertyObjContainer.appendChild(newPropertyContainer);
         }
-    }
-    static saveProperties() {
-        alert('Properties Saved');
     }
     static resetProperties() {
         this.inspectingProperties = this.inspectingProperties.default;
@@ -81,10 +88,13 @@ class Inspector {
     }
 }
 
-function createProperty(name, type, value) {
-    return {
-        name: name,
-        type: type,
-        val: value
-    };
-}
+const createProperty = (name, type, value) => ({
+    name: name,
+    type: type,
+    val: value
+});
+
+const createPropertyHeader = header => ({
+    name: header,
+    type: 'header'
+});

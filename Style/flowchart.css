@@ -11,6 +11,86 @@ canvas{
     display:flex;
 }
 
+.BarGraph{
+    display:flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    height:max-content;
+}
+
+.BarGraph > .dataContainer{
+    display:flex;
+    justify-content: space-evenly;
+    width:90%;
+    height:85%;
+    margin:0 1rem;
+}
+
+.BarGraph > .dataContainer > *{
+    display:flex;
+    width:40px;
+    flex-direction: column;
+    align-items: center;
+    background-color: gold;
+    border-radius: 1.5vmin 1.5vmin 0 0;
+    align-self: flex-end;
+}
+
+.BarGraph > .dataContainer > * + *{
+    margin-left: .2rem;
+}
+
+.addBarBtn{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    margin-left:auto;
+    width:10%;
+    height:70%;
+    background-color: blue;
+    color:white;
+    font-weight: bold;
+    border-width:1px;
+    border-radius: 1vmin;
+    cursor:pointer;
+}
+
+.barScaler{
+    z-index: 1;
+    width:75%;
+    height:2px;
+    background-color: blue;
+    cursor: ns-resize;
+}
+
+.barDataRotator{
+    display:flex;
+    width:max-content;
+    height: 100%;
+    align-items: center;
+    font-family: Quicksand;
+    transform: rotate(90deg);
+    white-space:nowrap;
+    
+}
+
+.BarGraph > .bottomBar{
+    z-index: 1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Poppins;
+    align-self: flex-end;
+    cursor:move;
+    min-width:100%;
+    height:1.5rem;
+    background-color: lightslategrey;
+    border-radius: 1.2vmin;
+    padding:0 5px;
+    white-space: nowrap;
+}
+
 .flowchartItem{
     position: absolute;
     background-color: lightblue;
@@ -23,7 +103,7 @@ canvas{
     border-radius: inherit;
 }
 
-.flowchartItem > .dataContainer > .topBar{
+.flowchartItem > .dataContainer > .dragger{
     display:flex;
     align-items:center;
     justify-content: center;
@@ -44,7 +124,8 @@ canvas{
     margin:2vmin;
 }
 
-.flowchartItem > .connector{
+.connector{
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,7 +139,7 @@ canvas{
     transform: translate(-50%, -50%);
 }
 
-.flowchartItem > .connector::before{
+.connector::before{
     display:block;
     content:'';
     background-color: rgb(4, 141, 22);
@@ -67,7 +148,7 @@ canvas{
     border-radius: 100%;
 }
 
-.flowchartItem > .connector:hover::before{
+.connector:hover::before{
     background-color: rgb(8, 199, 34);
 }
 

@@ -80,19 +80,33 @@
     font-weight: bold;
 }
 
+.inspector > .properties > * > hr{
+    width:100%;
+    margin-left:4px;
+    height:1px;
+    background-color: white;
+}
+
+.inspectorHeader{
+    font-family: 'Montserrat' !important;
+    font-style: normal;
+}
+
 .inspector > .properties > * > .textInput, .numberInput{
     font-family: 'Open Sans';
     font-weight: bold;
+    height:65%;
     max-width: 50%;
 }
 
 .inspector > .properties > * > .colorInput{
     border:none;
+    height:90%;
     padding:0;
 }
 
 .inspector > .properties > * > .buttonInput{
-    height:8vmin;
+    height:200%;
     width:8vmin;
     font-size: 7vmin;
     transform: scale(.5);

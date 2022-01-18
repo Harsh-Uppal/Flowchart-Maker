@@ -1,7 +1,6 @@
 class FlowchartItem {
-    constructor(type, pos, index) {
+    constructor(pos, index) {
         this.pos = pos;
-        this.type = type;
         this.added = false;
         this.newConnector = null;
         this.index = index;
@@ -9,12 +8,11 @@ class FlowchartItem {
         this.connectors = [];
         this.clickEnabled = true;
         this.lastMouseAngle = vector(Infinity, Infinity);
-        this.scale = () => cellSize / 50;
 
         const itemsContainer = document.querySelector('.flowchartItems');
         const newItem = document.createElement('div');
         const dataContainer = document.createElement('div');
-        this.topBar = document.createElement('div');
+        this.dragger = document.createElement('div');
 
         newItem.className = 'flowchartItem';
         newItem.tabIndex = 0;
@@ -23,43 +21,24 @@ class FlowchartItem {
         newItem.style.top = this.pos.y + 'px';
         newItem.style.left = this.pos.x + 'px';
 
-        this.topBar.className = 'topBar';
-        this.topBar.draggable = true;
-        this.topBar.ondragenter = this.mouseDragStart;
-        this.topBar.ondrag = this.mouseDragged;
-        this.topBar.ondragend = this.mouseDragEnd;
+        this.dragger.className = 'dragger';
+        this.dragger.draggable = true;
+        this.dragger.ondragenter = this.mouseDragStart;
+        this.dragger.ondrag = this.mouseDragged;
+        this.dragger.ondragend = this.mouseDragEnd;
 
         dataContainer.className = 'dataContainer';
-
-        switch (type) {
-            case 'text':
-                this.innerNode = document.createElement('div');
-                this.innerNode.innerText = 'Write something here...';
-                break;
-            case 'image':
-                this.innerNode = document.createElement('img');
-                this.innerNode.setAttribute('src', './Assets/ImageIcon.png');
-                break;
-            case 'bar-graph':
-                this.innerNode = document.createElement('img');
-                this.innerNode.setAttribute('src', './Assets/BarGraph.png');
-                break;
-        }
-        this.innerNode.className = type;
-
-        dataContainer.appendChild(this.topBar);
-        dataContainer.appendChild(this.innerNode);
+        dataContainer.appendChild(this.dragger);
 
         newItem.appendChild(dataContainer);
         itemsContainer.appendChild(newItem);
 
         this.node = newItem;
-
-        this.resetProperties();
+        this.dataContainer = dataContainer;
     }
+    scale = () => cellSize / 50;
     keyPressed = key => {
-        if(key.key == 'Delete')
-        {
+        if (key.key == 'Delete') {
             Inspector.activate(false);
             flowchartItems.splice(this.index, 1);
             this.node.remove();
@@ -134,6 +113,16 @@ class FlowchartItem {
 
         FlowchartItem.connecting = this;
     }
+    addConnector = () => {
+        Inspector.activate(false);
+
+        const newConnector = this.connectors.length;
+        this.newConnector = newConnector;
+        this.connectors.push(document.createElement('div'));
+        this.connectors[newConnector].className = 'connector temp';
+        this.connectors[newConnector].onclick = () => this.connectorClicked(newConnector);
+        this.node.appendChild(this.connectors[newConnector]);
+    }
     update() {
         if (!this.added)
             this.pos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
@@ -170,85 +159,6 @@ class FlowchartItem {
         if (this.connector != null)
             this.connector.changeP1(vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop));
     }
-    setProperty = (property, val) => {
-        if (property == 'setProperty' || property == 'default')
-            return;
-
-        const propertyObj = this.properties[property];
-        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
-        switch (property) {
-            case 'color':
-                this.node.style.backgroundColor = val;
-                break;
-            case 'heading':
-                this.topBar.textContent = val;
-                break;
-            case 'headColor':
-                this.topBar.style.backgroundColor = val;
-                break;
-            case 'headFontColor':
-                this.topBar.style.color = val;
-                break;
-            case 'width':
-                this.innerNode.style.width = val + 'px';
-                break;
-            case 'height':
-                this.innerNode.style.height = val + 'px';
-                break;
-            case 'text':
-                this.innerNode.textContent = val;
-                break;
-            case 'fontColor':
-                this.innerNode.style.color = val;
-                break;
-            case 'fontSize':
-                this.innerNode.style.fontSize = val + 'vw';
-                break;
-            case 'imageSrc':
-                this.innerNode.setAttribute('src', val);
-                break;
-        }
-    }
-    addConnector = () => {
-        Inspector.activate(false);
-
-        const newConnector = this.connectors.length;
-        this.newConnector = newConnector;
-        this.connectors.push(document.createElement('div'));
-        this.connectors[newConnector].className = 'connector temp';
-        this.connectors[newConnector].onclick = () => this.connectorClicked(newConnector);
-        this.node.appendChild(this.connectors[newConnector]);
-    }
-    resetProperties() {
-        this.properties = {
-            color: createProperty('Background Color', 'color', '#ADD8E6'),
-            heading: createProperty('Heading', 'text', ''),
-            headColor: createProperty('Heading Background', 'color', '#20B2AA'),
-            headFontColor: createProperty('Heading Color', 'color', '#000000'),
-            setProperty: this.setProperty
-        };
-
-        switch (this.type) {
-            case 'text':
-                this.properties.text = createProperty('Text', 'text', 'Write something here...');
-                this.properties.fontSize = createProperty('Font Size', 'number', 1.2);
-                this.properties.fontColor = createProperty('Font Color', 'color', '#000000');
-                break;
-            case 'image':
-                this.properties.imageSrc = createProperty('Image Source', 'text', './Assets/ImageIcon.png');
-                this.properties.width = createProperty('Image Width', 'number', 25);
-                this.properties.height = createProperty('Image Height', 'number', 25);
-                break;
-        }
-
-        this.properties.addConnector = createProperty('Add Connector', 'Button', this.addConnector);
-        this.properties.default = {
-            ...this.properties
-        };
-
-        for (const prop in this.properties)
-            this.setProperty(prop, this.properties[prop].val);
-    }
     connectTo = (flowchartIndex, pos2Calculator) => {
         FlowchartItem.connecting = null;
 
@@ -260,7 +170,256 @@ class FlowchartItem {
         }
     }
 }
+class FlowchartTextBox extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
 
+        this.innerNode = document.createElement('div');
+        this.innerNode.innerText = 'Write something here...';
+        this.innerNode.className = 'text';
+        this.dataContainer.appendChild(this.innerNode);
+
+        this.resetProperties();
+    }
+    setProperty = (property, val) => {
+        if (property == 'setProperty' || property == 'default')
+            return;
+
+        const propertyObj = this.properties[property];
+        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+        switch (property) {
+            case 'color':
+                this.node.style.backgroundColor = val;
+                break;
+            case 'heading':
+                this.dragger.textContent = val;
+                break;
+            case 'headColor':
+                this.dragger.style.backgroundColor = val;
+                break;
+            case 'headFontColor':
+                this.dragger.style.color = val;
+                break;
+            case 'text':
+                this.innerNode.textContent = val;
+                break;
+            case 'fontColor':
+                this.innerNode.style.color = val;
+                break;
+            case 'fontSize':
+                this.innerNode.style.fontSize = val + 'vw';
+                break;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            head0: createPropertyHeader('General'),
+            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            head1: createPropertyHeader('Header'),
+            heading: createProperty('Heading', 'text', ''),
+            headColor: createProperty('Heading Background', 'color', '#20B2AA'),
+            headFontColor: createProperty('Heading Color', 'color', '#000000'),
+            head2: createPropertyHeader('Text'),
+            text: createProperty('Text', 'text', 'Write something here...'),
+            fontSize: createProperty('Font Size', 'number', 1.2),
+            fontColor: createProperty('Font Color', 'color', '#000000'),
+            head3: createPropertyHeader('Connectors'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
+            setProperty: this.setProperty
+        };
+
+        this.properties.default = {
+            ...this.properties
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+}
+class FlowchartImage extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
+
+        this.innerNode = document.createElement('img');
+        this.innerNode.setAttribute('src', './Assets/ImageIcon.png');
+        this.innerNode.className = 'image';
+        this.dataContainer.appendChild(this.innerNode);
+
+        this.resetProperties();
+    }
+    setProperty = (property, val) => {
+        if (property == 'setProperty' || property == 'default')
+            return;
+
+        const propertyObj = this.properties[property];
+        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+        switch (property) {
+            case 'color':
+                this.node.style.backgroundColor = val;
+                break;
+            case 'heading':
+                this.dragger.textContent = val;
+                break;
+            case 'headColor':
+                this.dragger.style.backgroundColor = val;
+                break;
+            case 'headFontColor':
+                this.dragger.style.color = val;
+                break;
+            case 'width':
+                this.innerNode.style.width = val + 'px';
+                break;
+            case 'height':
+                this.innerNode.style.height = val + 'px';
+                break;
+            case 'imageSrc':
+                this.innerNode.setAttribute('src', val);
+                break;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            head0: createPropertyHeader('General'),
+            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            head1: createPropertyHeader('Header'),
+            heading: createProperty('Heading', 'text', ''),
+            headColor: createProperty('Heading Background', 'color', '#20B2AA'),
+            headFontColor: createProperty('Heading Color', 'color', '#000000'),
+            head2: createPropertyHeader('Image'),
+            imageSrc: createProperty('Image Source', 'text', './Assets/ImageIcon.png'),
+            width: createProperty('Image Width', 'number', 100),
+            height: createProperty('Image Height', 'number', 80),
+            head3: createPropertyHeader('Connectors'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
+            setProperty: this.setProperty
+        };
+
+        this.properties.default = {
+            ...this.properties
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+}
+class FlowchartBarGraph extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
+
+        this.header = document.createElement('div');
+        this.node.className = 'BarGraph';
+        this.dragger.className = 'bottomBar';
+        const addBarBtn = document.createElement('button');
+        addBarBtn.className = 'addBarBtn';
+        addBarBtn.innerText = '+';
+        addBarBtn.onclick = this.addNewBar;
+        this.dragger.appendChild(this.header);
+        this.dragger.appendChild(addBarBtn);
+
+        this.node.appendChild(this.dragger);
+
+        this.resetProperties();
+
+        this.bars = [];
+
+        for (let i = 0; i < 3; i++)
+            this.addNewBar();
+    }
+    scale = () => cellSize / 50 * this.properties.scale.val;
+    setProperty = (property, val) => {
+        if (property == 'setProperty' || property == 'default')
+            return;
+
+        const propertyObj = this.properties[property];
+        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+        switch (property) {
+            case 'heading':
+                this.header.innerText = val;
+                break;
+            case 'headColor':
+                this.dragger.style.backgroundColor = val;
+                break;
+            case 'headFontColor':
+                this.dragger.style.color = val;
+                break;
+            case 'scale':
+                this.update();
+                break;
+            default:
+                if (property.startsWith('bar')) {
+                    const barIndex = parseInt(property.slice(3, property.length));
+                    this.bars[barIndex].content.textContent = val;
+                }
+                break;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            head0: createPropertyHeader('General'),
+            scale: createProperty('Scale', 'number', 1),
+            head1: createPropertyHeader('Header'),
+            heading: createProperty('Heading', 'text', ''),
+            headColor: createProperty('Heading Background', 'color', '#20B2AA'),
+            headFontColor: createProperty('Heading Color', 'color', '#000000'),
+            head2: createPropertyHeader('Connectors'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
+            head3: createPropertyHeader('Bars'),
+            setProperty: this.setProperty
+        };
+
+        // for(const bar in this.bars)
+        //     this.properties['bar' + bar] = createProperty('Bar ' + bar, 'text', 'Bar ' + bar);
+
+        this.properties.default = {
+            ...this.properties
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+    barScalerDragStarted = () => {
+        dragEnabled = false;
+        this.lastDragY = mouseY;
+    }
+    barScalerDragEnded = () => {
+        dragEnabled = true;
+        this.lastDragY = null;
+    }
+    barScalerDragged = barIndex => {
+        const dragDiff = this.lastDragY - mouseY;
+
+        const currentBarHeight = parseFloat(this.bars[barIndex].style.height.slice(0, this.bars[barIndex].style.height.length - 2));
+        this.bars[barIndex].style.height = currentBarHeight + dragDiff + 'px';
+
+        this.lastDragY = mouseY;
+    }
+    addNewBar = () => {
+        const i = this.bars.length;
+        const newBar = document.createElement('div');
+        const barScaler = document.createElement('div');
+        const newBarContent = document.createElement('div');
+
+        barScaler.ondragstart = this.barScalerDragStarted;
+        barScaler.ondrag = () => this.barScalerDragged(i);
+        barScaler.ondragend = this.barScalerDragEnded;
+        barScaler.draggable = true;
+        barScaler.className = 'barScaler';
+
+        newBarContent.className = 'barDataRotator';
+        newBarContent.textContent = 'Bar ' + i;
+        newBar.style.height = 40 + (20 * i) + 'px';
+
+        newBar.appendChild(barScaler);
+        newBar.appendChild(newBarContent);
+
+        newBar.content = newBarContent;
+
+        this.dataContainer.appendChild(newBar);
+        this.bars.push(newBar);
+
+        this.properties['bar' + i] = createProperty('Bar ' + i, 'text', 'Bar ' + i);
+    }
+}
 class Curve {
     constructor(p1, p2) {
         this.p1 = p1;

@@ -1,4 +1,4 @@
-let toolBar = {
+const Toolbar = {
     _node: null,
     _enabled: true,
     get node() {
@@ -16,14 +16,30 @@ let toolBar = {
 };
 
 function moveToolbar() {
-    toolBar.node.style.marginLeft = toolBar.node.style.marginLeft == '0px' ? '-17vw' : '0px';
-    toolBar.toggleEnabled();
+    Toolbar.node.style.marginLeft = Toolbar.node.style.marginLeft == '0px' ? '-17vw' : '0px';
+    Toolbar.toggleEnabled();
 }
 
 function newFlowchartItem(type) {
-    toolBar.node.style.marginLeft = '-17vw';
+    moveToolbar();
 
-    flowchartItems.push(
-        new FlowchartItem(type, vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize), flowchartItems.length)
-    );
+    const itemPos = vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize);
+    const itemIndex = flowchartItems.length;
+
+    let newItem;
+    switch (type) {
+        case 'text':
+            newItem = new FlowchartTextBox(itemPos, itemIndex);
+            break;
+        case 'image':
+            newItem = new FlowchartImage(itemPos, itemIndex);
+            break;
+        case 'bar-graph':
+            newItem = new FlowchartBarGraph(itemPos, itemIndex);
+            break;
+        default:
+            return;
+    }
+
+    flowchartItems.push(newItem);
 }

@@ -11,6 +11,7 @@
     background-color: darkgrey;
     transition: 1s;
     align-items: center;
+    overflow-y:scroll;
 }
 
 .inspector > .titlebar{

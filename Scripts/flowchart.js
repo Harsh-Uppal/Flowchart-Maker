@@ -5,6 +5,7 @@ class FlowchartItem {
         this.newConnector = null;
         this.index = index;
         this.connectingCurves = [];
+        this.connectedItems = [];
         this.connectors = [];
         this.clickEnabled = true;
         this.lastMouseAngle = vector(Infinity, Infinity);
@@ -38,11 +39,7 @@ class FlowchartItem {
     }
     scale = () => cellSize / 50;
     keyPressed = key => {
-        if (key.key == 'Delete') {
-            Inspector.activate(false);
-            flowchartItems.splice(this.index, 1);
-            this.node.remove();
-        }
+        if (key.key == 'Delete') this.delete();
     }
     mouseClicked = () => {
         if (!this.clickEnabled) {
@@ -75,9 +72,9 @@ class FlowchartItem {
         this.clickEnabled = false;
         if (FlowchartItem.connecting != null) {
             FlowchartItem.connecting.connectTo(this.index, () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
-                this.node.offsetWidth / 100,
-                this.node.offsetHeight / 100
-            ).mult(this.scale()))));
+                    this.node.offsetWidth / 100,
+                    this.node.offsetHeight / 100
+                ).mult(this.scale()))));
             return;
         }
 
@@ -159,7 +156,7 @@ class FlowchartItem {
         if (this.connector != null)
             this.connector.changeP1(vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop));
     }
-    connectTo = (flowchartIndex, pos2Calculator) => {
+    connectTo = (flowchartIndex, pos2Calculator, other) => {
         FlowchartItem.connecting = null;
 
         if (flowchartIndex == this.index)
@@ -168,6 +165,11 @@ class FlowchartItem {
             this.connectingCurves[this.connectingCurves.length - 1].curve.p2 = pos2Calculator;
             this.connectingCurves[this.connectingCurves.length - 1].connected = true;
         }
+    }
+    delete() {
+        Inspector.activate(false);
+        flowchartItems.splice(this.index, 1);
+        this.node.remove();
     }
 }
 class FlowchartTextBox extends FlowchartItem {
@@ -418,6 +420,8 @@ class FlowchartBarGraph extends FlowchartItem {
         this.bars.push(newBar);
 
         this.properties['bar' + i] = createProperty('Bar ' + i, 'text', 'Bar ' + i);
+
+        this.dragger.style.height = Math.min(.5 * i + .5, 3) + 'rem';
     }
 }
 class Curve {
@@ -425,10 +429,23 @@ class Curve {
         this.p1 = p1;
         this.p2 = p2;
     }
-    display() {
-        const p1 = this.p1();
-        const p2 = this.p2();
+    display = () => drawCurve(this.p1(), this.p2());
+}
 
-        line(p1.x, p1.y, p2.x, p2.y);
+function drawCurve(p1, p2) {
+
+    const w = p2.x - p1.x,
+        h = p2.y - p1.y;
+
+    push();
+    translate(p1.x, p1.y);
+    noFill();
+    beginShape();
+    for (let i = 0; i < 1; i += 1 / connectorQuality) {
+        const Y = i * h;
+        const sinY = h - (sin(Y / PI / (h / 10) + HALF_PI) * h / 2 + h / 2);
+        vertex(i * w, sinY + sinY - Y);
     }
+    endShape();
+    pop();
 }

@@ -1,4 +1,4 @@
-let pos = vector(0, 0),
+var pos = vector(0, 0),
     cellSize = 50,
     panSpeed = .5,
     cellSizeSpeed = .02,
@@ -6,7 +6,8 @@ let pos = vector(0, 0),
     minCellSize = 10,
     dragEnabled = true,
     generalInputs,
-    canvas;
+    canvas, 
+    shiftPressed = false;
 
 const flowchartItems = [],
     connectorQuality = 30;
@@ -18,6 +19,7 @@ function setup() {
     p5Canvas.mouseWheel(changeZoom);
 
     generalInputs = loadInputs();
+    generalInputs.zoom.onchange = 
     generalInputs.zoom.max = maxCellSize;
     generalInputs.zoom.min = minCellSize;
 
@@ -55,18 +57,28 @@ function mouseDragged(e) {
     pmouseY = mouseY;
     update();
 
+    updateFlowchartPos();
+
     setCursor('grabbing');
 }
 
-function mouseMoved() {
+function mouseMoved(e) {
     pmouseX = mouseX;
     pmouseY = mouseY;
+
+    shiftPressed = e.shiftKey;
+
     update();
 }
 
 function mouseClicked(e) {
     if (e.srcElement.nodeName != 'CANVAS')
         return;
+
+    if(FlowchartItem.connecting != null)
+        FlowchartItem.connecting.connectTo(FlowchartItem.connecting.index);
+
+        update();
 }
 
 function mouseReleased(e) {
@@ -82,6 +94,7 @@ function changeZoom(event) {
             maxCellSize), minCellSize));
     generalInputs.zoom.value = cellSize;
 
+    updateFlowchartPos();
     update();
 }
 
@@ -100,4 +113,10 @@ function update() {
     stroke('#fff');
     for (let i = 0; i < flowchartItems.length; i++)
         flowchartItems[i].update();
+}
+
+function updateFlowchartPos(){
+    flowchartItems.forEach(item => {
+        item.updatePosition();
+    });
 }

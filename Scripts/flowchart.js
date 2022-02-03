@@ -8,7 +8,7 @@ class FlowchartItem {
         this.connectedItems = [];
         this.connectors = [];
         this.clickEnabled = true;
-        this.lastMouseAngle = vector(Infinity, Infinity);
+        this.lastMouseAngle = null;
 
         const itemsContainer = document.querySelector('.flowchartItems');
         const newItem = document.createElement('div');
@@ -36,6 +36,7 @@ class FlowchartItem {
 
         this.node = newItem;
         this.dataContainer = dataContainer;
+        this.connectorContainer = this.node;
     }
     scale = () => cellSize / 50;
     keyPressed = key => {
@@ -56,34 +57,40 @@ class FlowchartItem {
         dragEnabled = false;
     }
     mouseDragged = () => {
-        this.pos = vector((mouseX - pos.x) / cellSize, (mouseY - pos.y) / cellSize);
-
+        this.moveToMouse();
         this.updatePosition();
     }
     mouseDragEnd = () => {
-        this.lastDragPos = vector(mouseX, mouseY);
         dragEnabled = true;
     }
     calculateConnectorPos = connectorAngle => vector(
         100 + connectorAngle % 100 - 50,
         100 - Math.abs(connectorAngle)
     );
+    calculateCurvePos = connectorRot =>
+        this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(connectorRot).sub(vector(50, 50)).mult(vector(
+            this.connectorContainer.offsetWidth / 100,
+            this.connectorContainer.offsetHeight / 100
+        ).mult(this.scale())));
     connectorClicked = index => {
         this.clickEnabled = false;
-        if (FlowchartItem.connecting != null) {
+        //If some other connector is trying to connect then connect to it
+        if (FlowchartItem.connecting != null && FlowchartItem.connecting.index != this.index) {
             FlowchartItem.connecting.connectTo(this.index, () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
-                    this.node.offsetWidth / 100,
-                    this.node.offsetHeight / 100
-                ).mult(this.scale()))));
+                this.node.offsetWidth / 100,
+                this.node.offsetHeight / 100
+            ).mult(this.scale()))));
             return;
         }
 
+        //Error checking
         if (index == null || this.connectors == null || this.connectors.length == 0)
             return;
 
         if (this.connectingCurves.length > 0 && !this.connectingCurves[this.connectingCurves.length - 1].connected)
             this.connectingCurves.splice(this.connectingCurves.length - 1, 1);
 
+        //If a new connector is clicked then add it
         if (index === this.newConnector) {
             this.connectors[this.newConnector].className = 'connector'
             this.connectors.forEach((connector, i) => {
@@ -97,12 +104,10 @@ class FlowchartItem {
             return;
         }
 
+        //Otherwise make the clicked connector trying to connect and create a curve for it
         this.connectingCurves.push({
             curve: new Curve(
-                () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
-                    this.node.offsetWidth / 100,
-                    this.node.offsetHeight / 100
-                ).mult(this.scale()))),
+                () => this.calculateCurvePos(this.connectors[index].rotation),
                 () => vector(mouseX, mouseY)
             ),
             connected: false
@@ -118,15 +123,15 @@ class FlowchartItem {
         this.connectors.push(document.createElement('div'));
         this.connectors[newConnector].className = 'connector temp';
         this.connectors[newConnector].onclick = () => this.connectorClicked(newConnector);
-        this.node.appendChild(this.connectors[newConnector]);
+        this.connectorContainer.appendChild(this.connectors[newConnector]);
     }
     update() {
-        if (!this.added)
-            this.pos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
+        if (!this.added) {
+            this.moveToMouse();
+            this.updatePosition();
+        }
 
         this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
-
-        this.updatePosition();
 
         this.connectingCurves.forEach(({
             curve
@@ -149,14 +154,15 @@ class FlowchartItem {
             }
         }
     }
+    moveToMouse() {
+        const newPos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
+        this.pos = shiftPressed ? newPos.round() : newPos;
+    }
     updatePosition() {
         this.node.style.top = this.pos.y * cellSize + pos.y + 'px';
         this.node.style.left = this.pos.x * cellSize + pos.x + 'px';
-
-        if (this.connector != null)
-            this.connector.changeP1(vector(this.node.offsetLeft + this.node.offsetWidth / 2, this.node.offsetTop));
     }
-    connectTo = (flowchartIndex, pos2Calculator, other) => {
+    connectTo = (flowchartIndex, pos2Calculator) => {
         FlowchartItem.connecting = null;
 
         if (flowchartIndex == this.index)
@@ -311,14 +317,27 @@ class FlowchartBarGraph extends FlowchartItem {
         this.header = document.createElement('div');
         this.node.className = 'BarGraph';
         this.dragger.className = 'bottomBar';
+        const barBtns = document.createElement('div');
+        barBtns.className = 'barBtns';
+
         const addBarBtn = document.createElement('button');
-        addBarBtn.className = 'addBarBtn';
         addBarBtn.innerText = '+';
+        addBarBtn.title = 'Add a new bar';
         addBarBtn.onclick = this.addNewBar;
+
+        const removeBarBtn = document.createElement('button');
+        removeBarBtn.innerText = '-';
+        removeBarBtn.title = 'Remove the last bar';
+        removeBarBtn.onclick = this.removeBar;
+
+        barBtns.appendChild(addBarBtn);
+        barBtns.appendChild(removeBarBtn);
+
         this.dragger.appendChild(this.header);
-        this.dragger.appendChild(addBarBtn);
+        this.dragger.appendChild(barBtns);
 
         this.node.appendChild(this.dragger);
+        this.connectorContainer = this.dragger;
 
         this.resetProperties();
 
@@ -327,6 +346,11 @@ class FlowchartBarGraph extends FlowchartItem {
         for (let i = 0; i < 3; i++)
             this.addNewBar();
     }
+    calculateCurvePos = connectorRot =>
+        this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(connectorRot).sub(vector(50, 50)).mult(vector(
+            this.dragger.offsetWidth / 100,
+            this.dragger.offsetHeight / 100
+        )).mult(this.scale()).add(vector(0, this.dataContainer.offsetHeight / 2 * (this.scale()))));
     scale = () => cellSize / 50 * this.properties.scale.val;
     setProperty = (property, val) => {
         if (property == 'setProperty' || property == 'default')
@@ -391,7 +415,7 @@ class FlowchartBarGraph extends FlowchartItem {
         const dragDiff = this.lastDragY - mouseY;
 
         const currentBarHeight = parseFloat(this.bars[barIndex].style.height.slice(0, this.bars[barIndex].style.height.length - 2));
-        this.bars[barIndex].style.height = currentBarHeight + dragDiff + 'px';
+        this.bars[barIndex].style.height = currentBarHeight + dragDiff / this.scale() + 'px';
 
         this.lastDragY = mouseY;
     }
@@ -409,7 +433,7 @@ class FlowchartBarGraph extends FlowchartItem {
 
         newBarContent.className = 'barDataRotator';
         newBarContent.textContent = 'Bar ' + i;
-        newBar.style.height = 40 + (20 * i) + 'px';
+        newBar.style.height = 60 + (20 * i) + 'px';
 
         newBar.appendChild(barScaler);
         newBar.appendChild(newBarContent);
@@ -421,7 +445,13 @@ class FlowchartBarGraph extends FlowchartItem {
 
         this.properties['bar' + i] = createProperty('Bar ' + i, 'text', 'Bar ' + i);
 
-        this.dragger.style.height = Math.min(.5 * i + .5, 3) + 'rem';
+        this.dragger.style.height = Math.min(Math.max(1.5, .5 * i + .5), 3) + 'rem';
+    }
+    removeBar = () => {
+        this.bars[this.bars.length - 1].remove();
+        this.bars.splice(this.bars.length - 1, 1);
+        this.properties['bar' + this.bars.length] = null;
+        this.dragger.style.height = Math.min(Math.max(1.5, .5 * this.bars.length - 1 + .5), 3) + 'rem';
     }
 }
 class Curve {
@@ -429,10 +459,15 @@ class Curve {
         this.p1 = p1;
         this.p2 = p2;
     }
-    display = () => drawCurve(this.p1(), this.p2());
+    display = () => drawCurve(this.p1(), this.p2(), shiftPressed);
 }
 
-function drawCurve(p1, p2) {
+function drawCurve(p1, p2, straightened) {
+
+    if (straightened) {
+        line(p1.x, p1.y, p2.x, p2.y);
+        return;
+    }
 
     const w = p2.x - p1.x,
         h = p2.y - p1.y;

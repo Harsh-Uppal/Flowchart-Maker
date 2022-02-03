@@ -19,6 +19,9 @@ function vector(x, y) {
         divide(val){
             if(!isNaN(val))
                 return vector(x / val, y / val);
+        },
+        round(){
+            return vector(Math.round(x), Math.round(y));
         }
     };
 }

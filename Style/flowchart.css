@@ -41,11 +41,16 @@ canvas{
     margin-left: .2rem;
 }
 
-.addBarBtn{
+.barBtns{
+    display:flex;
+    justify-content: space-evenly;
+    margin-left:auto;
+}
+
+.barBtns > *{
     display:flex;
     align-items:center;
     justify-content: center;
-    margin-left:auto;
     width:10%;
     height:70%;
     background-color: blue;
@@ -75,6 +80,7 @@ canvas{
 }
 
 .BarGraph > .bottomBar{
+    position: relative;
     z-index: 1;
     display:flex;
     align-items: center;
@@ -135,6 +141,7 @@ canvas{
     background-color: gold;
     border-radius: 100%;
     transform: translate(-50%, -50%);
+    cursor: pointer;
 }
 
 .connector::before{

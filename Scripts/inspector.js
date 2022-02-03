@@ -3,9 +3,12 @@ class Inspector {
         if (this.node == null)
             this.node = document.querySelector('.inspector');
 
-        if (val)
+        if (val){
             this.loadProperties();
-
+            this.node.style.display = '';
+        }
+        else
+            this.noDisplayTimeout = setTimeout(() => {this.node.style.display = 'none'}, 1000);
         this.node.style.bottom = val ? '4vh' : '-100vh';
         this.active = val;
     }

@@ -3,12 +3,13 @@ class Inspector {
         if (this.node == null)
             this.node = document.querySelector('.inspector');
 
-        if (val){
+        if (val) {
             this.loadProperties();
             this.node.style.display = '';
-        }
-        else
-            this.noDisplayTimeout = setTimeout(() => {this.node.style.display = 'none'}, 1000);
+        } else
+            this.noDisplayTimeout = setTimeout(() => {
+                this.node.style.display = 'none'
+            }, 1000);
         this.node.style.bottom = val ? '4vh' : '-100vh';
         this.active = val;
     }
@@ -28,7 +29,6 @@ class Inspector {
                 continue;
 
             const currentProp = this.inspectingProperties[property];
-
             const newPropertyContainer = document.createElement('div');
             const propertyLabel = document.createElement('label');
 
@@ -37,29 +37,38 @@ class Inspector {
             propertyLabel.textContent = currentProp.name;
             newPropertyContainer.appendChild(propertyLabel);
 
-            if (currentProp.type != 'header') {
-                const input = document.createElement('input');
+            switch (currentProp.type) {
+                case 'header':
+                    propertyLabel.className = 'inspectorHeader';
+                    newPropertyContainer.classList.add('no-flex');
+                    const seperator = document.createElement('hr');
+                    newPropertyContainer.appendChild(seperator);
+                    break;
+                case 'btnHeader':
+                    propertyLabel.className = 'inspectorHeader';
+                    newPropertyContainer.classList.add('no-flex');
+                    const btn = document.createElement('button');
+                    btn.textContent = currentProp.content;
+                    btn.onclick = currentProp.click;
+                    newPropertyContainer.appendChild(btn);
+                    break;
+                default:
+                    const input = document.createElement('input');
 
-                input.type = currentProp.type || 'text';
+                    input.type = currentProp.type || 'text';
 
-                if (input.type.toLowerCase() == 'button')
-                    input.onclick = currentProp.val;
+                    if (input.type.toLowerCase() == 'button')
+                        input.onclick = currentProp.val;
 
-                input.value = input.type.toLowerCase() == 'button' ? '+' : currentProp.val || '';
-                input.className = input.type + 'Input';
-                input.onkeyup = input.onchange =
-                    () => {
-                        Inspector.propertyChanged(property, input.value)
-                    };
+                    input.value = input.type.toLowerCase() == 'button' ? '+' : currentProp.val || '';
+                    input.className = input.type + 'Input';
+                    input.onkeyup = input.onchange =
+                        () => {
+                            Inspector.propertyChanged(property, input.value)
+                        };
 
-                newPropertyContainer.appendChild(input);
-            }
-            else
-            {
-                propertyLabel.className = 'inspectorHeader';
-                newPropertyContainer.classList.add('no-flex');
-                const seperator = document.createElement('hr');
-                newPropertyContainer.appendChild(seperator);
+                    newPropertyContainer.appendChild(input);
+                    break;
             }
 
             propertyObjContainer.appendChild(newPropertyContainer);
@@ -102,4 +111,11 @@ const createProperty = (name, type, value, spClass) => ({
 const createPropertyHeader = header => ({
     name: header,
     type: 'header'
+});
+
+const createPropertyBtnHeader = (header, btnContent, onclick) => ({
+    name: header,
+    type: 'btnHeader',
+    content: btnContent,
+    click: onclick
 });

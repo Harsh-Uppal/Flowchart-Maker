@@ -75,7 +75,7 @@ class FlowchartItem {
     connectorClicked = index => {
         this.clickEnabled = false;
         //If some other connector is trying to connect then connect to it
-        if (FlowchartItem.connecting != null && FlowchartItem.connecting.index != this.index) {
+        if (FlowchartItem.connecting != null) {
             FlowchartItem.connecting.connectTo(this.index, () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
                 this.node.offsetWidth / 100,
                 this.node.offsetHeight / 100
@@ -460,38 +460,75 @@ class FlowchartList extends FlowchartItem {
         super(pos, index);
 
         this.innerNode = document.createElement('div');
-        this.innerNode.innerText = 'Write something here...';
-        this.innerNode.className = 'text';
         this.items = [];
         this.dataContainer.appendChild(this.innerNode);
+        this.listNode = document.createElement('ul');
+        this.listNode.className = 'flowchartList';
+        this.dataContainer.appendChild(this.listNode);
+        this.headingContainer = document.createElement('div');
+        this.headingContainer.className = 'listHeading';
+        this.dragger.appendChild(this.headingContainer);
+
+        const listBtnContainer = document.createElement('div');
+        listBtnContainer.className = 'listBtns';
+        const addItemBtn = document.createElement('button');
+        const removeItemBtn = document.createElement('button');
+
+        addItemBtn.textContent = '+';
+        addItemBtn.onclick = this.addItem;
+        removeItemBtn.textContent = '-';
+        removeItemBtn.onclick = this.removeItem;
+
+        listBtnContainer.appendChild(addItemBtn);
+        listBtnContainer.appendChild(removeItemBtn);
+        this.dragger.appendChild(listBtnContainer);
 
         this.resetProperties();
+
+        for (let i = 0; i < 3; i++)
+            this.addItem();
     }
     setProperty = (property, val) => {
         if (property == 'setProperty' || property == 'default')
             return;
 
         const propertyObj = this.properties[property];
-        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+        switch (propertyObj.type) {
+            case 'header':
+                this.properties[property] = createPropertyHeader(propertyObj.name);
+                break;
+            case 'btnHeader':
+                this.properties[property] = createPropertyBtnHeader(propertyObj.name, propertyObj.content, propertyObj.click);
+                break;
+            default:
+                this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+                break;
+        }
+
         switch (property) {
             case 'color':
                 this.node.style.backgroundColor = val;
                 break;
             case 'heading':
-                this.dragger.textContent = val;
+                this.headingContainer.textContent = val;
                 break;
             case 'headColor':
                 this.dragger.style.backgroundColor = val;
                 break;
             case 'headFontColor':
-                this.dragger.style.color = val;
+                this.headingContainer.style.color = val;
                 break;
             case 'fontColor':
-                this.innerNode.style.color = val;
+                this.listNode.style.color = val;
                 break;
             case 'fontSize':
-                this.innerNode.style.fontSize = val + 'vw';
+                this.listNode.style.fontSize = val + 'vw';
                 break;
+        }
+
+        if (property.startsWith('item')) {
+            const itemNum = parseInt(property.slice(4, property.length));
+            this.items[itemNum].innerText = val;
         }
     }
     resetProperties() {
@@ -499,18 +536,15 @@ class FlowchartList extends FlowchartItem {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
             head1: createPropertyHeader('Header'),
-            heading: createProperty('Heading', 'text', ''),
+            heading: createProperty('Heading', 'text', 'New List'),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
             headFontColor: createProperty('Heading Color', 'color', '#000000'),
-            head2: createPropertyHeader('Text'),
-            fontSize: createProperty('Font Size', 'number', 1.2),
+            head2: createPropertyHeader('List'),
+            fontSize: createProperty('Font Size', 'number', 1.4),
             fontColor: createProperty('Font Color', 'color', '#000000'),
             head3: createPropertyHeader('Connectors'),
             addConnector: createProperty('Add Connector', 'Button', this.addConnector),
             head4: createPropertyHeader('Items'),
-            item1: createProperty('1', 'text', 'Item 1'),
-            item2: createProperty('2', 'text', 'Item 2'),
-            item3: createProperty('3', 'text', 'Item 3'),
             setProperty: this.setProperty
         };
 
@@ -520,6 +554,21 @@ class FlowchartList extends FlowchartItem {
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
+    }
+    addItem = () => {
+        const itemIndex = this.items.length;
+        const newItem = document.createElement('li');
+        newItem.innerText = 'Item ' + itemIndex;
+
+        this.listNode.appendChild(newItem);
+        this.items.push(newItem);
+
+        this.properties['item' + itemIndex] = createProperty(itemIndex, 'text', 'Item ' + itemIndex);
+    }
+    removeItem = () => {
+        this.items[this.items.length - 1].remove();
+        this.items.splice(this.items.length - 1, 1);
+        delete this.properties['item' + this.items.length];
     }
 }
 class Curve {

@@ -23,23 +23,24 @@ function moveToolbar() {
 function newFlowchartItem(type) {
     moveToolbar();
 
-    const itemPos = vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize);
-    const itemIndex = flowchartItems.length;
-
-    let newItem;
+    let itemType;
     switch (type) {
         case 'text':
-            newItem = new FlowchartTextBox(itemPos, itemIndex);
+            itemType = FlowchartTextBox;
             break;
         case 'image':
-            newItem = new FlowchartImage(itemPos, itemIndex);
+            itemType = FlowchartImage;
             break;
         case 'bar-graph':
-            newItem = new FlowchartBarGraph(itemPos, itemIndex);
+            itemType = FlowchartBarGraph;
+            break;
+            case 'list':
+                itemType = FlowchartList;
             break;
         default:
+            alert('Coming soon!');
             return;
     }
 
-    flowchartItems.push(newItem);
+    flowchartItems.push(new itemType(vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize), flowchartItems.length));
 }

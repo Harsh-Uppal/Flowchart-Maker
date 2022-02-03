@@ -33,6 +33,7 @@ class Inspector {
             const propertyLabel = document.createElement('label');
 
             newPropertyContainer.id = this.numProperties++;
+            newPropertyContainer.className = currentProp.spClass;
             propertyLabel.textContent = currentProp.name;
             newPropertyContainer.appendChild(propertyLabel);
 
@@ -91,10 +92,11 @@ class Inspector {
     }
 }
 
-const createProperty = (name, type, value) => ({
+const createProperty = (name, type, value, spClass) => ({
     name: name,
     type: type,
-    val: value
+    val: value,
+    spClass: spClass
 });
 
 const createPropertyHeader = header => ({

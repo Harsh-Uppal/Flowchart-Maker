@@ -454,6 +454,74 @@ class FlowchartBarGraph extends FlowchartItem {
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * this.bars.length - 1 + .5), 3) + 'rem';
     }
 }
+
+class FlowchartList extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
+
+        this.innerNode = document.createElement('div');
+        this.innerNode.innerText = 'Write something here...';
+        this.innerNode.className = 'text';
+        this.items = [];
+        this.dataContainer.appendChild(this.innerNode);
+
+        this.resetProperties();
+    }
+    setProperty = (property, val) => {
+        if (property == 'setProperty' || property == 'default')
+            return;
+
+        const propertyObj = this.properties[property];
+        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+        switch (property) {
+            case 'color':
+                this.node.style.backgroundColor = val;
+                break;
+            case 'heading':
+                this.dragger.textContent = val;
+                break;
+            case 'headColor':
+                this.dragger.style.backgroundColor = val;
+                break;
+            case 'headFontColor':
+                this.dragger.style.color = val;
+                break;
+            case 'fontColor':
+                this.innerNode.style.color = val;
+                break;
+            case 'fontSize':
+                this.innerNode.style.fontSize = val + 'vw';
+                break;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            head0: createPropertyHeader('General'),
+            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            head1: createPropertyHeader('Header'),
+            heading: createProperty('Heading', 'text', ''),
+            headColor: createProperty('Heading Background', 'color', '#20B2AA'),
+            headFontColor: createProperty('Heading Color', 'color', '#000000'),
+            head2: createPropertyHeader('Text'),
+            fontSize: createProperty('Font Size', 'number', 1.2),
+            fontColor: createProperty('Font Color', 'color', '#000000'),
+            head3: createPropertyHeader('Connectors'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
+            head4: createPropertyHeader('Items'),
+            item1: createProperty('1', 'text', 'Item 1'),
+            item2: createProperty('2', 'text', 'Item 2'),
+            item3: createProperty('3', 'text', 'Item 3'),
+            setProperty: this.setProperty
+        };
+
+        this.properties.default = {
+            ...this.properties
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+}
 class Curve {
     constructor(p1, p2) {
         this.p1 = p1;

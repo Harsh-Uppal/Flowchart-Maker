@@ -106,7 +106,7 @@ class FlowchartItem {
 
         //Otherwise make the clicked connector trying to connect and create a curve for it
         this.connectingCurves.push({
-            curve: new Curve(
+            curve: curve(
                 () => this.calculateCurvePos(this.connectors[index].rotation),
                 () => vector(mouseX, mouseY)
             ),
@@ -136,7 +136,7 @@ class FlowchartItem {
         this.connectingCurves.forEach(({
             curve
         }) => {
-            curve.display();
+            drawCurve(curve);
         });
 
         if (this.newConnector != null) {
@@ -168,7 +168,7 @@ class FlowchartItem {
         if (flowchartIndex == this.index)
             this.connectingCurves.splice(this.connectingCurves.length - 1, 1);
         else {
-            this.connectingCurves[this.connectingCurves.length - 1].curve.p2 = pos2Calculator;
+            this.connectingCurves[this.connectingCurves.length - 1].curve.p2f = pos2Calculator;
             this.connectingCurves[this.connectingCurves.length - 1].connected = true;
         }
     }
@@ -454,7 +454,6 @@ class FlowchartBarGraph extends FlowchartItem {
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * this.bars.length - 1 + .5), 3) + 'rem';
     }
 }
-
 class FlowchartList extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index);
@@ -571,17 +570,21 @@ class FlowchartList extends FlowchartItem {
         delete this.properties['item' + this.items.length];
     }
 }
-class Curve {
-    constructor(p1, p2) {
-        this.p1 = p1;
-        this.p2 = p2;
-    }
-    display = () => drawCurve(this.p1(), this.p2(), shiftPressed);
-}
 
-function drawCurve(p1, p2, straightened) {
+const curve = (p1, p2) => ({
+    p1f: p1,
+    p2f: p2
+});
 
-    if (straightened) {
+function drawCurve({
+    p1f,
+    p2f
+}) {
+
+    const p1 = p1f(),
+        p2 = p2f();
+
+    if (shiftPressed) {
         line(p1.x, p1.y, p2.x, p2.y);
         return;
     }

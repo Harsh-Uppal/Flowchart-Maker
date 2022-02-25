@@ -16,7 +16,7 @@ const Toolbar = {
 };
 
 function moveToolbar() {
-    Toolbar.node.style.marginLeft = Toolbar.node.style.marginLeft == '0px' ? '-17vw' : '0px';
+    Toolbar.node.style.marginLeft = Toolbar.node.style.marginLeft == '0px' ? 'min(-17vw, -13rem)' : '0px';
     Toolbar.toggleEnabled();
 }
 
@@ -34,8 +34,11 @@ function newFlowchartItem(type) {
         case 'bar-graph':
             itemType = FlowchartBarGraph;
             break;
-            case 'list':
-                itemType = FlowchartList;
+        case 'list':
+            itemType = FlowchartList;
+            break;
+        case 'pie-chart':
+            itemType = FlowchartPieChart;
             break;
         default:
             alert('Coming soon!');

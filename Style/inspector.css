@@ -6,7 +6,7 @@
     flex-direction: column;
     z-index: 1;
     width:max-content;
-    padding:0 1vw;
+    padding:0 min(1vw, 1rem);
     height:80vh;
     background-color: darkgrey;
     transition: 1s;
@@ -27,7 +27,7 @@
     display:flex;
     justify-content: center;
     font-family: Quicksand;
-    font-size: 3vw;
+    font-size: calc(3 * var(--v));
     width:80%;
 }
 
@@ -39,7 +39,6 @@
     border-radius: 100%;
     width:6vmin;
     height:6vmin;
-    cursor: pointer;
     background-color: #fff3;
     transition: .2s;
 }
@@ -76,7 +75,7 @@
 .inspector > .properties > * > label{
     display:flex;
     align-items: center;
-    font-size:1.3vw;
+    font-size:calc(1.6 * var(--v));
     font-family: 'Open Sans';
     font-weight: bold;
 }
@@ -109,8 +108,43 @@
 .inspector > .properties > * > .buttonInput{
     height:200%;
     width:8vmin;
-    font-size: 7vmin;
+    font-size: calc(7 * var(--v));
     transform: scale(.5);
+}
+
+.inspector > .properties > * > .transparentInput{
+    font-family: 'Open Sans';
+    font-weight: bold;
+    background-color:#00000000 !important;
+    border: solid 2px white;
+    border-radius: .5vw;
+}
+
+.inspector > .properties > * > .removeBtn{
+    display:flex;
+    height:80%;
+    width:15%;
+    position: relative;
+    border-radius: 10000px;
+    background-color: rgba(255, 100, 100, 0.533);
+    border:.5px solid lightblue;
+    transition: .5s;
+}
+
+.inspector > .properties > * > .removeBtn:hover{
+    background-color: #F46F;
+}
+
+.inspector > .properties > * > .removeBtn::before{
+    content: '';
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width:70%;
+    padding:7% 0;
+    background-color: black;
+    border-radius: 10000px;
 }
 
 .inspector > .buttons{
@@ -124,15 +158,46 @@
     display:flex;
     align-items: center;
     justify-content: center;
-    width:40%;
     height:60%;
     padding:7%;
-    border-radius: 2vmin;
-    font-size: 1.6vw;
+    border-radius: calc((1.2vw + 1.2vh) / 2);
+    font-size: calc(1.6 * var(--v));
     background-color: #FFF8;
     border-style: none;
-    cursor: pointer;
     transition:.2s;
+}
+
+.inspector > .buttons > .deleteBtn{
+    position: relative;
+    width:3vmin !important;
+    height:3vmin !important;
+}
+
+.inspector > .buttons > .deleteBtn:hover{
+    background-color: #F558;
+}
+
+.inspector > .buttons > .deleteBtn::before, .inspector > .buttons > .deleteBtn::after{
+    content:'';
+    position: absolute;
+    top:50%;
+    left:50%;
+    width:65%;
+    height:10%;
+    background-color: black;
+    border-radius: 10000rem;
+}
+
+.inspector > .buttons > .deleteBtn::before{
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.inspector > .buttons > .deleteBtn::after{
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.inspector > .buttons > .resetBtn{
+    width:50%;
 }
 
 .inspector > .buttons > *:hover{
@@ -141,4 +206,29 @@
 
 .inspector > .buttons > *:active{
     background-color: #FFF8;
+}
+
+.addBtn{
+    position: relative;
+    width:4vmin;
+    height:4vmin;
+    border-radius: 1vmin;
+    background-color: #FFF7;
+    border:1px solid darkcyan;
+}
+
+.addBtn::before, .addBtn::after{
+    content:'';
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width:60%;
+    height:10%;
+    background-color: #000;
+    border-radius: 10000rem;
+}
+
+.addBtn::after{
+    transform: translate(-50%, -50%) rotate(90deg);
 }

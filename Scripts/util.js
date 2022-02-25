@@ -3,11 +3,15 @@ function vector(x, y) {
         x: x,
         y: y,
         add(val){
-            if(isNaN(val) && val != undefined)
+            if(!isNaN(val))
+                return vector(x + val, y + val);
+            if(val != undefined)
                 return vector(x + val.x, y + val.y);
         },
         sub(val){
-            if(isNaN(val) && val != undefined)
+            if(!isNaN(val))
+                return vector(x - val, y - val);
+            if(val != undefined)
                 return vector(x - val.x, y - val.y);
         },
         mult(val){

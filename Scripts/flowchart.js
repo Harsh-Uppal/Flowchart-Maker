@@ -24,10 +24,10 @@ class FlowchartItem {
 
         this.dragger.className = 'dragger';
         this.dragger.draggable = true;
-        this.dragger.ondragenter = this.mouseDragStart;
-        this.dragger.ondrag = this.mouseDragged;
-        this.dragger.ondragend = this.mouseDragEnd;
-
+        this.dragger.ondragenter = this.dragger.ontouchstart = this.mouseDragStart;
+        this.dragger.ondrag = this.dragger.ontouchmove = this.mouseDragged;
+        this.dragger.ondragend = this.dragger.ontouchend = this.mouseDragEnd;
+        
         dataContainer.className = 'dataContainer';
         dataContainer.appendChild(this.dragger);
 
@@ -172,10 +172,18 @@ class FlowchartItem {
             this.connectingCurves[this.connectingCurves.length - 1].connected = true;
         }
     }
-    delete() {
+    delete = () => {
         Inspector.activate(false);
         flowchartItems.splice(this.index, 1);
         this.node.remove();
+    }
+    setProperty = (property, val) => {
+        if (property != null && property != 'setProperty' && property != 'default' && property != 'delete') {
+            if (!this.properties[property].type.endsWith('header'))
+                this.properties[property].val = val;
+
+            this.updateProperty(property, val);
+        }
     }
 }
 class FlowchartTextBox extends FlowchartItem {
@@ -183,18 +191,12 @@ class FlowchartTextBox extends FlowchartItem {
         super(pos, index);
 
         this.innerNode = document.createElement('div');
-        this.innerNode.innerText = 'Write something here...';
         this.innerNode.className = 'text';
         this.dataContainer.appendChild(this.innerNode);
 
         this.resetProperties();
     }
-    setProperty = (property, val) => {
-        if (property == 'setProperty' || property == 'default')
-            return;
-
-        const propertyObj = this.properties[property];
-        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+    updateProperty = (property, val) => {
         switch (property) {
             case 'color':
                 this.node.style.backgroundColor = val;
@@ -223,6 +225,7 @@ class FlowchartTextBox extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
@@ -231,9 +234,8 @@ class FlowchartTextBox extends FlowchartItem {
             text: createProperty('Text', 'text', 'Write something here...'),
             fontSize: createProperty('Font Size', 'number', 1.2),
             fontColor: createProperty('Font Color', 'color', '#000000'),
-            head3: createPropertyHeader('Connectors'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
-            setProperty: this.setProperty
+            setProperty: this.setProperty,
+            delete: this.delete
         };
 
         this.properties.default = {
@@ -255,12 +257,7 @@ class FlowchartImage extends FlowchartItem {
 
         this.resetProperties();
     }
-    setProperty = (property, val) => {
-        if (property == 'setProperty' || property == 'default')
-            return;
-
-        const propertyObj = this.properties[property];
-        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+    updateProperty = (property, val) => {
         switch (property) {
             case 'color':
                 this.node.style.backgroundColor = val;
@@ -289,6 +286,7 @@ class FlowchartImage extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
@@ -297,9 +295,8 @@ class FlowchartImage extends FlowchartItem {
             imageSrc: createProperty('Image Source', 'text', './Assets/ImageIcon.png'),
             width: createProperty('Image Width', 'number', 100),
             height: createProperty('Image Height', 'number', 80),
-            head3: createPropertyHeader('Connectors'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
-            setProperty: this.setProperty
+            setProperty: this.setProperty,
+            delete: this.delete
         };
 
         this.properties.default = {
@@ -352,12 +349,7 @@ class FlowchartBarGraph extends FlowchartItem {
             this.dragger.offsetHeight / 100
         )).mult(this.scale()).add(vector(0, this.dataContainer.offsetHeight / 2 * (this.scale()))));
     scale = () => cellSize / 50 * this.properties.scale.val;
-    setProperty = (property, val) => {
-        if (property == 'setProperty' || property == 'default')
-            return;
-
-        const propertyObj = this.properties[property];
-        this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
+    updateProperty = (property, val) => {
         switch (property) {
             case 'heading':
                 this.header.innerText = val;
@@ -383,18 +375,15 @@ class FlowchartBarGraph extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             scale: createProperty('Scale', 'number', 1),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
             headFontColor: createProperty('Heading Color', 'color', '#000000'),
-            head2: createPropertyHeader('Connectors'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
             head3: createPropertyHeader('Bars'),
-            setProperty: this.setProperty
+            setProperty: this.setProperty,
+            delete: this.delete
         };
-
-        // for(const bar in this.bars)
-        //     this.properties['bar' + bar] = createProperty('Bar ' + bar, 'text', 'Bar ' + bar);
 
         this.properties.default = {
             ...this.properties
@@ -425,9 +414,9 @@ class FlowchartBarGraph extends FlowchartItem {
         const barScaler = document.createElement('div');
         const newBarContent = document.createElement('div');
 
-        barScaler.ondragstart = this.barScalerDragStarted;
-        barScaler.ondrag = () => this.barScalerDragged(i);
-        barScaler.ondragend = this.barScalerDragEnded;
+        barScaler.ondragstart = barScaler.ontouchstart = this.barScalerDragStarted;
+        barScaler.ondrag = barScaler.ontouchmove = () => this.barScalerDragged(i);
+        barScaler.ondragend = barScaler.ontouchend = this.barScalerDragEnded;
         barScaler.draggable = true;
         barScaler.className = 'barScaler';
 
@@ -443,7 +432,10 @@ class FlowchartBarGraph extends FlowchartItem {
         this.dataContainer.appendChild(newBar);
         this.bars.push(newBar);
 
-        this.properties['bar' + i] = createProperty('Bar ' + i, 'text', 'Bar ' + i);
+        this.properties['bar' + i] = createProperty(null, 'text', 'Bar ' + i, {
+            remove: alert,
+            inputClass: 'transparentInput'
+        });
 
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * i + .5), 3) + 'rem';
     }
@@ -487,23 +479,7 @@ class FlowchartList extends FlowchartItem {
         for (let i = 0; i < 3; i++)
             this.addItem();
     }
-    setProperty = (property, val) => {
-        if (property == 'setProperty' || property == 'default')
-            return;
-
-        const propertyObj = this.properties[property];
-        switch (propertyObj.type) {
-            case 'header':
-                this.properties[property] = createPropertyHeader(propertyObj.name);
-                break;
-            case 'btnHeader':
-                this.properties[property] = createPropertyBtnHeader(propertyObj.name, propertyObj.content, propertyObj.click);
-                break;
-            default:
-                this.properties[property] = createProperty(propertyObj.name, propertyObj.type, val, propertyObj.options);
-                break;
-        }
-
+    updateProperty = (property, val) => {
         switch (property) {
             case 'color':
                 this.node.style.backgroundColor = val;
@@ -534,6 +510,9 @@ class FlowchartList extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
+                inputClass: 'addBtn'
+            }),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', 'New List'),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
@@ -541,10 +520,9 @@ class FlowchartList extends FlowchartItem {
             head2: createPropertyHeader('List'),
             fontSize: createProperty('Font Size', 'number', 1.4),
             fontColor: createProperty('Font Color', 'color', '#000000'),
-            head3: createPropertyHeader('Connectors'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector),
-            head4: createPropertyHeader('Items'),
-            setProperty: this.setProperty
+            head3: createPropertyBtnHeader('Items', ['addBtn'], this.addItem),
+            setProperty: this.setProperty,
+            delete: this.delete
         };
 
         this.properties.default = {
@@ -562,45 +540,142 @@ class FlowchartList extends FlowchartItem {
         this.listNode.appendChild(newItem);
         this.items.push(newItem);
 
-        this.properties['item' + itemIndex] = createProperty(itemIndex, 'text', 'Item ' + itemIndex);
+        this.properties['item' + itemIndex] = createProperty(null, 'text', 'Item ' + itemIndex, {
+            remove: n => this.removeItem(this.properties[n].index),
+            inputClass: 'transparentInput'
+        });
+        this.properties['item' + itemIndex].index = itemIndex;
+
+        Inspector.loadProperties();
     }
-    removeItem = () => {
-        this.items[this.items.length - 1].remove();
-        this.items.splice(this.items.length - 1, 1);
+    removeItem = index => {
+        index = index != null ? Math.min(index, this.items.length - 1) : this.items.length - 1;
+        this.items[index].remove();
+        this.items.splice(index, 1);
         delete this.properties['item' + this.items.length];
     }
 }
+class FlowchartPieChart extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
 
-const curve = (p1, p2) => ({
-    p1f: p1,
-    p2f: p2
-});
+        this.node.classList.add('transparent')
+        this.dataContainer.className = 'piechart';
+        this.dragger.className = 'piechartDragger';
+        this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this.sectionContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this.sectionContainer.setAttribute('width', '100%');
+        this.sectionContainer.setAttribute('height', '100%');
+        this.svg.appendChild(this.sectionContainer);
+        this.size = 200;
+        this.half_size = this.size / 2;
+        this.dataContainer.style.width = this.size + 'px';
+        this.dataContainer.style.height = this.size + 'px';
+        this.dataContainer.appendChild(this.svg);
+        this.sections = [];
+        this.resizerDragging = null;
 
-function drawCurve({
-    p1f,
-    p2f
-}) {
+        this.resetProperties();
 
-    const p1 = p1f(),
-        p2 = p2f();
+        for (let i = 0; i < 4; i++)
+            this.addSection(false);
 
-    if (shiftPressed) {
-        line(p1.x, p1.y, p2.x, p2.y);
-        return;
+        this.updateSVG();
     }
-
-    const w = p2.x - p1.x,
-        h = p2.y - p1.y;
-
-    push();
-    translate(p1.x, p1.y);
-    noFill();
-    beginShape();
-    for (let i = 0; i < 1; i += 1 / connectorQuality) {
-        const Y = i * h;
-        const sinY = h - (sin(Y / PI / (h / 10) + HALF_PI) * h / 2 + h / 2);
-        vertex(i * w, sinY + sinY - Y);
+    scale = () => cellSize / 50 * this.properties.scale.val;
+    updateProperty = (property, val) => {
+        switch (property) {
+            case 'color':
+                this.dragger.style.backgroundColor = val;
+                break;
+            case 'scale':
+                this.update();
+                break;
+            case 'stroke':
+                this.sections.forEach(section => section.setAttribute("stroke", val));
+                break;
+            case 'bgColor':
+                this.sections.forEach(section => section.setAttribute("fill", val));
+                break;
+        }
     }
-    endShape();
-    pop();
+    resetProperties() {
+        this.properties = {
+            head0: createPropertyHeader('General'),
+            scale: createProperty('Scale', 'number', 1),
+            color: createProperty('Color', 'color', '#20B2AA'),
+            stroke: createProperty('Stroke Color', 'color', '#FFFFFF'),
+            bgColor: createProperty('Background Color', 'color', '#000000'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
+            head2: createPropertyHeader('Sections'),
+            setProperty: this.setProperty,
+            delete: this.delete
+        };
+
+        this.properties.default = {
+            ...this.properties
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+    updateSVG() {
+        let startAngle = this.sections[this.sections.length - 1].angle;
+        this.sections.forEach((section, ind) => {
+            const startP = vector(-Math.sin(startAngle), -Math.cos(startAngle)).mult(this.half_size - 5).add(this.half_size);
+            const endP = vector(-Math.sin(section.angle), -Math.cos(section.angle)).mult(this.half_size - 5).add(this.half_size);
+            section.setAttribute('d', `M ${this.half_size} ${this.half_size} L ${startP.x}  ${startP.y} ` +
+                `A ${this.half_size} ${this.half_size} 0 0 0 ${endP.x} ${endP.y} L ${this.half_size} ${this.half_size}`);
+            section.resizer.setAttribute('cx', endP.x);
+            section.resizer.setAttribute('cy', endP.y);
+
+            startAngle = section.angle;
+        });
+    }
+    addSection(update = true) {
+        const index = this.sections.length;
+        const newSection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        newSection.setAttribute("stroke", "white");
+        newSection.setAttribute("stroke-width", "5px");
+        newSection.angle = Math.PI * 2;
+        newSection.resizer = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        newSection.resizer.setAttribute('fill', 'cyan');
+        newSection.resizer.setAttribute('class', 'resizer');
+        newSection.resizer.setAttribute('r', 5);
+        newSection.resizer.addEventListener('mousedown', () => this.resizerDragStart(index));
+        newSection.resizer.addEventListener('mousemove', this.resizerMouseMove);
+        newSection.resizer.addEventListener('mouseup', this.resizerDragEnd);
+        newSection.resizer.addEventListener('mouseleave', this.resizerDragEnd);
+        newSection.resizer.addEventListener('touchstart', () => this.resizerDragStart(index));
+        newSection.resizer.addEventListener('touchmove', this.resizerMouseMove);
+        newSection.resizer.addEventListener('touchend', this.resizerDragEnd);
+        newSection.resizer.addEventListener('touchleave', this.resizerDragEnd);
+        newSection.resizer.addEventListener('touchcancel', this.resizerDragEnd);
+
+        this.sections.push(newSection);
+        this.sectionContainer.appendChild(newSection);
+        this.svg.appendChild(newSection.resizer);
+
+        for(let i = 0;i < index;i ++)
+            this.sections[i].angle -= Math.PI / (index + 2);
+
+        if (update)
+            this.updateSVG();
+    }
+    resizerDragStart = index => {
+        this.resizerDragging = index;
+    }
+    resizerMouseMove = () => {
+        if(this.resizerDragging == null)
+            return;
+
+        const angle = Math.atan2(mouseX - this.pos.x * cellSize - pos.x, mouseY - this.pos.y * cellSize - pos.y);
+        const sizeInc = 0;
+        console.log(this.sections[this.resizerDragging].startAngle * 180 / Math.PI);
+
+        this.sections.sum = this.section.sum + sizeInc;
+    }
+    resizerDragEnd = () => {
+        this.resizerDragging = null;
+    }
 }

@@ -5,27 +5,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="darkgray">
+    <meta name="description" content="Quickly and easily make flowcharts online">
+
     <title>Flowchart Maker</title>
 
     <link rel="stylesheet" type="text/css" href="Style/fonts.css" />
     <link rel="stylesheet" type="text/css" href="Style/style.css" />
-    <link rel="stylesheet" type="text/css" href="Style/flowchart.css" />
     <link rel="stylesheet" type="text/css" href="Style/generalProperties.css" />
     <link rel="stylesheet" type="text/css" href="Style/toolbar.css" />
-    <link rel="stylesheet" type="text/css" href="Style/inspector.css" />
 
     <script src="./Scripts/util.js"></script>
     <script src="./Scripts/app.js"></script>
     <script src="./Scripts/toolbar.js"></script>
-    <script src="./Scripts/flowchart.js"></script>
-    <script src="./Scripts/inspector.js"></script>
-    <script src="./Scripts/encoder.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 </head>
 
-<body>
+<body bgcolor="#000">
+    <link rel="stylesheet" type="text/css" href="Style/flowchart.css" />
+    <link rel="stylesheet" type="text/css" href="Style/inspector.css" />
+
+    <script src="./Scripts/inspector.js"></script>
+    <script src="./Scripts/encoder.js"></script>
+    <script src="./Scripts/curves.js"></script>
+    <script src="./Scripts/flowchart.js"></script>
+
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
         <div class="titleOptions">
@@ -39,20 +44,20 @@
     </div>
     <div class="generalProperties">
         <div class="zoom">
-            <div class="title">Zoom</div>
-            <input type="range" onmousemove="changeZoom()" onchange="changeZoom()" />
+            <label for="zoomInput" class="title">Zoom</label>
+            <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()" ontouchmove="changeZoom()" />
         </div>
         <div class="gridlines">
-            <div class="title">Gridlines</div>
-            <input type="checkbox" checked="true" onchange="update()" />
+            <label for="gridlinesCheckbox" class="title">Gridlines</label>
+            <input id="gridlinesCheckbox" type="checkbox" checked="true" onchange="update()" />
         </div>
         <div class="gridlinesColor">
-            <div class="title">Grid Color</div>
-            <input type="color" value="#32CD32" onchange="update()" />
+            <label for="gridlinesColorInput" class="title">Grid Color</label>
+            <input id="gridlinesColorInput" type="color" value="#32CD32" onchange="update()" />
         </div>
         <div class="backgroundColor">
-            <div class="title">Background</div>
-            <input type="color" value="#111111" onchange="update()" />
+            <label for="backgroundColorInput" class="title">Background</label>
+            <input id="backgroundColorInput" type="color" value="#111111" onchange="update()" />
         </div>
     </div>
     <div class="container">
@@ -61,31 +66,35 @@
                 <div class="header">Toolbar</div>
                 <div class="tools">
                     <button title="Add a TextBox" onclick="newFlowchartItem('text')" id="TextBox">Text</button>
-                    <button title="Add a Image" onclick="newFlowchartItem('image')" id="Image"><img
-                            src="Assets/ImageIcon.png" /></button>
-                    <button title="Add a Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph"><img
-                            src="Assets/BarGraph.png"></button>
-                    <button title="Add a List" onclick="newFlowchartItem('list')" id="ListNode"><img
-                            src="Assets/ListIcon.png" /></button>
-                    <button title="Add a Pie Chart" onclick="newFlowchartItem('pie-chart')" id="Image"><img
-                            src="Assets/PieChart.png" /></button>
+                    <button title="Add a Image" onclick="newFlowchartItem('image')" id="Image">
+                        <img src="Assets/ImageIcon.png" alt="Image Icon"/>
+                    </button>
+                    <button title="Add a Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph">
+                        <img src="Assets/BarGraph.png" alt="Bar Graph">
+                    </button>
+                    <button title="Add a List" onclick="newFlowchartItem('list')" id="ListNode">
+                        <img src="Assets/ListIcon.png" alt="List"/>
+                    </button>
+                    <button title="Add a Pie Chart" onclick="newFlowchartItem('pie-chart')" id="Pie Chart">
+                        <img src="Assets/PieChart.png" alt="Pie Chart"/>
+                    </button>
                 </div>
             </div>
-            <button class="arrow" onclick="moveToolbar()">
-                <img class="image" src="Assets/Arrow.png" />
+            <button title="Show/Hide the toolbar" class="arrow" onclick="moveToolbar()">
+                <img class="image" src="Assets/Arrow.png" alt/>
             </button>
         </div>
+
         <div class="canvas">
             <main></main>
-            <div class="flowchartItems">
-            </div>
+            <div class="flowchartItems"></div>
         </div>
 
-        <div class="inspector" tabindex="-1">
+        <div class="inspector">
             <div class="titlebar">
                 <label class="header">Inspector</label>
-                <button class="hideBtn" onclick="Inspector.activate(false)">
-                    <img src="./Assets/Arrow.png" class="hideArrowImg" />
+                <button title="Show/Hide Inspector" class="hideBtn" onclick="Inspector.activate(false)" tabindex="-1">
+                    <img src="./Assets/Arrow.png" class="hideArrowImg" alt/>
                 </button>
             </div>
             <div class="properties">
@@ -93,10 +102,14 @@
             </div>
 
             <div class="buttons">
-                <button class="resetBtn" onclick="Inspector.resetProperties()">Reset</button>
+                <button tabindex="-1" class="resetBtn" onclick="Inspector.resetProperties()"
+                    title="Reset all properties">Reset</button>
+                <button tabindex="-1" class="deleteBtn" onclick="Inspector.deleteItem()"
+                    title="Delete selected item"></button>
             </div>
         </div>
     </div>
+
     <footer>
         <div class="copyright">
             &copy; Copyright 2021 All Rights reserved

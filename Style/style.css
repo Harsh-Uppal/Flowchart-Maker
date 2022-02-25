@@ -1,3 +1,15 @@
+:root{
+    --v: calc((1vh + 1vw) / 2);
+}
+
+button{
+    cursor: pointer;
+}
+
+input[type='button'], input[type='Button']{
+    cursor: pointer;
+}
+
 body{
     margin:0;
     padding:0;
@@ -18,9 +30,9 @@ body{
     z-index: 1;
     width:100vw;
     height:4vh;
-    background-color: gray;
+    background-color: #5b6c75;
     font: 1vw 'Poppins';
-    color:blue;
+    color:rgb(188 255 115);
 }
 
 .titleBar{
@@ -59,7 +71,6 @@ body{
     width:5.4vh;
     margin-right:.6vh;
     border-radius: .75vmin;
-    cursor: pointer;
 }
 
 .titleOptions > button > .img{

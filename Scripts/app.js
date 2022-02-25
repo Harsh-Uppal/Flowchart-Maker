@@ -7,19 +7,19 @@ var pos = vector(0, 0),
     dragEnabled = true,
     generalInputs,
     canvas, 
-    shiftPressed = false;
+    shiftPressed = false, 
+    updateOnMouseMoved = true;
 
 const flowchartItems = [],
     connectorQuality = 30;
 
 window.addEventListener('resize', setup);
 
-function setup() {
-    let p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
+function setup() {    
+    const p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
     p5Canvas.mouseWheel(changeZoom);
 
     generalInputs = loadInputs();
-    generalInputs.zoom.onchange = 
     generalInputs.zoom.max = maxCellSize;
     generalInputs.zoom.min = minCellSize;
 
@@ -63,6 +63,9 @@ function mouseDragged(e) {
 }
 
 function mouseMoved(e) {
+    if(!updateOnMouseMoved)
+        return;
+    
     pmouseX = mouseX;
     pmouseY = mouseY;
 
@@ -88,11 +91,10 @@ function mouseReleased(e) {
     setCursor('grab');
 }
 
-function changeZoom(event) {
-    cellSize = Math.round(
-        Math.max(Math.min(event == undefined ? parseInt(generalInputs.zoom.value) : cellSize - event.deltaY * cellSizeSpeed,
+function changeZoom(e) {
+    generalInputs.zoom.value = cellSize = Math.round(
+        Math.max(Math.min(e == undefined ? parseInt(generalInputs.zoom.value) : cellSize - e.deltaY * cellSizeSpeed,
             maxCellSize), minCellSize));
-    generalInputs.zoom.value = cellSize;
 
     updateFlowchartPos();
     update();

@@ -27,7 +27,7 @@ class FlowchartItem {
         this.dragger.ondragenter = this.dragger.ontouchstart = this.mouseDragStart;
         this.dragger.ondrag = this.dragger.ontouchmove = this.mouseDragged;
         this.dragger.ondragend = this.dragger.ontouchend = this.mouseDragEnd;
-        
+
         dataContainer.className = 'dataContainer';
         dataContainer.appendChild(this.dragger);
 
@@ -77,7 +77,7 @@ class FlowchartItem {
         //If some other connector is trying to connect then connect to it
         if (FlowchartItem.connecting != null) {
             FlowchartItem.connecting.connectTo(this.index,
-                 () => this.calculateCurvePos(this.connectors[index].rotation)
+                () => this.calculateCurvePos(this.connectors[index].rotation)
             );
             return;
         }
@@ -104,13 +104,13 @@ class FlowchartItem {
         }
 
         //Otherwise make the clicked connector trying to connect and create a curve for it
-        this.connectingCurves.push({
-            curve: curve(
+        this.connectingCurves.push(
+            new Curve(
                 () => this.calculateCurvePos(this.connectors[index].rotation),
-                () => vector(mouseX, mouseY)
-            ),
-            connected: false
-        });
+                () => vector(mouseX, mouseY),
+                false
+            )
+        );
 
         FlowchartItem.connecting = this;
     }
@@ -132,10 +132,8 @@ class FlowchartItem {
 
         this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
 
-        this.connectingCurves.forEach(({
-            curve
-        }) => {
-            drawCurve(curve);
+        this.connectingCurves.forEach((curve) => {
+            curve.draw();
         });
 
         if (this.newConnector != null) {
@@ -167,8 +165,8 @@ class FlowchartItem {
         if (flowchartIndex == this.index)
             this.connectingCurves.splice(this.connectingCurves.length - 1, 1);
         else {
-            this.connectingCurves[this.connectingCurves.length - 1].curve.p2f = pos2Calculator;
-            this.connectingCurves[this.connectingCurves.length - 1].connected = true;
+            this.connectingCurves[this.connectingCurves.length - 1].p1f = pos2Calculator;
+            this.connectingCurves[this.connectingCurves.length - 1].fixed = true;
         }
     }
     delete = () => {
@@ -224,7 +222,9 @@ class FlowchartTextBox extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
+                inputClass: 'addBtn'
+            }),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
@@ -285,7 +285,9 @@ class FlowchartImage extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
+                inputClass: 'addBtn'
+            }),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
@@ -374,7 +376,9 @@ class FlowchartBarGraph extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             scale: createProperty('Scale', 'number', 1),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
+                inputClass: 'addBtn'
+            }),
             head1: createPropertyHeader('Header'),
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
@@ -605,7 +609,9 @@ class FlowchartPieChart extends FlowchartItem {
             color: createProperty('Color', 'color', '#20B2AA'),
             stroke: createProperty('Stroke Color', 'color', '#FFFFFF'),
             bgColor: createProperty('Background Color', 'color', '#000000'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {inputClass:'addBtn'}),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
+                inputClass: 'addBtn'
+            }),
             head2: createPropertyHeader('Sections'),
             setProperty: this.setProperty,
             delete: this.delete
@@ -655,7 +661,7 @@ class FlowchartPieChart extends FlowchartItem {
         this.sectionContainer.appendChild(newSection);
         this.svg.appendChild(newSection.resizer);
 
-        for(let i = 0;i < index;i ++)
+        for (let i = 0; i < index; i++)
             this.sections[i].angle -= Math.PI / (index + 2);
 
         if (update)
@@ -665,7 +671,7 @@ class FlowchartPieChart extends FlowchartItem {
         this.resizerDragging = index;
     }
     resizerMouseMove = () => {
-        if(this.resizerDragging == null)
+        if (this.resizerDragging == null)
             return;
 
         const angle = Math.atan2(mouseX - this.pos.x * cellSize - pos.x, mouseY - this.pos.y * cellSize - pos.y);

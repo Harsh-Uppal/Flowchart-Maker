@@ -1,4 +1,4 @@
-function vector(x, y) {
+const vector = (x, y) => {
     return { 
         x: x,
         y: y,
@@ -29,3 +29,5 @@ function vector(x, y) {
         }
     };
 }
+
+vector.lerp = (v0, v1, t) => vector(v0.x + (v1.x - v0.x) * t, v0.y + (v1.y - v0.y) * t);

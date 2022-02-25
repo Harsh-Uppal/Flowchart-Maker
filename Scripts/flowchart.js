@@ -76,10 +76,9 @@ class FlowchartItem {
         this.clickEnabled = false;
         //If some other connector is trying to connect then connect to it
         if (FlowchartItem.connecting != null) {
-            FlowchartItem.connecting.connectTo(this.index, () => this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(this.connectors[index].rotation).sub(vector(50, 50)).mult(vector(
-                this.node.offsetWidth / 100,
-                this.node.offsetHeight / 100
-            ).mult(this.scale()))));
+            FlowchartItem.connecting.connectTo(this.index,
+                 () => this.calculateCurvePos(this.connectors[index].rotation)
+            );
             return;
         }
 
@@ -347,7 +346,7 @@ class FlowchartBarGraph extends FlowchartItem {
         this.pos.mult(cellSize).add(pos).add(this.calculateConnectorPos(connectorRot).sub(vector(50, 50)).mult(vector(
             this.dragger.offsetWidth / 100,
             this.dragger.offsetHeight / 100
-        )).mult(this.scale()).add(vector(0, this.dataContainer.offsetHeight / 2 * (this.scale()))));
+        )).mult(this.scale()).add(vector(0, this.dataContainer.offsetHeight / 2 * this.scale())));
     scale = () => cellSize / 50 * this.properties.scale.val;
     updateProperty = (property, val) => {
         switch (property) {

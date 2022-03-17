@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="darkgray">
+    <meta name="description" content="Quickly and easily make flowcharts online">
+
+    <title>Flowchart Maker</title>
+
+    <link rel="stylesheet" type="text/css" href="Style/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="Style/style.css" />
+    <link rel="stylesheet" type="text/css" href="Style/generalProperties.css" />
+    <link rel="stylesheet" type="text/css" href="Style/toolbar.css" />
+
+    <script src="./out/util.min.js"></script>
+    <script src="./out/app.min.js"></script>
+    <script src="./out/toolbar.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+
+<body bgcolor="#000">
+    <link rel="stylesheet" type="text/css" href="Style/flowchart.css" />
+    <link rel="stylesheet" type="text/css" href="Style/inspector.css" />
+
+    <script src="./out/inspector.min.js"></script>
+    <script src="./out/encoder.min.js"></script>
+    <script src="./out/curves.min.js"></script>
+    <script src="./out/flowchart.min.js"></script>
+
+    <div class="titleBar">
+        <div class="title">Flowchart Maker</div>
+        <div class="titleOptions">
+            <button title="Save flowchart">
+                <img class="img" src="Assets/Save.png" alt="Save" />
+            </button>
+            <button title="Show in View Mode">
+                <img class="img" src="Assets/ViewMode.png" alt="Save" />
+            </button>
+        </div>
+    </div>
+    <div class="generalProperties">
+        <div class="zoom">
+            <label for="zoomInput" class="title">Zoom</label>
+            <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()" ontouchmove="changeZoom()" />
+        </div>
+        <div class="gridlines">
+            <label for="gridlinesCheckbox" class="title">Gridlines</label>
+            <input id="gridlinesCheckbox" type="checkbox" checked="true" onchange="update()" />
+        </div>
+        <div class="gridlinesColor">
+            <label for="gridlinesColorInput" class="title">Grid Color</label>
+            <input id="gridlinesColorInput" type="color" value="#32CD32" onchange="update()" />
+        </div>
+        <div class="backgroundColor">
+            <label for="backgroundColorInput" class="title">Background</label>
+            <input id="backgroundColorInput" type="color" value="#111111" onchange="update()" />
+        </div>
+    </div>
+    <div class="container">
+        <div class="toolbar" style="margin-left: 0;">
+            <div class="toolbarContent">
+                <div class="header">Toolbar</div>
+                <div class="tools">
+                    <button title="Add a TextBox" onclick="newFlowchartItem('text')" id="TextBox">Text</button>
+                    <button title="Add a Image" onclick="newFlowchartItem('image')" id="Image">
+                        <img src="Assets/ImageIcon.png" alt="Image Icon"/>
+                    </button>
+                    <button title="Add a Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph">
+                        <img src="Assets/BarGraph.png" alt="Bar Graph">
+                    </button>
+                    <button title="Add a List" onclick="newFlowchartItem('list')" id="ListNode">
+                        <img src="Assets/ListIcon.png" alt="List"/>
+                    </button>
+                    <button title="Add a Pie Chart" onclick="newFlowchartItem('pie-chart')" id="Pie Chart">
+                        <img src="Assets/PieChart.png" alt="Pie Chart"/>
+                    </button>
+                </div>
+            </div>
+            <button title="Show/Hide the toolbar" class="arrow" onclick="moveToolbar()">
+                <img class="image" src="Assets/Arrow.png" alt/>
+            </button>
+        </div>
+
+        <div class="canvas">
+            <main></main>
+            <div class="flowchartItems"></div>
+        </div>
+
+        <div class="inspector">
+            <div class="titlebar">
+                <label class="header">Inspector</label>
+                <button title="Show/Hide Inspector" class="hideBtn" onclick="Inspector.activate(false)" tabindex="-1">
+                    <img src="./Assets/Arrow.png" class="hideArrowImg" alt/>
+                </button>
+            </div>
+            <div class="properties">
+                <div id="1"></div>
+            </div>
+
+            <div class="buttons">
+                <button tabindex="-1" class="resetBtn" onclick="Inspector.resetProperties()"
+                    title="Reset all properties">Reset</button>
+                <button tabindex="-1" class="deleteBtn" onclick="Inspector.deleteItem()"
+                    title="Delete selected item"></button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="copyright">
+            &copy; Copyright 2021 All Rights reserved
+        </div>
+    </footer>
+</body>
+
+</html>

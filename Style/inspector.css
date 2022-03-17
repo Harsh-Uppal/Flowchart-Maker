@@ -69,7 +69,7 @@
     align-items: center;
     justify-content: space-between;
     width:100%;
-    height:7%;
+    height:calc(var(--v) * 2.8);
 }
 
 .inspector > .properties > * > label{
@@ -93,16 +93,28 @@
 }
 
 .inspector > .properties > * > .textInput, .numberInput{
+    display:flex;
     font-family: 'Open Sans';
     font-weight: bold;
     height:65%;
+    flex-grow: 1;
     max-width: 50%;
 }
 
-.inspector > .properties > * > .colorInput{
+.inspector > .properties > * > input[type="color"]{
+    display:block;
+    cursor: pointer;
+    width:calc(var(--v) * 2.6);
+    height:calc(var(--v) * 2.6);
     border:none;
-    height:90%;
     padding:0;
+}
+
+.inspector > .properties > * > .colorInput::-webkit-color-swatch,
+.inspector > .properties > * > .colorInput::-webkit-color-swatch-wrapper{
+    aspect-ratio: 1 / 1;
+    padding:0;
+    border-radius: 100%;
 }
 
 .inspector > .properties > * > .buttonInput{
@@ -112,7 +124,7 @@
     transform: scale(.5);
 }
 
-.inspector > .properties > * > .transparentInput{
+.inspector > .properties > * > input {
     font-family: 'Open Sans';
     font-weight: bold;
     background-color:#00000000 !important;
@@ -120,10 +132,15 @@
     border-radius: .5vw;
 }
 
+.inspector > .properties > * > input + button,
+.inspector > .properties > * > input + input {
+    margin-left:.5vw;
+}
+
 .inspector > .properties > * > .removeBtn{
     display:flex;
-    height:80%;
-    width:15%;
+    width:calc(var(--v) * 3);
+    height:calc(var(--v) * 2.6);
     position: relative;
     border-radius: 10000px;
     background-color: rgba(255, 100, 100, 0.533);
@@ -158,10 +175,10 @@
     display:flex;
     align-items: center;
     justify-content: center;
+    font: bold calc(2.5 * var(--v)) 'Open Sans';
     height:60%;
     padding:7%;
     border-radius: calc((1.2vw + 1.2vh) / 2);
-    font-size: calc(1.6 * var(--v));
     background-color: #FFF8;
     border-style: none;
     transition:.2s;
@@ -169,8 +186,7 @@
 
 .inspector > .buttons > .deleteBtn{
     position: relative;
-    width:3vmin !important;
-    height:3vmin !important;
+    aspect-ratio: 1 / 1;
 }
 
 .inspector > .buttons > .deleteBtn:hover{
@@ -210,8 +226,8 @@
 
 .addBtn{
     position: relative;
-    width:4vmin;
-    height:4vmin;
+    width:calc(var(--v) * 2.6);
+    height:calc(var(--v) * 2.6);
     border-radius: 1vmin;
     background-color: #FFF7;
     border:1px solid darkcyan;

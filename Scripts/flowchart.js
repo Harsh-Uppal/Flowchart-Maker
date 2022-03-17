@@ -174,12 +174,12 @@ class FlowchartItem {
         flowchartItems.splice(this.index, 1);
         this.node.remove();
     }
-    setProperty = (property, val) => {
+    setProperty = (property, val, index) => {
         if (property != null && property != 'setProperty' && property != 'default' && property != 'delete') {
-            if (!this.properties[property].type.endsWith('header'))
+            if (!(this.properties[property].multiple ? this.properties[property].type[index] : this.properties[property].type).endsWith('header'))
                 this.properties[property].val = val;
 
-            this.updateProperty(property, val);
+            this.updateProperty(property, val, index);
         }
     }
 }
@@ -436,16 +436,18 @@ class FlowchartBarGraph extends FlowchartItem {
         this.bars.push(newBar);
 
         this.properties['bar' + i] = createProperty(null, 'text', 'Bar ' + i, {
-            remove: alert,
+            remove: this.removeBar,
             inputClass: 'transparentInput'
         });
 
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * i + .5), 3) + 'rem';
     }
-    removeBar = () => {
-        this.bars[this.bars.length - 1].remove();
-        this.bars.splice(this.bars.length - 1, 1);
-        this.properties['bar' + this.bars.length] = null;
+    removeBar = i => {
+        const index = i.slice(3, 4);
+
+        this.bars[index].remove();
+        this.bars.splice(index, 1);
+        this.properties[i] = null;
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * this.bars.length - 1 + .5), 3) + 'rem';
     }
 }
@@ -566,12 +568,6 @@ class FlowchartPieChart extends FlowchartItem {
         this.dataContainer.className = 'piechart';
         this.dragger.className = 'piechartDragger';
         this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        this.sectionContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        this.sectionContainer.setAttribute('width', '100%');
-        this.sectionContainer.setAttribute('height', '100%');
-        this.svg.appendChild(this.sectionContainer);
-        this.size = 200;
-        this.half_size = this.size / 2;
         this.dataContainer.style.width = this.size + 'px';
         this.dataContainer.style.height = this.size + 'px';
         this.dataContainer.appendChild(this.svg);
@@ -580,13 +576,13 @@ class FlowchartPieChart extends FlowchartItem {
 
         this.resetProperties();
 
-        for (let i = 0; i < 4; i++)
+        for (let i = 0; i < 3; i++)
             this.addSection(false);
 
         this.updateSVG();
     }
     scale = () => cellSize / 50 * this.properties.scale.val;
-    updateProperty = (property, val) => {
+    updateProperty = (property, val, i) => {
         switch (property) {
             case 'color':
                 this.dragger.style.backgroundColor = val;
@@ -597,8 +593,36 @@ class FlowchartPieChart extends FlowchartItem {
             case 'stroke':
                 this.sections.forEach(section => section.setAttribute("stroke", val));
                 break;
-            case 'bgColor':
+            case 'fill':
                 this.sections.forEach(section => section.setAttribute("fill", val));
+                break;
+            case 'strokeWeight':
+                this.sections.forEach(section => section.setAttribute("stroke-width", val));
+                this.updateSize();
+                this.updateSVG();
+                break;
+            case 'randomFill':
+                if (val)
+                    for (let i = 0; i < this.sections.length; i++)
+                        this.sections[i].rColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+                this.updateSVG();
+                break;
+            default:
+                if (property.startsWith('sec')) {
+                    const index = parseInt(property.slice(3, property.length));
+
+                    switch (i) {
+                        case 0: this.sections[index].text = val;
+                            break;
+                        case 1: this.sections[index].size = parseFloat(val) || 0;
+                            break;
+                        case 2: this.sections[index].color = val;
+                            break;
+                    }
+
+                    this.updateSVG();
+                }
                 break;
         }
     }
@@ -606,13 +630,16 @@ class FlowchartPieChart extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             scale: createProperty('Scale', 'number', 1),
-            color: createProperty('Color', 'color', '#20B2AA'),
-            stroke: createProperty('Stroke Color', 'color', '#FFFFFF'),
-            bgColor: createProperty('Background Color', 'color', '#000000'),
             addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
                 inputClass: 'addBtn'
             }),
-            head2: createPropertyHeader('Sections'),
+            head1: createPropertyHeader('Style'),
+            color: createProperty('Color', 'color', '#20B2AA'),
+            randomFill: createProperty('Radomize Section Colors', 'checkbox', false),
+            fill: createProperty('Background Color', 'color', '#000000'),
+            stroke: createProperty('Stroke Color', 'color', '#FFFFFF'),
+            strokeWeight: createProperty('Stroke Weight', 'number', '3'),
+            head2: createPropertyBtnHeader('Sections', ['addBtn'], this.addSection),
             setProperty: this.setProperty,
             delete: this.delete
         };
@@ -625,62 +652,53 @@ class FlowchartPieChart extends FlowchartItem {
             this.setProperty(prop, this.properties[prop].val);
     }
     updateSVG() {
-        let startAngle = this.sections[this.sections.length - 1].angle;
-        this.sections.forEach((section, ind) => {
-            const startP = vector(-Math.sin(startAngle), -Math.cos(startAngle)).mult(this.half_size - 5).add(this.half_size);
-            const endP = vector(-Math.sin(section.angle), -Math.cos(section.angle)).mult(this.half_size - 5).add(this.half_size);
-            section.setAttribute('d', `M ${this.half_size} ${this.half_size} L ${startP.x}  ${startP.y} ` +
-                `A ${this.half_size} ${this.half_size} 0 0 0 ${endP.x} ${endP.y} L ${this.half_size} ${this.half_size}`);
-            section.resizer.setAttribute('cx', endP.x);
-            section.resizer.setAttribute('cy', endP.y);
+        let accum = 0, fromAngle, toAngle, fromCoordX, fromCoordY,
+            toCoordX, toCoordY, d, totalSize = 0;
 
-            startAngle = section.angle;
+        this.sections.forEach(s => totalSize += s.size);
+        this.sections.forEach(section => {
+            fromAngle = accum;
+            accum += section.size / totalSize * (Math.PI * 2);
+            toAngle = accum;
+
+            fromCoordX = this.center + this.r * Math.cos(fromAngle);
+            fromCoordY = this.center + this.r * Math.sin(fromAngle);
+            toCoordX = this.center + this.r * Math.cos(toAngle);
+            toCoordY = this.center + this.r * Math.sin(toAngle);
+
+            //d = 'M' + this.center + ',' + this.center + ' L' + fromCoordX + ',' + fromCoordY + ' A' + this.r + ',' + this.r + ' 0 0,1 ' + toCoordX + ',' + toCoordY + 'z';
+            d = `M${this.center},${this.center} L${fromCoordX},${fromCoordY} A${this.r},${this.r} 0 ${toAngle - fromAngle > Math.PI ? 1 : 0},1 ${toCoordX},${toCoordY}z`
+            section.setAttributeNS(null, "d", d);
+            section.setAttribute('fill', this.properties.randomFill.val ? section.rColor : section.color);
         });
     }
-    addSection(update = true) {
+    updateSize() {
+        this.size = 200;
+        this.r = this.size / 2;
+        this.center = this.size / 2 + (parseInt(this.properties.strokeWeight.val) || 0);
+        this.svg.setAttribute('width', this.center * 2 + 'px');
+        this.svg.setAttribute('height', this.center * 2 + 'px');
+    }
+    addSection = (update = true) => {
         const index = this.sections.length;
         const newSection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
         newSection.setAttribute("stroke", "white");
         newSection.setAttribute("stroke-width", "5px");
-        newSection.angle = Math.PI * 2;
-        newSection.resizer = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        newSection.resizer.setAttribute('fill', 'cyan');
-        newSection.resizer.setAttribute('class', 'resizer');
-        newSection.resizer.setAttribute('r', 5);
-        newSection.resizer.addEventListener('mousedown', () => this.resizerDragStart(index));
-        newSection.resizer.addEventListener('mousemove', this.resizerMouseMove);
-        newSection.resizer.addEventListener('mouseup', this.resizerDragEnd);
-        newSection.resizer.addEventListener('mouseleave', this.resizerDragEnd);
-        newSection.resizer.addEventListener('touchstart', () => this.resizerDragStart(index));
-        newSection.resizer.addEventListener('touchmove', this.resizerMouseMove);
-        newSection.resizer.addEventListener('touchend', this.resizerDragEnd);
-        newSection.resizer.addEventListener('touchleave', this.resizerDragEnd);
-        newSection.resizer.addEventListener('touchcancel', this.resizerDragEnd);
+        newSection.size = 1;
+        newSection.text = 'Section ' + (index + 1);
 
+        this.svg.appendChild(newSection);
         this.sections.push(newSection);
-        this.sectionContainer.appendChild(newSection);
-        this.svg.appendChild(newSection.resizer);
 
-        for (let i = 0; i < index; i++)
-            this.sections[i].angle -= Math.PI / (index + 2);
+        this.properties['sec' + index] =
+            createProperty(null, ['text', 'number', 'color'], [newSection.text, 1, '#000000'], { multiple: true, remove: this.removeSection });
+        Inspector.loadProperties();
 
         if (update)
             this.updateSVG();
     }
-    resizerDragStart = index => {
-        this.resizerDragging = index;
-    }
-    resizerMouseMove = () => {
-        if (this.resizerDragging == null)
-            return;
-
-        const angle = Math.atan2(mouseX - this.pos.x * cellSize - pos.x, mouseY - this.pos.y * cellSize - pos.y);
-        const sizeInc = 0;
-        console.log(this.sections[this.resizerDragging].startAngle * 180 / Math.PI);
-
-        this.sections.sum = this.section.sum + sizeInc;
-    }
-    resizerDragEnd = () => {
-        this.resizerDragging = null;
+    removeSection(i) {
+        
     }
 }

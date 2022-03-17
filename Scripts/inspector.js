@@ -57,20 +57,36 @@ class Inspector {
                     }
                     break;
                 default:
-                    const input = document.createElement(currentProp.type.toLowerCase() == 'button' ? 'button' : 'input');
+                    if (currentProp.multiple &&
+                        (!Array.isArray(currentProp.type) ||
+                            !Array.isArray(currentProp.val) ||
+                            currentProp.type.length != currentProp.val.length))
+                        break;
 
-                    input.type = currentProp.type || 'text';
+                    //Number of loops
+                    const l =  currentProp.multiple ? currentProp.type.length : 1;
+                    for (let i = 0; i < l; i++) {
+                        const inpData = currentProp.multiple ?
+                            { type: currentProp.type[i].toLowerCase(), val: currentProp.val[i] } :
+                            { type: currentProp.type.toLowerCase(), val: currentProp.val };
+                        const input = document.createElement(inpData.type == 'button' ? 'button' : 'input');
 
-                    if (input.type.toLowerCase() == 'button')
-                        input.onclick = currentProp.val;
+                        input.type = inpData.type || 'text';
 
-                    input.value = input.type.toLowerCase() == 'button' ? '' : currentProp.val || '';
-                    input.className = currentProp.iClass == null ? input.type + 'Input' : currentProp.iClass;
-                    input.onkeyup = input.onchange =
-                        () => {
-                            Inspector.propertyChanged(property, input.value)
-                        };
-                    newPropertyContainer.appendChild(input);
+                        if (input.type == 'button')
+                            input.onclick = inpData.val;
+                        else if (input.type == 'checkbox')
+                            input.checked = inpData.val;
+                        else
+                            input.value = inpData.val || '';
+
+                        input.className = currentProp.iClass == null ? input.type + 'Input' : currentProp.iClass;
+                        input.onkeyup = input.onchange =
+                            () => {
+                                Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked : input.value, i)
+                            };
+                        newPropertyContainer.appendChild(input);
+                    }
 
                     if (currentProp.remF) {
                         const removeBtn = document.createElement("button");
@@ -82,7 +98,6 @@ class Inspector {
                         };
                         newPropertyContainer.appendChild(removeBtn);
                     }
-
                     break;
             }
 
@@ -118,31 +133,29 @@ class Inspector {
         this.activate(false);
         this.inspectingProperties = null;
     }
-    static propertyChanged(name, val) {
-        this.inspectingProperties.setProperty(name, val);
-    }
+    static propertyChanged = (name, val, index) => this.inspectingProperties.setProperty(name, val, index);
 }
 
 const createProperty = (name, type, value, options) => {
     const {
         remove,
-        inputClass
-    } = options != null ? options : [null];
+        inputClass,
+        multiple
+    } = options != null ? options : {};
 
     return {
         name: name,
         type: type,
         val: value,
         remF: remove,
-        iClass: inputClass
+        iClass: inputClass,
+        multiple: multiple
     }
 };
-
 const createPropertyHeader = header => ({
     name: header,
     type: 'header'
 });
-
 const createPropertyBtnHeader = (header, btnClassList, onclick) => ({
     name: header,
     type: 'btnheader',

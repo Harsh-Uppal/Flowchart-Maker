@@ -25,7 +25,6 @@ function setup() {
 
     canvas = document.querySelector('canvas');
 
-    strokeWeight(2);
     setCursor('grab');
     update();
     noLoop();
@@ -41,6 +40,8 @@ function loadInputs() {
 }
 
 function drawGridlines() {
+    strokeWeight(2);
+
     for (let x = pos.x % cellSize; x < width; x += cellSize)
         line(x, 0, x, height);
 

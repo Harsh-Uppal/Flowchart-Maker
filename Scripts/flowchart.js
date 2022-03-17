@@ -318,19 +318,6 @@ class FlowchartBarGraph extends FlowchartItem {
         const barBtns = document.createElement('div');
         barBtns.className = 'barBtns';
 
-        const addBarBtn = document.createElement('button');
-        addBarBtn.innerText = '+';
-        addBarBtn.title = 'Add a new bar';
-        addBarBtn.onclick = this.addNewBar;
-
-        const removeBarBtn = document.createElement('button');
-        removeBarBtn.innerText = '-';
-        removeBarBtn.title = 'Remove the last bar';
-        removeBarBtn.onclick = this.removeBar;
-
-        barBtns.appendChild(addBarBtn);
-        barBtns.appendChild(removeBarBtn);
-
         this.dragger.appendChild(this.header);
         this.dragger.appendChild(barBtns);
 
@@ -366,8 +353,9 @@ class FlowchartBarGraph extends FlowchartItem {
                 break;
             default:
                 if (property.startsWith('bar')) {
-                    const barIndex = parseInt(property.slice(3, property.length));
+                    const barIndex = this.properties[property].index;
                     this.bars[barIndex].content.textContent = val;
+                    console.log(this.properties[property].val)
                 }
                 break;
         }
@@ -383,7 +371,7 @@ class FlowchartBarGraph extends FlowchartItem {
             heading: createProperty('Heading', 'text', ''),
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
             headFontColor: createProperty('Heading Color', 'color', '#000000'),
-            head3: createPropertyHeader('Bars'),
+            head3: createPropertyBtnHeader('Bars', ['addBtn'], this.addNewBar),
             setProperty: this.setProperty,
             delete: this.delete
         };
@@ -405,20 +393,24 @@ class FlowchartBarGraph extends FlowchartItem {
     }
     barScalerDragged = barIndex => {
         const dragDiff = this.lastDragY - mouseY;
-
         const currentBarHeight = parseFloat(this.bars[barIndex].style.height.slice(0, this.bars[barIndex].style.height.length - 2));
-        this.bars[barIndex].style.height = currentBarHeight + dragDiff / this.scale() + 'px';
 
+        this.bars[barIndex].style.height = currentBarHeight + dragDiff / this.scale() + 'px';
         this.lastDragY = mouseY;
     }
     addNewBar = () => {
+        let nameI = 0;
+        while (this.properties['bar' + nameI] != null)
+            nameI++;
+
+        const propName = 'bar' + nameI;
         const i = this.bars.length;
         const newBar = document.createElement('div');
         const barScaler = document.createElement('div');
         const newBarContent = document.createElement('div');
 
         barScaler.ondragstart = barScaler.ontouchstart = this.barScalerDragStarted;
-        barScaler.ondrag = barScaler.ontouchmove = () => this.barScalerDragged(i);
+        barScaler.ondrag = barScaler.ontouchmove = () => this.barScalerDragged(this.properties[propName].index);
         barScaler.ondragend = barScaler.ontouchend = this.barScalerDragEnded;
         barScaler.draggable = true;
         barScaler.className = 'barScaler';
@@ -435,19 +427,26 @@ class FlowchartBarGraph extends FlowchartItem {
         this.dataContainer.appendChild(newBar);
         this.bars.push(newBar);
 
-        this.properties['bar' + i] = createProperty(null, 'text', 'Bar ' + i, {
-            remove: this.removeBar,
-            inputClass: 'transparentInput'
-        });
+        this.properties[propName] = {
+            ...createProperty(null, 'text', 'Bar ' + i, {
+                remove: this.removeBar,
+                inputClass: 'transparentInput'
+            }),
+            index: i
+        }
 
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * i + .5), 3) + 'rem';
+        Inspector.loadProperties();
     }
     removeBar = i => {
-        const index = i.slice(3, 4);
-
-        this.bars[index].remove();
-        this.bars.splice(index, 1);
+        const prop = this.properties[i];
+        for (const p in this.properties)
+            if (this.properties[p] != null && this.properties[p].index > prop.index)
+                this.properties[p].index--;
         this.properties[i] = null;
+
+        this.bars[prop.index].remove();
+        this.bars.splice(prop.index, 1);
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * this.bars.length - 1 + .5), 3) + 'rem';
     }
 }
@@ -464,20 +463,6 @@ class FlowchartList extends FlowchartItem {
         this.headingContainer = document.createElement('div');
         this.headingContainer.className = 'listHeading';
         this.dragger.appendChild(this.headingContainer);
-
-        const listBtnContainer = document.createElement('div');
-        listBtnContainer.className = 'listBtns';
-        const addItemBtn = document.createElement('button');
-        const removeItemBtn = document.createElement('button');
-
-        addItemBtn.textContent = '+';
-        addItemBtn.onclick = this.addItem;
-        removeItemBtn.textContent = '-';
-        removeItemBtn.onclick = this.removeItem;
-
-        listBtnContainer.appendChild(addItemBtn);
-        listBtnContainer.appendChild(removeItemBtn);
-        this.dragger.appendChild(listBtnContainer);
 
         this.resetProperties();
 
@@ -538,6 +523,11 @@ class FlowchartList extends FlowchartItem {
             this.setProperty(prop, this.properties[prop].val);
     }
     addItem = () => {
+        let nameI = 0;
+        while (this.properties['item' + nameI] != null)
+            nameI++;
+
+        const propName = 'item' + nameI;
         const itemIndex = this.items.length;
         const newItem = document.createElement('li');
         newItem.innerText = 'Item ' + itemIndex;
@@ -545,17 +535,21 @@ class FlowchartList extends FlowchartItem {
         this.listNode.appendChild(newItem);
         this.items.push(newItem);
 
-        this.properties['item' + itemIndex] = createProperty(null, 'text', 'Item ' + itemIndex, {
-            remove: n => this.removeItem(this.properties[n].index),
-            inputClass: 'transparentInput'
-        });
-        this.properties['item' + itemIndex].index = itemIndex;
+        this.properties[propName] = {
+            ...createProperty(null, 'text', 'Item ' + itemIndex, {
+                remove: n => this.removeItem(this.properties[n].index),
+                inputClass: 'transparentInput'
+            }),
+            index: itemIndex
+        };
 
         Inspector.loadProperties();
     }
     removeItem = index => {
-        index = index != null ? Math.min(index, this.items.length - 1) : this.items.length - 1;
         this.items[index].remove();
+        for (const p in this.properties)
+            if (this.properties[p] != null && this.properties[p].index > index)
+                this.properties[p].index--;
         this.items.splice(index, 1);
         delete this.properties['item' + this.items.length];
     }
@@ -601,16 +595,9 @@ class FlowchartPieChart extends FlowchartItem {
                 this.updateSize();
                 this.updateSVG();
                 break;
-            case 'randomFill':
-                if (val)
-                    for (let i = 0; i < this.sections.length; i++)
-                        this.sections[i].rColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-
-                this.updateSVG();
-                break;
             default:
                 if (property.startsWith('sec')) {
-                    const index = parseInt(property.slice(3, property.length));
+                    const index = this.properties[property].index;
 
                     switch (i) {
                         case 0: this.sections[index].text = val;
@@ -635,7 +622,10 @@ class FlowchartPieChart extends FlowchartItem {
             }),
             head1: createPropertyHeader('Style'),
             color: createProperty('Color', 'color', '#20B2AA'),
-            randomFill: createProperty('Radomize Section Colors', 'checkbox', false),
+            randomFill: createProperty('Radomize Section Colors', 'button', this.fillRandomColors, {
+                inputContent: '<img src="./Assets/Shuffle.svg" alt="Randomize Section Colors"/>',
+                inputClass: 'randomizeBtn'
+            }),
             fill: createProperty('Background Color', 'color', '#000000'),
             stroke: createProperty('Stroke Color', 'color', '#FFFFFF'),
             strokeWeight: createProperty('Stroke Weight', 'number', '3'),
@@ -669,7 +659,7 @@ class FlowchartPieChart extends FlowchartItem {
             //d = 'M' + this.center + ',' + this.center + ' L' + fromCoordX + ',' + fromCoordY + ' A' + this.r + ',' + this.r + ' 0 0,1 ' + toCoordX + ',' + toCoordY + 'z';
             d = `M${this.center},${this.center} L${fromCoordX},${fromCoordY} A${this.r},${this.r} 0 ${toAngle - fromAngle > Math.PI ? 1 : 0},1 ${toCoordX},${toCoordY}z`
             section.setAttributeNS(null, "d", d);
-            section.setAttribute('fill', this.properties.randomFill.val ? section.rColor : section.color);
+            section.setAttribute('fill', section.color);
         });
     }
     updateSize() {
@@ -680,25 +670,49 @@ class FlowchartPieChart extends FlowchartItem {
         this.svg.setAttribute('height', this.center * 2 + 'px');
     }
     addSection = (update = true) => {
+        let nameI = 0;
+        while (this.properties['sec' + nameI] != null)
+            nameI++;
+
         const index = this.sections.length;
         const newSection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const propName = 'sec' + nameI;
 
-        newSection.setAttribute("stroke", "white");
-        newSection.setAttribute("stroke-width", "5px");
+        newSection.setAttribute("stroke", this.properties.stroke.val);
+        newSection.setAttribute("stroke-width", this.properties.strokeWeight.val + 'px');
         newSection.size = 1;
-        newSection.text = 'Section ' + (index + 1);
+        newSection.title = newSection.text = 'Section ' + (index + 1);
 
         this.svg.appendChild(newSection);
         this.sections.push(newSection);
 
-        this.properties['sec' + index] =
-            createProperty(null, ['text', 'number', 'color'], [newSection.text, 1, '#000000'], { multiple: true, remove: this.removeSection });
+        this.properties[propName] = {
+            ...createProperty(
+                null,
+                ['text', 'number', 'color'],
+                [newSection.text, 1, '#000000'],
+                { multiple: true, remove: this.removeSection }),
+            index
+        }
         Inspector.loadProperties();
 
         if (update)
             this.updateSVG();
     }
-    removeSection(i) {
-        
+    removeSection = i => {
+        const prop = this.properties[i];
+        for (const p in this.properties)
+            if (this.properties[p] != null && this.properties[p].index > prop.index)
+                this.properties[p].index--;
+        this.properties[i] = null;
+        this.sections[prop.index].remove();
+        this.sections.splice(prop.index, 1);
+        this.updateSVG();
+    }
+    fillRandomColors = () => {
+        for (let i = 0; i < this.sections.length; i++)
+            this.sections[i].color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+        this.updateSVG();
     }
 }

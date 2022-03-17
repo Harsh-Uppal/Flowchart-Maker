@@ -1,37 +1,37 @@
-class Inspector {
-    static activate(val) {
-        if (this.node == null)
-            this.node = document.querySelector('.inspector');
+const Inspector = {
+    activate(val) {
+        if (Inspector.node == null)
+            Inspector.node = document.querySelector('.inspector');
 
         if (val) {
-            this.loadProperties();
-            this.node.style.display = '';
+            Inspector.loadProperties();
+            Inspector.node.style.display = '';
         } else
-            this.noDisplayTimeout = setTimeout(() => {
-                this.node.style.display = 'none'
+            Inspector.noDisplayTimeout = setTimeout(() => {
+                Inspector.node.style.display = 'none'
             }, 1000);
-        this.node.style.bottom = val ? '4vh' : '-100vh';
-        this.active = val;
-    }
-    static setInspectorProperties(props) {
-        this.inspectingProperties = props;
-    }
-    static loadProperties() {
-        if (this.inspectingProperties == null)
+        Inspector.node.style.bottom = val ? '4vh' : '-100vh';
+        Inspector.active = val;
+    },
+    setInspectorProperties(props) {
+        Inspector.inspectingProperties = props;
+    },
+    loadProperties() {
+        if (Inspector.inspectingProperties == null)
             return;
 
         const propertyObjContainer = document.querySelector('.inspector > .properties');
         propertyObjContainer.innerHTML = '';
-        this.numProperties = 0;
-        for (const property in this.inspectingProperties) {
+        Inspector.numProperties = 0;
+        for (const property in Inspector.inspectingProperties) {
 
             if (property == 'default' || property == 'setProperty' || property == 'delete')
                 continue;
 
-            const currentProp = this.inspectingProperties[property];
+            const currentProp = Inspector.inspectingProperties[property];
             const newPropertyContainer = document.createElement('div');
 
-            newPropertyContainer.id = this.numProperties++;
+            newPropertyContainer.id = Inspector.numProperties++;
 
             if (currentProp.name != null && currentProp.name.toString().trim() != '') {
                 const propertyLabel = document.createElement('label');
@@ -64,7 +64,7 @@ class Inspector {
                         break;
 
                     //Number of loops
-                    const l =  currentProp.multiple ? currentProp.type.length : 1;
+                    const l = currentProp.multiple ? currentProp.type.length : 1;
                     for (let i = 0; i < l; i++) {
                         const inpData = currentProp.multiple ?
                             { type: currentProp.type[i].toLowerCase(), val: currentProp.val[i] } :
@@ -80,7 +80,8 @@ class Inspector {
                         else
                             input.value = inpData.val || '';
 
-                        input.className = currentProp.iClass == null ? input.type + 'Input' : currentProp.iClass;
+                        input.innerHTML = currentProp.content == undefined ? '' : currentProp.content;
+                        input.className = currentProp.iClass;
                         input.onkeyup = input.onchange =
                             () => {
                                 Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked : input.value, i)
@@ -103,44 +104,44 @@ class Inspector {
 
             propertyObjContainer.appendChild(newPropertyContainer);
         }
-    }
-    static resetProperties() {
-        this.inspectingProperties = this.inspectingProperties.default;
+    },
+    resetProperties() {
+        Inspector.inspectingProperties = Inspector.inspectingProperties.default;
         const inputs = document.querySelector('.inspector > .properties');
 
         let i = -1;
-        for (const currentProperty in this.inspectingProperties) {
+        for (const currentProperty in Inspector.inspectingProperties) {
             i++;
 
-            const prop = this.inspectingProperties[currentProperty];
+            const prop = Inspector.inspectingProperties[currentProperty];
 
             if (currentProperty == 'setProperty' || currentProperty == 'delete' || prop.type.endsWith('header'))
                 continue;
 
-            this.inspectingProperties.setProperty(currentProperty, propVal);
+            Inspector.inspectingProperties.setProperty(currentProperty, propVal);
 
             const currentInput = inputs.children[i].querySelector('input');
             currentInput.value = currentInput.type == 'button' ? '' : prop.val;
             currentInput.className = prop.iClass == null ? currentInput.type + 'Input' : prop.iClass;
         }
 
-        this.inspectingProperties.default = {
-            ...this.inspectingProperties
+        Inspector.inspectingProperties.default = {
+            ...Inspector.inspectingProperties
         };
-    }
-    static deleteItem() {
-        this.inspectingProperties.delete();
-        this.activate(false);
-        this.inspectingProperties = null;
-    }
-    static propertyChanged = (name, val, index) => this.inspectingProperties.setProperty(name, val, index);
-}
-
+    },
+    deleteItem() {
+        Inspector.inspectingProperties.delete();
+        Inspector.activate(false);
+        Inspector.inspectingProperties = null;
+    },
+    propertyChanged: (name, val, index) => Inspector.inspectingProperties.setProperty(name, val, index)
+};
 const createProperty = (name, type, value, options) => {
     const {
         remove,
         inputClass,
-        multiple
+        multiple,
+        inputContent
     } = options != null ? options : {};
 
     return {
@@ -149,7 +150,8 @@ const createProperty = (name, type, value, options) => {
         val: value,
         remF: remove,
         iClass: inputClass,
-        multiple: multiple
+        multiple: multiple,
+        content: inputContent
     }
 };
 const createPropertyHeader = header => ({

@@ -1,6 +1,11 @@
+window.onload = () => Inspector.node = document.querySelector('.inspector');
+
 const Inspector = {
+    node: null,
+    active: false,
+    inspectingProperties: null,
     activate(val) {
-        if (Inspector.node == null)
+        if (Inspector.inspectingProperties == null)
             Inspector.node = document.querySelector('.inspector');
 
         if (val) {
@@ -17,6 +22,8 @@ const Inspector = {
         Inspector.inspectingProperties = props;
     },
     loadProperties() {
+        // console.log(Inspector.inspectingProperties)
+
         if (Inspector.inspectingProperties == null)
             return;
 

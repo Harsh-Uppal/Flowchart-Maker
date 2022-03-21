@@ -163,6 +163,20 @@ canvas{
     border-radius: 100%;
 }
 
+.piechart-section-name{
+    align-items: center;
+    justify-content: center;
+    padding:1rem;
+    font-size: calc(var(--v) * 2);
+    border-radius: 200000px;
+    transition: .3s;
+    color:#FFF;
+}
+
+.piechart-section-name + .piechart-section-name {
+    margin-top: 5px;
+}
+
 .resizer{
     cursor: e-resize;
 }

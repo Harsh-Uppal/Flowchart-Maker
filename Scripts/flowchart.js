@@ -526,7 +526,7 @@ class FlowchartList extends FlowchartItem {
         let nameI = 0;
         while (this.properties['item' + nameI] != null)
             nameI++;
-
+            
         const propName = 'item' + nameI;
         const itemIndex = this.items.length;
         const newItem = document.createElement('li');
@@ -551,7 +551,7 @@ class FlowchartList extends FlowchartItem {
             if (this.properties[p] != null && this.properties[p].index > index)
                 this.properties[p].index--;
         this.items.splice(index, 1);
-        delete this.properties['item' + this.items.length];
+        delete this.properties['item' + index];
     }
 }
 class FlowchartPieChart extends FlowchartItem {
@@ -562,9 +562,11 @@ class FlowchartPieChart extends FlowchartItem {
         this.dataContainer.className = 'piechart';
         this.dragger.className = 'piechartDragger';
         this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        this.sectionNames = document.createElement('div');
         this.dataContainer.style.width = this.size + 'px';
         this.dataContainer.style.height = this.size + 'px';
         this.dataContainer.appendChild(this.svg);
+        this.node.appendChild(this.sectionNames);
         this.sections = [];
         this.resizerDragging = null;
 
@@ -581,6 +583,8 @@ class FlowchartPieChart extends FlowchartItem {
             case 'color':
                 this.dragger.style.backgroundColor = val;
                 break;
+            case 'fontColor':
+                this.sections.forEach(section => section.name.style.color = val);        
             case 'scale':
                 this.update();
                 break;
@@ -600,7 +604,8 @@ class FlowchartPieChart extends FlowchartItem {
                     const index = this.properties[property].index;
 
                     switch (i) {
-                        case 0: this.sections[index].text = val;
+                        case 0:
+                        this.sections[index].name.textContent = val;
                             break;
                         case 1: this.sections[index].size = parseFloat(val) || 0;
                             break;
@@ -622,6 +627,7 @@ class FlowchartPieChart extends FlowchartItem {
             }),
             head1: createPropertyHeader('Style'),
             color: createProperty('Color', 'color', '#20B2AA'),
+            fontColor: createProperty('Font Color', 'color', '#FFFFFF'),
             randomFill: createProperty('Radomize Section Colors', 'button', this.fillRandomColors, {
                 inputContent: '<img src="./Assets/Shuffle.svg" alt="Randomize Section Colors"/>',
                 inputClass: 'randomizeBtn'
@@ -676,21 +682,30 @@ class FlowchartPieChart extends FlowchartItem {
 
         const index = this.sections.length;
         const newSection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const sectionName = document.createElement('div');
         const propName = 'sec' + nameI;
-
+        
+        newSection.propName = propName;
+        newSection.name = sectionName;
         newSection.setAttribute("stroke", this.properties.stroke.val);
         newSection.setAttribute("stroke-width", this.properties.strokeWeight.val + 'px');
         newSection.size = 1;
-        newSection.title = newSection.text = 'Section ' + (index + 1);
+        newSection.color = randomColor();
+        newSection.classList = 'piechart-section';
+
+        sectionName.className = 'piechart-section-name';
+        sectionName.textContent = newSection.title = newSection.text = 'Section ' + (index + 1);
+        sectionName.style.backgroundColor = newSection.color;
 
         this.svg.appendChild(newSection);
+        this.sectionNames.appendChild(sectionName);
         this.sections.push(newSection);
 
         this.properties[propName] = {
             ...createProperty(
                 null,
                 ['text', 'number', 'color'],
-                [newSection.text, 1, '#000000'],
+                [newSection.text, 1, newSection.color],
                 { multiple: true, remove: this.removeSection }),
             index
         }
@@ -706,13 +721,17 @@ class FlowchartPieChart extends FlowchartItem {
                 this.properties[p].index--;
         this.properties[i] = null;
         this.sections[prop.index].remove();
+        this.sections[prop.index].name.remove();
         this.sections.splice(prop.index, 1);
         this.updateSVG();
     }
     fillRandomColors = () => {
         for (let i = 0; i < this.sections.length; i++)
-            this.sections[i].color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            this.properties[this.sections[i].propName].val[2] = this.sections[i].color = this.sections[i].name.style.backgroundColor = randomColor();
 
         this.updateSVG();
+        Inspector.loadProperties();
     }
 }
+
+const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);

@@ -50,7 +50,7 @@ class FlowchartItem {
         if (!this.added)
             this.added = true;
 
-        Inspector.setInspectorProperties(this.properties);
+        Inspector.inspectingProperties = this.properties;
         Inspector.activate(true);
     }
     mouseDragStart = () => {
@@ -176,7 +176,11 @@ class FlowchartItem {
     }
     setProperty = (property, val, index) => {
         if (property != null && property != 'setProperty' && property != 'default' && property != 'delete') {
-            if (!(this.properties[property].multiple ? this.properties[property].type[index] : this.properties[property].type).endsWith('header'))
+            if (this.properties[property].multiple) {
+                if (!this.properties[property].type[index].endsWith('header'))
+                    this.properties[property].val[index] = val;
+            }
+            else if (!this.properties[property].type.endsWith('header'))
                 this.properties[property].val = val;
 
             this.updateProperty(property, val, index);
@@ -436,7 +440,7 @@ class FlowchartBarGraph extends FlowchartItem {
         }
 
         this.dragger.style.height = Math.min(Math.max(1.5, .5 * i + .5), 3) + 'rem';
-        Inspector.loadProperties();
+        Inspector.load();
     }
     removeBar = i => {
         const prop = this.properties[i];
@@ -526,7 +530,7 @@ class FlowchartList extends FlowchartItem {
         let nameI = 0;
         while (this.properties['item' + nameI] != null)
             nameI++;
-            
+
         const propName = 'item' + nameI;
         const itemIndex = this.items.length;
         const newItem = document.createElement('li');
@@ -543,7 +547,7 @@ class FlowchartList extends FlowchartItem {
             index: itemIndex
         };
 
-        Inspector.loadProperties();
+        Inspector.load();
     }
     removeItem = index => {
         this.items[index].remove();
@@ -584,7 +588,7 @@ class FlowchartPieChart extends FlowchartItem {
                 this.dragger.style.backgroundColor = val;
                 break;
             case 'fontColor':
-                this.sections.forEach(section => section.name.style.color = val);        
+                this.sections.forEach(section => section.name.style.color = val);
             case 'scale':
                 this.update();
                 break;
@@ -605,7 +609,7 @@ class FlowchartPieChart extends FlowchartItem {
 
                     switch (i) {
                         case 0:
-                        this.sections[index].name.textContent = val;
+                            this.sections[index].name.textContent = val;
                             break;
                         case 1: this.sections[index].size = parseFloat(val) || 0;
                             break;
@@ -684,7 +688,7 @@ class FlowchartPieChart extends FlowchartItem {
         const newSection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         const sectionName = document.createElement('div');
         const propName = 'sec' + nameI;
-        
+
         newSection.propName = propName;
         newSection.name = sectionName;
         newSection.setAttribute("stroke", this.properties.stroke.val);
@@ -709,7 +713,7 @@ class FlowchartPieChart extends FlowchartItem {
                 { multiple: true, remove: this.removeSection }),
             index
         }
-        Inspector.loadProperties();
+        Inspector.load();
 
         if (update)
             this.updateSVG();
@@ -726,12 +730,16 @@ class FlowchartPieChart extends FlowchartItem {
         this.updateSVG();
     }
     fillRandomColors = () => {
-        for (let i = 0; i < this.sections.length; i++)
+        for (let i = 0; i < this.sections.length; i++) {
             this.properties[this.sections[i].propName].val[2] = this.sections[i].color = this.sections[i].name.style.backgroundColor = randomColor();
+            Inspector.refresh(this.sections[i].propName);
+        }
 
         this.updateSVG();
-        Inspector.loadProperties();
     }
 }
 
-const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
+const randomColor = () => {
+    const color = '#' + Math.floor(Math.random() * 16777215).toString(16)
+    return color.length == 7 ? color : color + '0';
+}

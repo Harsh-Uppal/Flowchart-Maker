@@ -4,12 +4,13 @@ const Inspector = {
     node: null,
     active: false,
     inspectingProperties: null,
+    propertyInputs: {},
     activate(val) {
         if (Inspector.inspectingProperties == null)
             Inspector.node = document.querySelector('.inspector');
 
         if (val) {
-            Inspector.loadProperties();
+            Inspector.load();
             Inspector.node.style.display = '';
         } else
             Inspector.noDisplayTimeout = setTimeout(() => {
@@ -18,10 +19,7 @@ const Inspector = {
         Inspector.node.style.bottom = val ? '4vh' : '-100vh';
         Inspector.active = val;
     },
-    setInspectorProperties(props) {
-        Inspector.inspectingProperties = props;
-    },
-    loadProperties() {
+    load() {
         // console.log(Inspector.inspectingProperties)
 
         if (Inspector.inspectingProperties == null)
@@ -35,6 +33,8 @@ const Inspector = {
             if (property == 'default' || property == 'setProperty' || property == 'delete')
                 continue;
 
+            this.propertyInputs[property] = {};
+
             const currentProp = Inspector.inspectingProperties[property];
             const newPropertyContainer = document.createElement('div');
 
@@ -45,6 +45,8 @@ const Inspector = {
                 propertyLabel.textContent = currentProp.name;
                 propertyLabel.className = currentProp.type.endsWith('header') ? 'inspectorHeader' : '';
                 newPropertyContainer.appendChild(propertyLabel);
+
+                this.propertyInputs[property].label = propertyLabel;
             }
 
             switch (currentProp.type) {
@@ -70,6 +72,8 @@ const Inspector = {
                             currentProp.type.length != currentProp.val.length))
                         break;
 
+                    this.propertyInputs[property].input = [];
+
                     //Number of loops
                     const l = currentProp.multiple ? currentProp.type.length : 1;
                     for (let i = 0; i < l; i++) {
@@ -94,6 +98,7 @@ const Inspector = {
                                 Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked : input.value, i)
                             };
                         newPropertyContainer.appendChild(input);
+                        this.propertyInputs[property].input.push(input);
                     }
 
                     if (currentProp.remF) {
@@ -111,6 +116,19 @@ const Inspector = {
 
             propertyObjContainer.appendChild(newPropertyContainer);
         }
+    },
+    refresh(prop) {
+        if(this.propertyInputs == null)
+            return;
+
+        const propObj = Inspector.inspectingProperties[prop];
+        const propInput = this.propertyInputs[prop];
+        if(propObj == null || propInput == null)
+            return;
+            
+        propInput.input.forEach((input, index) => {
+            input.value = this.inspectingProperties[prop].val[index];
+        });
     },
     resetProperties() {
         Inspector.inspectingProperties = Inspector.inspectingProperties.default;

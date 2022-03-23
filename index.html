@@ -65,19 +65,20 @@
             <div class="toolbarContent">
                 <div class="header">Toolbar</div>
                 <div class="tools">
-                    <button title="Add a TextBox" onclick="newFlowchartItem('text')" id="TextBox">Text</button>
-                    <button title="Add a Image" onclick="newFlowchartItem('image')" id="Image">
+                    <button title="Add a TextBox" onclick="newFlowchartItem(FlowchartTextBox)" id="TextBox">Text</button>
+                    <button title="Add a Image" onclick="newFlowchartItem(FlowchartImage)" id="Image">
                         <img src="Assets/ImageIcon.png" alt="Image Icon"/>
                     </button>
-                    <button title="Add a Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph">
+                    <button title="Add a Bar Graph" onclick="newFlowchartItem(FlowchartBarGraph)" id="Graph">
                         <img src="Assets/BarGraph.png" alt="Bar Graph">
                     </button>
-                    <button title="Add a List" onclick="newFlowchartItem('list')" id="ListNode">
+                    <button title="Add a List" onclick="newFlowchartItem(FlowchartList)" id="ListNode">
                         <img src="Assets/ListIcon.png" alt="List"/>
                     </button>
-                    <button title="Add a Pie Chart" onclick="newFlowchartItem('pie-chart')" id="Pie Chart">
+                    <button title="Add a Pie Chart" onclick="newFlowchartItem(FlowchartPieChart)" id="Pie Chart">
                         <img src="Assets/PieChart.png" alt="Pie Chart"/>
                     </button>
+                    <button title="Add a Link" onclick="newFlowchartItem(FlowchartLink)" id="Link">Link</button>
                 </div>
             </div>
             <button title="Show/Hide the toolbar" class="arrow" onclick="moveToolbar()">

@@ -16,6 +16,10 @@ body{
     overflow: hidden;
 }
 
+a.no-underline{
+    text-decoration: none;
+}
+
 .container{
     display:flex;
     align-items: center;

@@ -341,7 +341,7 @@ class FlowchartBarGraph extends FlowchartItem {
             this.dragger.offsetHeight / 100
         )).mult(this.scale()).add(vector(0, this.dataContainer.offsetHeight / 2 * this.scale())));
     scale = () => cellSize / 50 * this.properties.scale.val;
-    updateProperty = (property, val) => {
+    updateProperty = (property, val, index) => {
         switch (property) {
             case 'heading':
                 this.header.innerText = val;
@@ -356,11 +356,11 @@ class FlowchartBarGraph extends FlowchartItem {
                 this.update();
                 break;
             default:
-                if (property.startsWith('bar')) {
-                    const barIndex = this.properties[property].index;
+                const barIndex = this.properties[property].index;
+                if (index == 0 && property.startsWith('bar')) {
                     this.bars[barIndex].content.textContent = val;
-                    console.log(this.properties[property].val)
-                }
+                } else if (index == 1)
+                    this.bars[barIndex].style.height = val / this.scale() + 'px';
                 break;
         }
     }
@@ -396,11 +396,15 @@ class FlowchartBarGraph extends FlowchartItem {
         this.lastDragY = null;
     }
     barScalerDragged = barIndex => {
-        const dragDiff = this.lastDragY - mouseY;
-        const currentBarHeight = parseFloat(this.bars[barIndex].style.height.slice(0, this.bars[barIndex].style.height.length - 2));
+        const d = this.lastDragY - mouseY;
+        const h = parseFloat(this.bars[barIndex].style.height.slice(0, this.bars[barIndex].style.height.length - 2));
+        const newH = h + d / this.scale();
 
-        this.bars[barIndex].style.height = currentBarHeight + dragDiff / this.scale() + 'px';
+        this.bars[barIndex].style.height = newH + 'px';
         this.lastDragY = mouseY;
+
+        this.properties[this.bars[barIndex].propName].val[1] = newH;
+        Inspector.refresh(this.bars[barIndex].propName);
     }
     addNewBar = () => {
         let nameI = 0;
@@ -412,6 +416,7 @@ class FlowchartBarGraph extends FlowchartItem {
         const newBar = document.createElement('div');
         const barScaler = document.createElement('div');
         const newBarContent = document.createElement('div');
+        const barHeight = 60 + (20 * i);
 
         barScaler.ondragstart = barScaler.ontouchstart = this.barScalerDragStarted;
         barScaler.ondrag = barScaler.ontouchmove = () => this.barScalerDragged(this.properties[propName].index);
@@ -421,7 +426,8 @@ class FlowchartBarGraph extends FlowchartItem {
 
         newBarContent.className = 'barDataRotator';
         newBarContent.textContent = 'Bar ' + i;
-        newBar.style.height = 60 + (20 * i) + 'px';
+        newBar.style.height = barHeight + 'px';
+        newBar.propName = propName;
 
         newBar.appendChild(barScaler);
         newBar.appendChild(newBarContent);
@@ -432,9 +438,10 @@ class FlowchartBarGraph extends FlowchartItem {
         this.bars.push(newBar);
 
         this.properties[propName] = {
-            ...createProperty(null, 'text', 'Bar ' + i, {
+            ...createProperty(null, ['text', 'number'], ['Bar ' + i, barHeight], {
                 remove: this.removeBar,
-                inputClass: 'transparentInput'
+                inputClass: 'transparentInput',
+                multiple: true
             }),
             index: i
         }
@@ -736,6 +743,79 @@ class FlowchartPieChart extends FlowchartItem {
         }
 
         this.updateSVG();
+    }
+}
+class FlowchartLink extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
+
+        this.innerNode = document.createElement('a');
+        this.innerNode.className = 'text';
+        this.dataContainer.appendChild(this.innerNode);
+
+        this.resetProperties();
+    }
+    updateProperty = (property, val) => {
+        switch (property) {
+            case 'color':
+                this.node.style.backgroundColor = val;
+                break;
+            case 'heading':
+                this.dragger.textContent = val;
+                break;
+            case 'headColor':
+                this.dragger.style.backgroundColor = val;
+                break;
+            case 'headFontColor':
+                this.dragger.style.color = val;
+                break;
+            case 'text':
+                this.innerNode.textContent = val;
+                break;
+            case 'fontColor':
+                this.innerNode.style.color = val;
+                break;
+            case 'fontSize':
+                this.innerNode.style.fontSize = val + 'vw';
+                break;
+            case 'link':
+                this.innerNode.href = val;
+                break;
+            case 'underline':
+                if (val)
+                    this.innerNode.classList.remove('no-underline');
+                else
+                    this.innerNode.classList.add('no-underline');
+                break;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            head0: createPropertyHeader('General'),
+            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
+                inputClass: 'addBtn'
+            }),
+            head1: createPropertyHeader('Header'),
+            heading: createProperty('Heading', 'text', ''),
+            headColor: createProperty('Heading Background', 'color', '#20B2AA'),
+            headFontColor: createProperty('Heading Color', 'color', '#000000'),
+            head2: createPropertyHeader('Link'),
+            text: createProperty('Text', 'text', 'Write something here...'),
+            link: createProperty('Link', 'text', 'https://google.com'),
+            fontSize: createProperty('Font Size', 'number', 1.2),
+            fontColor: createProperty('Font Color', 'color', '#000000'),
+            underline: createProperty('Underline Link', 'checkbox', false),
+            setProperty: this.setProperty,
+            delete: this.delete
+        };
+
+        this.properties.default = {
+            ...this.properties
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
     }
 }
 

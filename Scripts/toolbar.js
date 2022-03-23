@@ -22,28 +22,5 @@ function moveToolbar() {
 
 function newFlowchartItem(type) {
     moveToolbar();
-
-    let itemType;
-    switch (type) {
-        case 'text':
-            itemType = FlowchartTextBox;
-            break;
-        case 'image':
-            itemType = FlowchartImage;
-            break;
-        case 'bar-graph':
-            itemType = FlowchartBarGraph;
-            break;
-        case 'list':
-            itemType = FlowchartList;
-            break;
-        case 'pie-chart':
-            itemType = FlowchartPieChart;
-            break;
-        default:
-            alert('Coming soon!');
-            return;
-    }
-
-    flowchartItems.push(new itemType(vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize), flowchartItems.length));
+    flowchartItems.push(new type(vector((mouseX - pos.x), (mouseY - pos.y)).divide(cellSize), flowchartItems.length));
 }

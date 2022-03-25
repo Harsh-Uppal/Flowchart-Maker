@@ -41,26 +41,6 @@ canvas{
     margin-left: .2rem;
 }
 
-.barBtns{
-    display:flex;
-    justify-content: space-evenly;
-    margin-left:auto;
-}
-
-.barBtns > *{
-    display:flex;
-    align-items:center;
-    justify-content: center;
-    width:10%;
-    height:70%;
-    background-color: blue;
-    color:white;
-    font-weight: bold;
-    border-width:1px;
-    border-radius: 1vmin;
-    cursor:pointer;
-}
-
 .barScaler{
     z-index: 1;
     width:75%;
@@ -74,7 +54,7 @@ canvas{
     width:max-content;
     height: 100%;
     align-items: center;
-    font-family: Quicksand;
+    font-family: var(--font-header);
     transform: rotate(90deg);
     white-space:nowrap;
 }
@@ -85,7 +65,7 @@ canvas{
     display:flex;
     align-items: center;
     justify-content: center;
-    font-family: Poppins;
+    font-family: var(--font-secondary);
     align-self: flex-end;
     cursor:move;
     min-width:100%;
@@ -124,8 +104,12 @@ canvas{
     white-space: nowrap;
     width:max-content;
     height: max-content;
-    font: bold 1.2vw 'Open Sans';
+    font: bold 1.2vw var(--font-primary);
     margin:2vmin;
+}
+
+.flowchartItem > .dataContainer > a{
+    display:inline-block;
 }
 
 .flowchartList{

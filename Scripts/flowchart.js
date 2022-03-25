@@ -17,8 +17,8 @@ class FlowchartItem {
 
         newItem.className = 'flowchartItem';
         newItem.tabIndex = 0;
-        newItem.onclick = this.mouseClicked;
-        newItem.onkeydown = this.keyPressed;
+        newItem.addEventListener('click', this.mouseClicked);
+        newItem.addEventListener('keydown', this.keyPressed);
         newItem.style.top = this.pos.y + 'px';
         newItem.style.left = this.pos.x + 'px';
 
@@ -121,7 +121,7 @@ class FlowchartItem {
         this.newConnector = newConnector;
         this.connectors.push(document.createElement('div'));
         this.connectors[newConnector].className = 'connector temp';
-        this.connectors[newConnector].onclick = () => this.connectorClicked(newConnector);
+        this.connectors[newConnector].addEventListener('clcik', () => this.connectorClicked(newConnector));
         this.connectorContainer.appendChild(this.connectors[newConnector]);
     }
     update() {
@@ -192,7 +192,6 @@ class FlowchartTextBox extends FlowchartItem {
         super(pos, index);
 
         this.innerNode = document.createElement('div');
-        this.innerNode.className = 'text';
         this.dataContainer.appendChild(this.innerNode);
 
         this.resetProperties();
@@ -242,7 +241,8 @@ class FlowchartTextBox extends FlowchartItem {
         };
 
         this.properties.default = {
-            ...this.properties
+            ...this.properties,
+            dontEncode: true
         };
 
         for (const prop in this.properties)
@@ -305,7 +305,8 @@ class FlowchartImage extends FlowchartItem {
         };
 
         this.properties.default = {
-            ...this.properties
+            ...this.properties,
+            dontEncode:true
         };
 
         for (const prop in this.properties)
@@ -381,7 +382,8 @@ class FlowchartBarGraph extends FlowchartItem {
         };
 
         this.properties.default = {
-            ...this.properties
+            ...this.properties,
+            dontEncode:true
         };
 
         for (const prop in this.properties)
@@ -527,7 +529,8 @@ class FlowchartList extends FlowchartItem {
         };
 
         this.properties.default = {
-            ...this.properties
+            ...this.properties,
+            dontEncode:true
         };
 
         for (const prop in this.properties)
@@ -652,7 +655,8 @@ class FlowchartPieChart extends FlowchartItem {
         };
 
         this.properties.default = {
-            ...this.properties
+            ...this.properties,
+            dontEncode:true
         };
 
         for (const prop in this.properties)
@@ -750,7 +754,6 @@ class FlowchartLink extends FlowchartItem {
         super(pos, index);
 
         this.innerNode = document.createElement('a');
-        this.innerNode.className = 'text';
         this.dataContainer.appendChild(this.innerNode);
 
         this.resetProperties();
@@ -801,7 +804,7 @@ class FlowchartLink extends FlowchartItem {
             headColor: createProperty('Heading Background', 'color', '#20B2AA'),
             headFontColor: createProperty('Heading Color', 'color', '#000000'),
             head2: createPropertyHeader('Link'),
-            text: createProperty('Text', 'text', 'Write something here...'),
+            text: createProperty('Text', 'text', 'Open Google'),
             link: createProperty('Link', 'text', 'https://google.com'),
             fontSize: createProperty('Font Size', 'number', 1.2),
             fontColor: createProperty('Font Color', 'color', '#000000'),
@@ -811,7 +814,8 @@ class FlowchartLink extends FlowchartItem {
         };
 
         this.properties.default = {
-            ...this.properties
+            ...this.properties,
+            dontEncode:true
         };
 
         for (const prop in this.properties)

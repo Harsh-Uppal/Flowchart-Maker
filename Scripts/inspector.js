@@ -1,4 +1,4 @@
-window.onload = () => Inspector.node = document.querySelector('.inspector');
+window.addEventListener('load', () => Inspector.node = document.querySelector('.inspector'));
 
 const Inspector = {
     node: null,
@@ -20,48 +20,63 @@ const Inspector = {
         Inspector.active = val;
     },
     load() {
-        // console.log(Inspector.inspectingProperties)
-
         if (Inspector.inspectingProperties == null)
             return;
 
         const propertyObjContainer = document.querySelector('.inspector > .properties');
         propertyObjContainer.innerHTML = '';
-        Inspector.numProperties = 0;
+        let propGroup = null;
         for (const property in Inspector.inspectingProperties) {
+            const currentProp = Inspector.inspectingProperties[property];
 
-            if (property == 'default' || property == 'setProperty' || property == 'delete')
+            if (property == 'default' ||
+                property == 'setProperty' ||
+                property == 'delete' ||
+                (!currentProp.multiple &&
+                    !currentProp.type.endsWith('header') &&
+                    !currentProp.visible))
                 continue;
 
             this.propertyInputs[property] = {};
 
-            const currentProp = Inspector.inspectingProperties[property];
             const newPropertyContainer = document.createElement('div');
-
-            newPropertyContainer.id = Inspector.numProperties++;
 
             if (currentProp.name != null && currentProp.name.toString().trim() != '') {
                 const propertyLabel = document.createElement('label');
                 propertyLabel.textContent = currentProp.name;
-                propertyLabel.className = currentProp.type.endsWith('header') ? 'inspectorHeader' : '';
                 newPropertyContainer.appendChild(propertyLabel);
 
                 this.propertyInputs[property].label = propertyLabel;
+            }
+            if (!currentProp.multiple && currentProp.type.endsWith('header')){
+                propertyObjContainer.appendChild(newPropertyContainer);
+                newPropertyContainer.className = 'property-header';
+            }
+            if (!currentProp.multiple && (currentProp.type.endsWith('header') || propGroup == null)) {
+                propGroup = document.createElement('div');
+                propGroup.className = 'property-group';
+                propertyObjContainer.appendChild(propGroup);
             }
 
             switch (currentProp.type) {
                 case 'header':
                     newPropertyContainer.classList.add('no-flex');
-                    const seperator = document.createElement('hr');
-                    newPropertyContainer.appendChild(seperator);
+                    const cPropGroup = propGroup;
+                    const expandArrow = document.createElement('div');
+                    expandArrow.className = 'expandArrow';
+                    expandArrow.addEventListener('click', () => {
+                        expandArrow.style.transform = expandArrow.style.transform == '' ? 'rotate(-90deg)' : '';
+                        cPropGroup.style.display = cPropGroup.style.display == '' ? 'none' : '';
+                    });
+                    newPropertyContainer.appendChild(expandArrow);
                     break;
                 case 'btnheader':
                     newPropertyContainer.classList.add('no-flex');
 
                     for (let i = 0; i < currentProp.classes.length; i++) {
                         const btn = document.createElement('button');
-                        btn.classList = currentProp.classes[i];
-                        btn.onclick = currentProp.click;
+                        btn.className = currentProp.classes[i];
+                        btn.addEventListener('click', currentProp.click);
                         newPropertyContainer.appendChild(btn);
                     }
                     break;
@@ -81,11 +96,13 @@ const Inspector = {
                             { type: currentProp.type[i].toLowerCase(), val: currentProp.val[i] } :
                             { type: currentProp.type.toLowerCase(), val: currentProp.val };
                         const input = document.createElement(inpData.type == 'button' ? 'button' : 'input');
-
+                        const inputChangeHandler = () => {
+                            Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked : input.value, i)
+                        };
                         input.type = inpData.type || 'text';
 
                         if (input.type == 'button')
-                            input.onclick = inpData.val;
+                            input.addEventListener('click', inpData.val);
                         else if (input.type == 'checkbox')
                             input.checked = inpData.val;
                         else
@@ -93,10 +110,8 @@ const Inspector = {
 
                         input.innerHTML = currentProp.content == undefined ? '' : currentProp.content;
                         input.className = currentProp.iClass;
-                        input.onkeyup = input.onchange =
-                            () => {
-                                Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked : input.value, i)
-                            };
+                        input.addEventListener('keyup', inputChangeHandler);
+                        input.addEventListener('change', inputChangeHandler);
                         newPropertyContainer.appendChild(input);
                         this.propertyInputs[property].input.push(input);
                     }
@@ -104,28 +119,29 @@ const Inspector = {
                     if (currentProp.remF) {
                         const removeBtn = document.createElement("button");
                         removeBtn.className = "removeBtn";
-                        removeBtn.onclick = () => {
+                        removeBtn.addEventListener('click', () => {
                             currentProp.remF(property);
                             newPropertyContainer.remove();
                             delete Inspector.inspectingProperties[property];
-                        };
+                        });
                         newPropertyContainer.appendChild(removeBtn);
                     }
                     break;
             }
 
-            propertyObjContainer.appendChild(newPropertyContainer);
+            if (currentProp.multiple || !currentProp.type.endsWith('header'))
+                propGroup.appendChild(newPropertyContainer);
         }
     },
     refresh(prop) {
-        if(this.propertyInputs == null)
+        if (this.propertyInputs == null)
             return;
 
         const propObj = Inspector.inspectingProperties[prop];
         const propInput = this.propertyInputs[prop];
-        if(propObj == null || propInput == null)
+        if (propObj == null || propInput == null)
             return;
-            
+
         propInput.input.forEach((input, index) => {
             input.value = this.inspectingProperties[prop].val[index];
         });
@@ -161,22 +177,30 @@ const Inspector = {
     },
     propertyChanged: (name, val, index) => Inspector.inspectingProperties.setProperty(name, val, index)
 };
-const createProperty = (name, type, value, options) => {
+const createProperty = (name, type, value, options = {
+    remove: null,
+    inputClass: '',
+    multiple: false,
+    inputContent: '',
+    visible: true
+}) => {
     const {
         remove,
         inputClass,
         multiple,
-        inputContent
-    } = options != null ? options : {};
+        inputContent,
+        visible
+    } = options;
 
     return {
-        name: name,
-        type: type,
+        name,
+        type,
         val: value,
         remF: remove,
         iClass: inputClass,
-        multiple: multiple,
-        content: inputContent
+        content: inputContent,
+        multiple,
+        visible
     }
 };
 const createPropertyHeader = header => ({

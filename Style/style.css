@@ -35,7 +35,7 @@ a.no-underline{
     width:100vw;
     height:4vh;
     background-color: #5b6c75;
-    font: 1vw 'Poppins';
+    font: 1vw var(--font-secondary);
     color:rgb(188 255 115);
 }
 
@@ -52,7 +52,7 @@ a.no-underline{
 
 .titleBar > .title{
     color:White;
-    font-family: Quicksand;
+    font-family: var(--font-header);
     font-size: 3vw;
 }
 

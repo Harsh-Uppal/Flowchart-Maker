@@ -1,3 +1,7 @@
+:root {
+    --inspector-color: darkgrey;
+}
+
 .inspector {
     position: absolute;
     bottom: -100vh;
@@ -8,18 +12,18 @@
     width: max-content;
     padding: 0 min(1vw, 1rem);
     height: 80vh;
-    background-color: darkgrey;
+    background-color: var(--inspector-color);
     transition: 1s;
     align-items: center;
     overflow-y: scroll;
 }
 
-.inspector::-webkit-scrollbar{
-    width:.75vw;
+.inspector::-webkit-scrollbar {
+    width: .75vw;
     background: lightblue;
 }
 
-.inspector::-webkit-scrollbar-thumb{
+.inspector::-webkit-scrollbar-thumb {
     background: gray;
     border-radius: 100000rem;
 }
@@ -36,7 +40,7 @@
 .inspector>.titlebar>.header {
     display: flex;
     justify-content: center;
-    font-family: Quicksand;
+    font-family: var(--font-header);
     font-size: calc(3 * var(--v));
     width: 80%;
 }
@@ -68,56 +72,71 @@
     background-color: #fff3;
 }
 
+.property-header{
+    display: flex;
+    width:100%;
+    justify-content: space-between;
+}
+
+.property-header > label {
+    font: bold calc(var(--v) * 1.8) var(--font-header-secondary) !important;
+}
+
 .inspector>.properties {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    width:100%;
 }
 
-.inspector>.properties>* {
+.inspector>.properties>.property-group {
+    background-color: var(--inspector-color);
+}
+
+.inspector>.properties>.property-group>* {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: calc(var(--v) * 2.8);
+    height: calc(var(--v) * 2.4);
 }
 
-.inspector>.properties>*>label {
+.inspector>.properties>.property-group>*>label {
     display: flex;
     align-items: center;
-    font-size: calc(1.6 * var(--v));
-    font-family: 'Open Sans';
-    font-weight: bold;
+    font: normal lighter calc(1.6 * var(--v)) var(--font-primary);
 }
 
-.inspector>.properties>*>hr {
-    width: 100%;
-    margin-left: 4px;
-    height: 1px;
-    background-color: white;
-}
-
-.inspectorHeader {
-    font-family: 'Montserrat' !important;
-    font-style: normal;
-}
-
-.inspector>.properties>*>input[type='text'],
-inspector>.properties>*>input[type='number'] {
+.inspector>.properties>.property-group>*>.expandArrow,
+.inspector>.properties>*>.expandArrow {
     display: flex;
-    font-family: 'Open Sans';
+    transition: .5s;
+    cursor: pointer;
+    font-size: calc(var(--v) * 1.5);
+    align-items: center;
+}
+
+.inspector>.properties>.property-group>*>.expandArrow::after,
+.inspector>.properties>*>.expandArrow::after {
+    content: '▼';
+}
+
+.inspector>.properties>.property-group>*>input[type='text'],
+.inspector>.properties>.property-group>*>input[type='number'] {
+    display: flex;
+    font-family: var(--font-primary);
     font-weight: bold;
     height: 65%;
     flex-grow: 1;
     max-width: 50%;
 }
 
-.inspector>.properties>*>input[type="checkbox"] {
-    padding:0;
+.inspector>.properties>.property-group>*>input[type="checkbox"] {
+    padding: 0;
     height: 90%;
 }
 
-.inspector>.properties>*>input[type="color"] {
+.inspector>.properties>.property-group>*>input[type="color"] {
     cursor: pointer;
     width: calc(var(--v) * 2.6);
     height: calc(var(--v) * 2.6);
@@ -125,33 +144,33 @@ inspector>.properties>*>input[type='number'] {
     padding: 0;
 }
 
-.inspector>.properties>*>input[type="color"]::-webkit-color-swatch,
-.inspector>.properties>*>input[type="color"]::-webkit-color-swatch-wrapper {
+.inspector>.properties>.property-group>*>input[type="color"]::-webkit-color-swatch,
+.inspector>.properties>.property-group>*>input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
     border-radius: 100%;
 }
 
-.inspector>.properties>*>button {
+.inspector>.properties>.property-group>*>button {
     height: 200%;
     width: 8vmin;
     font-size: calc(7 * var(--v));
     transform: scale(.5);
 }
 
-.inspector>.properties>*>input {
-    font-family: 'Open Sans';
+.inspector>.properties>.property-group>*>input {
+    font-family: var(--font-primary);
     font-weight: bold;
     background-color: #0000 !important;
     border: solid 2px white;
     border-radius: .5vw;
 }
 
-.inspector>.properties>*>input+button,
-.inspector>.properties>*>input+input {
+.inspector>.properties>.property-group>*>input+button,
+.inspector>.properties>.property-group>*>input+input {
     margin-left: .5vw;
 }
 
-.inspector>.properties>*>.removeBtn {
+.inspector>.properties>.property-group>*>.removeBtn {
     display: flex;
     width: calc(var(--v) * 6);
     height: calc(var(--v) * 5);
@@ -162,11 +181,11 @@ inspector>.properties>*>input[type='number'] {
     transition: .5s;
 }
 
-.inspector>.properties>*>.removeBtn:hover {
+.inspector>.properties>.property-group>*>.removeBtn:hover {
     background-color: #F46F;
 }
 
-.inspector>.properties>*>.removeBtn::before {
+.inspector>.properties>.property-group>*>.removeBtn::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -178,16 +197,16 @@ inspector>.properties>*>input[type='number'] {
     border-radius: 10000px;
 }
 
-.inspector>.properties>*>.randomizeBtn {
-    display:flex;
+.inspector>.properties>.property-group>*>.randomizeBtn {
+    display: flex;
     align-items: center;
-    justify-content:center ;
+    justify-content: center;
     background-color: #0000;
-    border:none;
-    padding:0 !important;
+    border: none;
+    padding: 0 !important;
 }
 
-.inspector>.properties>*>.randomizeBtn > img {
+.inspector>.properties>.property-group>*>.randomizeBtn>img {
     padding: 0;
     aspect-ratio: 1 / 1;
     height: 100%;
@@ -206,7 +225,7 @@ inspector>.properties>*>input[type='number'] {
     display: flex;
     align-items: center;
     justify-content: center;
-    font: bold calc(2 * var(--v)) 'Open Sans';
+    font: bold calc(2 * var(--v)) var(--font-primary);
     height: 60%;
     padding: 6%;
     border-radius: calc((1.2vw + 1.2vh) / 2);

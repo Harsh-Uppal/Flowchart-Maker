@@ -16,8 +16,7 @@
 } 
 
 .generalProperties > * > .title{
-    font-size: calc(2 * var(--v));
-    font-family: Quicksand;
+    font:bold calc(2 * var(--v)) var(--font-header-secondary);
     color:cornsilk;
 }
 

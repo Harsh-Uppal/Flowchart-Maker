@@ -10,10 +10,18 @@ input[type='button'], input[type='Button']{
     cursor: pointer;
 }
 
+body, html {
+    overflow: hidden;
+    width:100%;
+    height:100%;
+}
+
 body{
+    position: relative;
     margin:0;
     padding:0;
-    overflow: hidden;
+    display:flex;
+    flex-direction: column;
 }
 
 a.no-underline{
@@ -21,18 +29,19 @@ a.no-underline{
 }
 
 .container{
+    position: relative;
     display:flex;
     align-items: center;
-    height:80vh;
+    flex-grow: 1;
+    width:100%;
 }
 
 .copyright{
-    display:flex;       
+    display: grid;
+    place-items: center;
     position: relative;
-    align-items: center;
-    justify-content: space-evenly;
-    z-index: 1;
-    width:100vw;
+    z-index: 1;    
+    width:100%;
     height:4vh;
     background-color: #5b6c75;
     font: 1vw var(--font-secondary);

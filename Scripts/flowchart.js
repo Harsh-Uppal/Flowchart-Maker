@@ -121,7 +121,7 @@ class FlowchartItem {
         this.newConnector = newConnector;
         this.connectors.push(document.createElement('div'));
         this.connectors[newConnector].className = 'connector temp';
-        this.connectors[newConnector].addEventListener('clcik', () => this.connectorClicked(newConnector));
+        this.connectors[newConnector].addEventListener('click', () => this.connectorClicked(newConnector));
         this.connectorContainer.appendChild(this.connectors[newConnector]);
     }
     update() {

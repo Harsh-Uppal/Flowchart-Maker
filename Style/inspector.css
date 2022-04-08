@@ -4,18 +4,18 @@
 
 .inspector {
     position: absolute;
-    bottom: -100vh;
+    bottom: -100%;
     right: 0;
     display: flex;
     flex-direction: column;
     z-index: 1;
     width: max-content;
     padding: 0 min(1vw, 1rem);
-    height: 80vh;
+    height: 100%;
     background-color: var(--inspector-color);
     transition: 1s;
     align-items: center;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .inspector::-webkit-scrollbar {
@@ -125,7 +125,7 @@
 .inspector>.properties>.property-group>*>input[type='number'] {
     display: flex;
     font-family: var(--font-primary);
-    font-weight: bold;
+    font-weight: lighter;
     height: 65%;
     flex-grow: 1;
     max-width: 50%;
@@ -225,7 +225,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font: bold calc(2 * var(--v)) var(--font-primary);
+    font: lighter calc(2 * var(--v)) var(--font-primary);
     height: 60%;
     padding: 6%;
     border-radius: calc((1.2vw + 1.2vh) / 2);

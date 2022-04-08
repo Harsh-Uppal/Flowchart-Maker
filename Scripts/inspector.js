@@ -16,7 +16,7 @@ const Inspector = {
             Inspector.noDisplayTimeout = setTimeout(() => {
                 Inspector.node.style.display = 'none'
             }, 1000);
-        Inspector.node.style.bottom = val ? '4vh' : '-100vh';
+        Inspector.node.style.bottom = val ? '0' : '-100%';
         Inspector.active = val;
     },
     load() {
@@ -200,7 +200,7 @@ const createProperty = (name, type, value, options = {
         iClass: inputClass,
         content: inputContent,
         multiple,
-        visible
+        visible: visible || true
     }
 };
 const createPropertyHeader = header => ({

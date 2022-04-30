@@ -2,11 +2,11 @@
     --v: calc((1vh + 1vw) / 2);
 }
 
-button{
-    cursor: pointer;
+img {
+    display: block;
 }
 
-input[type='button'], input[type='Button']{
+button, input[type='button'], input[type='Button'], input[type='Color'], input[type='Checkbox']{
     cursor: pointer;
 }
 

@@ -48,7 +48,7 @@ const Inspector = {
 
                 this.propertyInputs[property].label = propertyLabel;
             }
-            if (!currentProp.multiple && currentProp.type.endsWith('header')){
+            if (!currentProp.multiple && currentProp.type.endsWith('header')) {
                 propertyObjContainer.appendChild(newPropertyContainer);
                 newPropertyContainer.className = 'property-header';
             }
@@ -93,11 +93,13 @@ const Inspector = {
                     const l = currentProp.multiple ? currentProp.type.length : 1;
                     for (let i = 0; i < l; i++) {
                         const inpData = currentProp.multiple ?
-                            { type: currentProp.type[i].toLowerCase(), val: currentProp.val[i] } :
-                            { type: currentProp.type.toLowerCase(), val: currentProp.val };
-                        const input = document.createElement(inpData.type == 'button' ? 'button' : 'input');
+                            { type: currentProp.type[i], val: currentProp.val[i], options: currentProp.options ? currentProp.options[i] : null } :
+                            { type: currentProp.type, val: currentProp.val, options: currentProp.options };
+                        const input = document.createElement(inpData.type == 'button' ? 'button' :
+                            inpData.type == 'select' ? 'select' : 'input');
                         const inputChangeHandler = () => {
-                            Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked : input.value, i)
+                            Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked :
+                                input.nodeName == 'SELECT' ? input.selectedIndex : input.value, i)
                         };
                         input.type = inpData.type || 'text';
 
@@ -105,10 +107,23 @@ const Inspector = {
                             input.addEventListener('click', inpData.val);
                         else if (input.type == 'checkbox')
                             input.checked = inpData.val;
+                        else if (inpData.type == 'select') {
+                            if (!Array.isArray(inpData.options))
+                                console.error('Input value expected to be an array');
+                            else {
+                                inpData.options.forEach(opt => {
+                                    const option = document.createElement('option');
+                                    option.setAttribute('value', opt);
+                                    option.innerText = opt;
+                                    input.appendChild(option);
+                                });
+                            }
+                        }
                         else
                             input.value = inpData.val || '';
 
-                        input.innerHTML = currentProp.content == undefined ? '' : currentProp.content;
+                        if (inpData.type != 'select')
+                            input.innerHTML = currentProp.content == undefined ? '' : currentProp.content;
                         input.className = currentProp.iClass;
                         input.addEventListener('keyup', inputChangeHandler);
                         input.addEventListener('change', inputChangeHandler);
@@ -184,6 +199,9 @@ const createProperty = (name, type, value, options = {
     inputContent: '',
     visible: true
 }) => {
+    try {
+        type = type.toLowerCase();
+    } catch { }
     const {
         remove,
         inputClass,
@@ -191,8 +209,17 @@ const createProperty = (name, type, value, options = {
         inputContent,
         visible
     } = options;
-
-    return {
+    return type == 'select' ? {
+        name,
+        type,
+        val: 0,
+        options: value,
+        remF: remove,
+        iClass: inputClass,
+        content: inputContent,
+        multiple,
+        visible: visible || true
+    } : {
         name,
         type,
         val: value,

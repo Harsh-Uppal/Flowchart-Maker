@@ -1,3 +1,7 @@
+a{
+    text-decoration: underline;
+}
+
 canvas{
     position: absolute;
     z-index: 0;
@@ -17,6 +21,7 @@ canvas{
     flex-direction: column;
     align-items: center;
     height:max-content;
+    cursor: move;
 }
 
 .BarGraph > .dataContainer{
@@ -76,10 +81,22 @@ canvas{
 }
 
 .flowchartItem{
+    cursor: move;
+    user-select: none;
     position: absolute;
     background-color: lightblue;
-    border-radius: 2vmin;
     transform: translate(-50%, -50%);
+}
+
+.flowchartItem[shape="Rectangle"] {
+    border:2px solid steelblue;
+}
+
+.flowchartItem[shape="Circle"] {
+    display: grid;
+    place-content: center;
+    border-radius: 100%;
+    aspect-ratio: 1 / 1;
 }
 
 .flowchartItem > .dataContainer{
@@ -94,7 +111,7 @@ canvas{
     width:100%;
     height:2rem;
     background-color: lightseagreen;
-    border-radius: 2vmin 2vmin 0 0;
+    border-radius: 100%  100%  0 0;
     cursor: move;
     margin:0 !important;
     font-size: 1.5vw;
@@ -106,6 +123,10 @@ canvas{
     height: max-content;
     font: bold 1.2vw var(--font-primary);
     margin:2vmin;
+}
+
+.flowchartItem > .dataContainer > *[fill="true"] {
+    margin: 0 !important;
 }
 
 .flowchartItem > .dataContainer > a{
@@ -132,19 +153,18 @@ canvas{
     background-color: #0000 !important;
 }
 
-.piechart{
-    position: relative;
+.barGraphDragger{
+    display: grid;
+    place-content: center;
+    width:100%;
+    font-family: var(--font-primary);
+    border-radius: var(--v);
 }
 
-.piechartDragger{
-    cursor: move;
-    position:absolute;
-    width:15%;
-    height:15%;
-    top:50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    border-radius: 100%;
+.piechart{
+    position: relative;
+    display: flex;
+    justify-content: center;
 }
 
 .piechart-section-name{
@@ -167,27 +187,23 @@ canvas{
 
 .connector{
     z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position:  absolute;
     border:none;
     margin:0 !important;
-    width:15px;
-    height:15px;
+    width:10px;
+    height:10px;
     background-color: gold;
-    border-radius: 100%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) rotate(45deg);
     cursor: pointer;
 }
 
 .connector::before{
-    display:block;
+    display: block;
     content:'';
     background-color: rgb(4, 141, 22);
-    width:70%;
-    height:70%;
-    border-radius: 100%;
+    width:7px;
+    height:7px;
+    margin: 1.5px;
 }
 
 .connector:hover::before{

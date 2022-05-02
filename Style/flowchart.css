@@ -16,12 +16,13 @@ canvas{
 }
 
 .bargraph{
-    display:flex;
+    cursor: move;
+    user-select: none;
     position: absolute;
+    display:flex;
     flex-direction: column;
     align-items: center;
     height:max-content;
-    cursor: move;
 }
 
 .bargraph > .dataContainer{

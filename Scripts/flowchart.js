@@ -208,9 +208,6 @@ class FlowchartTextBox extends FlowchartItem {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
             shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Triangle']),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
-                inputClass: 'addBtn'
-            }),
             head1: createPropertyHeader('Text'),
             text: createProperty('Text', 'text', 'Write something here...'),
             fontSize: createProperty('Font Size', 'number', 1.2),
@@ -262,9 +259,6 @@ class FlowchartImage extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
-                inputClass: 'addBtn'
-            }),
             head1: createPropertyHeader('Image'),
             imageSrc: createProperty('Image Source', 'text', './Assets/ImageIcon.png'),
             width: createProperty('Image Width', 'number', 100),
@@ -340,9 +334,6 @@ class FlowchartBarGraph extends FlowchartItem {
             header: createProperty('Header', 'text', 'New Bar Graph'),
             headerBG: createProperty('Header Background', 'color', '#2f4f4f'),
             headerColor: createProperty('Header Font Color', 'color', '#FFFFFF'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
-                inputClass: 'addBtn'
-            }),
             head1: createPropertyBtnHeader('Bars', ['addBtn'], this.addNewBar),
             setProperty: this.setProperty,
             delete: this.delete
@@ -470,9 +461,6 @@ class FlowchartList extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
-                inputClass: 'addBtn'
-            }),
             head1: createPropertyHeader('List'),
             fontSize: createProperty('Font Size', 'number', 1.4),
             fontColor: createProperty('Font Color', 'color', '#000000'),
@@ -587,9 +575,6 @@ class FlowchartPieChart extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             scale: createProperty('Scale', 'number', 1),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
-                inputClass: 'addBtn'
-            }),
             head1: createPropertyHeader('Style'),
             fontColor: createProperty('Font Color', 'color', '#FFFFFF'),
             randomFill: createProperty('Radomize Section Colors', 'button', this.fillRandomColors, {
@@ -734,9 +719,6 @@ class FlowchartLink extends FlowchartItem {
         this.properties = {
             head0: createPropertyHeader('General'),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            addConnector: createProperty('Add Connector', 'Button', this.addConnector, {
-                inputClass: 'addBtn'
-            }),
             head1: createPropertyHeader('Link'),
             text: createProperty('Text', 'text', 'Open Google'),
             link: createProperty('Link', 'text', 'https://google.com'),

@@ -21,7 +21,8 @@ const createEncoder = () => {
                 (typeof (obj) == 'function') ||
                 (typeof (obj.val) == 'function') ||
                 (!obj.multiple && obj.type.endsWith('header'))))
-                str += `${prop}:${obj.multiple ? encodeArray(obj.val) : obj.val},`;
+                str += `${prop}:${obj.multiple ? encodeArray(obj.val) : 
+                    (obj.type || 'text') == 'text' ? `"${obj.val}"` : obj.val},`;
         }
         return `${item.constructor.name}:{${str.toString().replace(' ', String.fromCharCode(0))}},`;
     }

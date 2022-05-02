@@ -1,4 +1,4 @@
-const vector = (x, y) => {
+const vec = vector = (x, y) => {
     return { 
         x: x,
         y: y,

@@ -15,7 +15,7 @@ canvas{
     display:flex;
 }
 
-.BarGraph{
+.bargraph{
     display:flex;
     position: absolute;
     flex-direction: column;
@@ -24,7 +24,7 @@ canvas{
     cursor: move;
 }
 
-.BarGraph > .dataContainer{
+.bargraph > .dataContainer{
     display:flex;
     justify-content: space-evenly;
     width:90%;
@@ -32,7 +32,7 @@ canvas{
     margin:0 1rem;
 }
 
-.BarGraph > .dataContainer > *{
+.bargraph > .dataContainer > *{
     display:flex;
     width:2rem;
     flex-direction: column;
@@ -42,7 +42,7 @@ canvas{
     align-self: flex-end;
 }
 
-.BarGraph > .dataContainer > * + *{
+.bargraph > .dataContainer > * + *{
     margin-left: .2rem;
 }
 
@@ -64,7 +64,7 @@ canvas{
     white-space:nowrap;
 }
 
-.BarGraph > .bottomBar{
+.bargraph > .bottomBar{
     position: relative;
     z-index: 1;
     display:flex;
@@ -97,6 +97,9 @@ canvas{
     place-content: center;
     border-radius: 100%;
     aspect-ratio: 1 / 1;
+}
+
+.flowchartItem[shape="Triangle"] {
 }
 
 .flowchartItem > .dataContainer{
@@ -153,7 +156,8 @@ canvas{
     background-color: #0000 !important;
 }
 
-.barGraphDragger{
+.bargraph-header{
+    position: relative;
     display: grid;
     place-content: center;
     width:100%;
@@ -163,8 +167,9 @@ canvas{
 
 .piechart{
     position: relative;
-    display: flex;
-    justify-content: center;
+    display:block;
+    margin-inline: auto;
+    width:max-content;
 }
 
 .piechart-section-name{

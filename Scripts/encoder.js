@@ -1,30 +1,33 @@
 function saveFlowchart() {
     const blob = new Blob([Encoder.encodeFlowchart()], { type: "text/plain;charset=utf-8" });
-    const link = document.createElement("a"); // Or maybe get it from the current document
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "flowchart.flc";
     link.click();
 }
 
-const createEncoder = () => {
-    const encodeArray = arr => `[${(function () {
-        let str = '';
-        for (let i = 0; i < arr.length; i++)
-            str += arr[i] + ',';
-        return str;
-    })()}]`;
+function loadFlowchart() {
+    let inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.flc';
+    inp.addEventListener('change', async() => {
+        console.log(JSON.parse(await inp.files[0].text()));
+    });
+    inp.click();
+}
+
+const Encoder = (() => {
     const encodeItem = (item) => {
-        let str = '';
+        let itemObj = {type:item.constructor.name, properties:{}};
         for (const prop in item.properties) {
             const obj = item.properties[prop];
             if (!(obj.dontEncode ||
                 (typeof (obj) == 'function') ||
                 (typeof (obj.val) == 'function') ||
-                (!obj.multiple && obj.type.endsWith('header'))))
-                str += `${prop}:${obj.multiple ? encodeArray(obj.val) : 
-                    (obj.type || 'text') == 'text' ? `"${obj.val}"` : obj.val},`;
+                (obj.type && obj.type.endsWith('header'))))
+                itemObj.properties[prop] = obj.val;
         }
-        return `${item.constructor.name}:{${str.toString().replace(' ', String.fromCharCode(0))}},`;
+        return itemObj;
     }
     const decodeItem = item => {
         return (Function('return new ' + item + '();'))();
@@ -35,13 +38,11 @@ const createEncoder = () => {
             if (!Array.isArray(flowchartItems) || flowchartItems.length == 0)
                 return '';
 
-            let str = '';
+            let obj = {generalProperties:null, flowchartItems:[]};
             flowchartItems.forEach((item) => {
-                str += encodeItem(item);
+                obj.flowchartItems.push(encodeItem(item));
             });
-            return `{${str}}`;
+            return JSON.stringify(obj);
         }
     };
-}
-
-const Encoder = createEncoder();
+})();

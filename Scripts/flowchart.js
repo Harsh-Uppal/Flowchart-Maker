@@ -8,6 +8,13 @@ class FlowchartItem {
         this.connectors = [];
         this.clickEnabled = this.dragEnabled = true;
         this.lastMouseAngle = null;
+        this.templateProps = {
+            pos: createDynamicProperty(null, null, () => this.pos, { visible: false }),
+            head0: createPropertyHeader('General'),
+            scale: createProperty('Scale', 'number', 1),
+            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Triangle']),
+        };
 
         const itemsContainer = document.querySelector('.flowchartItems');
         const newItem = document.createElement('div');
@@ -96,7 +103,6 @@ class FlowchartItem {
         FlowchartItem.connecting = this;
     }
     addConnectors = () => {
-        console.log([this.connectorContainer]);
         let addConnector = (x, y) => {
             const newConnector = this.connectors.length;
             this.connectors.push(document.createElement('div'));
@@ -163,15 +169,30 @@ class FlowchartItem {
         this.node.remove();
     }
     setProperty = (property, val, index) => {
-        if (property != null && property != 'setProperty' && property != 'default' && property != 'delete') {
-            if (this.properties[property].multiple) {
-                if (!this.properties[property].type[index].endsWith('header') && this.properties[property].type != 'select')
-                    this.properties[property].val[index] = val;
-            }
-            else if (!this.properties[property].type.endsWith('header') && this.properties[property].type != 'select')
-                this.properties[property].val = val;
+        switch (property) {
+            case 'color':
+                this.node.style.backgroundColor = val;
+                break;
+            case 'shape':
+                this.node.setAttribute('shape', this.properties.shape.options[val]);
+                break;
+            case 'pos':
+                this.pos = val;
+                break;
+            case 'scale':
+                this.update();
+                break;
+            default:
+                if (property != null && property != 'setProperty' && property != 'default' && property != 'delete') {
+                    if (this.properties[property].multiple) {
+                        if (!this.properties[property].type[index].endsWith('header') && this.properties[property].type != 'select')
+                            this.properties[property].val[index] = val;
+                    }
+                    else if (!this.properties[property].type.endsWith('header') && this.properties[property].type != 'select')
+                        this.properties[property].val = val;
 
-            this.updateProperty(property, val, index);
+                    this.updateProperty(property, val, index);
+                }
         }
     }
 }
@@ -186,9 +207,6 @@ class FlowchartTextBox extends FlowchartItem {
     }
     updateProperty = (property, val) => {
         switch (property) {
-            case 'color':
-                this.node.style.backgroundColor = val;
-                break;
             case 'text':
                 this.innerNode.textContent = val;
                 break;
@@ -198,16 +216,11 @@ class FlowchartTextBox extends FlowchartItem {
             case 'fontSize':
                 this.innerNode.style.fontSize = val + 'vw';
                 break;
-            case 'shape':
-                this.node.setAttribute('shape', this.properties.shape.options[val]);
-                break;
         }
     }
     resetProperties() {
         this.properties = {
-            head0: createPropertyHeader('General'),
-            color: createProperty('Background Color', 'color', '#ADD8E6'),
-            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Triangle']),
+            ...this.templateProps,
             head1: createPropertyHeader('Text'),
             text: createProperty('Text', 'text', 'Write something here...'),
             fontSize: createProperty('Font Size', 'number', 1.2),
@@ -238,9 +251,6 @@ class FlowchartImage extends FlowchartItem {
     }
     updateProperty = (property, val) => {
         switch (property) {
-            case 'color':
-                this.node.style.backgroundColor = val;
-                break;
             case 'width':
                 this.innerNode.style.width = val + 'px';
                 break;
@@ -257,8 +267,7 @@ class FlowchartImage extends FlowchartItem {
     }
     resetProperties() {
         this.properties = {
-            head0: createPropertyHeader('General'),
-            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            ...this.templateProps,
             head1: createPropertyHeader('Image'),
             imageSrc: createProperty('Image Source', 'text', './Assets/ImageIcon.png'),
             width: createProperty('Image Width', 'number', 100),
@@ -306,9 +315,6 @@ class FlowchartBarGraph extends FlowchartItem {
     scale = () => cellSize / 50 * this.properties.scale.val;
     updateProperty = (property, val, index) => {
         switch (property) {
-            case 'scale':
-                this.update();
-                break;
             case 'header':
                 this.header.textContent = val;
                 break;
@@ -329,12 +335,12 @@ class FlowchartBarGraph extends FlowchartItem {
     }
     resetProperties() {
         this.properties = {
-            head0: createPropertyHeader('General'),
-            scale: createProperty('Scale', 'number', 1),
-            header: createProperty('Header', 'text', 'New Bar Graph'),
+            ...this.templateProps,
+            head1: createPropertyHeader('Header'),
+            header: createProperty('Header Content', 'text', 'New Bar Graph'),
             headerBG: createProperty('Header Background', 'color', '#2f4f4f'),
             headerColor: createProperty('Header Font Color', 'color', '#FFFFFF'),
-            head1: createPropertyBtnHeader('Bars', ['addBtn'], this.addNewBar),
+            head2: createPropertyBtnHeader('Bars', ['addBtn'], this.addNewBar),
             setProperty: this.setProperty,
             delete: this.delete
         };
@@ -441,9 +447,6 @@ class FlowchartList extends FlowchartItem {
     }
     updateProperty = (property, val) => {
         switch (property) {
-            case 'color':
-                this.node.style.backgroundColor = val;
-                break;
             case 'fontColor':
                 this.listNode.style.color = val;
                 break;
@@ -459,8 +462,7 @@ class FlowchartList extends FlowchartItem {
     }
     resetProperties() {
         this.properties = {
-            head0: createPropertyHeader('General'),
-            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            ...this.templateProps,
             head1: createPropertyHeader('List'),
             fontSize: createProperty('Font Size', 'number', 1.4),
             fontColor: createProperty('Font Color', 'color', '#000000'),
@@ -541,9 +543,6 @@ class FlowchartPieChart extends FlowchartItem {
         switch (property) {
             case 'fontColor':
                 this.sections.forEach(section => section.name.style.color = val);
-            case 'scale':
-                this.update();
-                break;
             case 'stroke':
                 this.sections.forEach(section => section.setAttribute("stroke", val));
                 break;
@@ -576,8 +575,7 @@ class FlowchartPieChart extends FlowchartItem {
     }
     resetProperties() {
         this.properties = {
-            head0: createPropertyHeader('General'),
-            scale: createProperty('Scale', 'number', 1),
+            ...this.templateProps,
             head1: createPropertyHeader('Style'),
             fontColor: createProperty('Font Color', 'color', '#FFFFFF'),
             randomFill: createProperty('Radomize Section Colors', 'button', this.fillRandomColors, {
@@ -698,9 +696,6 @@ class FlowchartLink extends FlowchartItem {
     }
     updateProperty = (property, val) => {
         switch (property) {
-            case 'color':
-                this.node.style.backgroundColor = val;
-                break;
             case 'text':
                 this.innerNode.textContent = val;
                 break;
@@ -720,8 +715,7 @@ class FlowchartLink extends FlowchartItem {
     }
     resetProperties() {
         this.properties = {
-            head0: createPropertyHeader('General'),
-            color: createProperty('Background Color', 'color', '#ADD8E6'),
+            ...this.templateProps,
             head1: createPropertyHeader('Link'),
             text: createProperty('Text', 'text', 'Open Google'),
             link: createProperty('Link', 'text', 'https://google.com'),

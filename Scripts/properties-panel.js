@@ -29,7 +29,8 @@ const PropertiesPanel = {
         for (const property in PropertiesPanel.inspectingProperties) {
             const currentProp = PropertiesPanel.inspectingProperties[property];
 
-            if (property == 'default' ||
+            if (!currentProp.visible ||
+                property == 'default' ||
                 property == 'setProperty' ||
                 property == 'delete' ||
                 (!currentProp.multiple &&
@@ -192,51 +193,3 @@ const PropertiesPanel = {
     },
     propertyChanged: (name, val, index) => PropertiesPanel.inspectingProperties.setProperty(name, val, index)
 };
-const createProperty = (name, type, value, options = {
-    remove: null,
-    inputClass: '',
-    multiple: false,
-    inputContent: '',
-    visible: true
-}) => {
-    try {
-        type = type.toLowerCase();
-    } catch { }
-    const {
-        remove,
-        inputClass,
-        multiple,
-        inputContent,
-        visible
-    } = options;
-    return type == 'select' ? {
-        name,
-        type,
-        val: 0,
-        options: value,
-        remF: remove,
-        iClass: inputClass,
-        content: inputContent,
-        multiple,
-        visible: visible || true
-    } : {
-        name,
-        type,
-        val: value,
-        remF: remove,
-        iClass: inputClass,
-        content: inputContent,
-        multiple,
-        visible: visible || true
-    }
-};
-const createPropertyHeader = header => ({
-    name: header,
-    type: 'header'
-});
-const createPropertyBtnHeader = (header, btnClassList, onclick) => ({
-    name: header,
-    type: 'btnheader',
-    classes: btnClassList,
-    click: onclick
-});

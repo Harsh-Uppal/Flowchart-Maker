@@ -49,8 +49,8 @@ class FlowchartItem {
         if (!this.added)
             this.added = true;
 
-        Inspector.inspectingProperties = this.properties;
-        Inspector.activate(true);
+        PropertiesPanel.inspectingProperties = this.properties;
+        PropertiesPanel.activate(true);
     }
     mouseDragStart = () => {
         dragEnabled = false;
@@ -158,7 +158,7 @@ class FlowchartItem {
         }
     }
     delete = () => {
-        Inspector.activate(false);
+        PropertiesPanel.activate(false);
         flowchartItems.splice(this.index, 1);
         this.node.remove();
     }
@@ -366,7 +366,7 @@ class FlowchartBarGraph extends FlowchartItem {
         this.lastDragY = mouseY;
 
         this.properties[this.bars[barIndex].propName].val[1] = Math.round(newH);
-        Inspector.refresh(this.bars[barIndex].propName);
+        PropertiesPanel.refresh(this.bars[barIndex].propName);
     }
     addNewBar = () => {
         let nameI = 0;
@@ -409,7 +409,7 @@ class FlowchartBarGraph extends FlowchartItem {
         }
 
         this.header.style.height = Math.min(Math.max(1.5, .5 * i + .5), 3) + 'rem';
-        Inspector.load();
+        PropertiesPanel.load();
     }
     removeBar = i => {
         const prop = this.properties[i];
@@ -498,7 +498,7 @@ class FlowchartList extends FlowchartItem {
             index: itemIndex
         };
 
-        Inspector.load();
+        PropertiesPanel.load();
     }
     removeItem = index => {
         this.items[index].remove();
@@ -532,6 +532,9 @@ class FlowchartPieChart extends FlowchartItem {
 
         this.updateSVG();
         this.addConnectors();
+
+        this.connectors[3].remove();
+        this.connectors[3] = undefined;
     }
     scale = () => cellSize / 50 * this.properties.scale.val;
     updateProperty = (property, val, i) => {
@@ -659,7 +662,7 @@ class FlowchartPieChart extends FlowchartItem {
                 { multiple: true, remove: this.removeSection }),
             index
         }
-        Inspector.load();
+        PropertiesPanel.load();
 
         if (update)
             this.updateSVG();
@@ -678,7 +681,7 @@ class FlowchartPieChart extends FlowchartItem {
     fillRandomColors = () => {
         for (let i = 0; i < this.sections.length; i++) {
             this.properties[this.sections[i].propName].val[2] = this.sections[i].color = this.sections[i].name.style.backgroundColor = randomColor();
-            Inspector.refresh(this.sections[i].propName);
+            PropertiesPanel.refresh(this.sections[i].propName);
         }
 
         this.updateSVG();

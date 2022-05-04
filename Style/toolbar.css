@@ -60,7 +60,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to bottom right, cyan, aquamarine);
+    background-image: linear-gradient(to bottom right, cyan, aquamarine);
     border-radius: 3vmin;
     cursor: pointer;
     font: 2.7vmin var(--font-primary);
@@ -71,11 +71,11 @@
 }
 
 .toolbarContent>.tools>*:hover {
-    background: linear-gradient(to bottom right, lightblue, aqua);
+    background-image: linear-gradient(to bottom right, lightblue, aqua);
 }
 
 .toolbarContent>.tools>*:active {
-    background: linear-gradient(to bottom right, cyan, aquamarine);
+    background-image: linear-gradient(to bottom right, cyan, aquamarine);
 }
 
 .toolbarContent>.tools>*>img {

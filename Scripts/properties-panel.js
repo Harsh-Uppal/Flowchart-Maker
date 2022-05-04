@@ -1,33 +1,33 @@
-window.addEventListener('load', () => Inspector.node = document.querySelector('.inspector'));
+window.addEventListener('load', () => PropertiesPanel.node = document.querySelector('#properties-panel'));
 
-const Inspector = {
+const PropertiesPanel = {
     node: null,
     active: false,
     inspectingProperties: null,
     propertyInputs: {},
     activate(val) {
-        if (Inspector.inspectingProperties == null)
-            Inspector.node = document.querySelector('.inspector');
+        if (PropertiesPanel.inspectingProperties == null)
+            PropertiesPanel.node = document.querySelector('#properties-panel');
 
         if (val) {
-            Inspector.load();
-            Inspector.node.style.display = '';
+            PropertiesPanel.load();
+            PropertiesPanel.node.style.display = '';
         } else
-            Inspector.noDisplayTimeout = setTimeout(() => {
-                Inspector.node.style.display = 'none'
+            PropertiesPanel.noDisplayTimeout = setTimeout(() => {
+                PropertiesPanel.node.style.display = 'none'
             }, 1000);
-        Inspector.node.style.bottom = val ? '0' : '-100%';
-        Inspector.active = val;
+        PropertiesPanel.node.style.bottom = val ? '0' : '-100%';
+        PropertiesPanel.active = val;
     },
     load() {
-        if (Inspector.inspectingProperties == null)
+        if (PropertiesPanel.inspectingProperties == null)
             return;
 
-        const propertyObjContainer = document.querySelector('.inspector > .properties');
+        const propertyObjContainer = document.querySelector('#properties-panel > .properties');
         propertyObjContainer.innerHTML = '';
         let propGroup = null;
-        for (const property in Inspector.inspectingProperties) {
-            const currentProp = Inspector.inspectingProperties[property];
+        for (const property in PropertiesPanel.inspectingProperties) {
+            const currentProp = PropertiesPanel.inspectingProperties[property];
 
             if (property == 'default' ||
                 property == 'setProperty' ||
@@ -98,7 +98,7 @@ const Inspector = {
                         const input = document.createElement(inpData.type == 'button' ? 'button' :
                             inpData.type == 'select' ? 'select' : 'input');
                         const inputChangeHandler = () => {
-                            Inspector.propertyChanged(property, input.type == 'checkbox' ? input.checked :
+                            PropertiesPanel.propertyChanged(property, input.type == 'checkbox' ? input.checked :
                                 input.nodeName == 'SELECT' ? input.selectedIndex : input.value, i)
                         };
                         input.type = inpData.type || 'text';
@@ -137,7 +137,7 @@ const Inspector = {
                         removeBtn.addEventListener('click', () => {
                             currentProp.remF(property);
                             newPropertyContainer.remove();
-                            delete Inspector.inspectingProperties[property];
+                            delete PropertiesPanel.inspectingProperties[property];
                         });
                         newPropertyContainer.appendChild(removeBtn);
                     }
@@ -152,7 +152,7 @@ const Inspector = {
         if (this.propertyInputs == null)
             return;
 
-        const propObj = Inspector.inspectingProperties[prop];
+        const propObj = PropertiesPanel.inspectingProperties[prop];
         const propInput = this.propertyInputs[prop];
         if (propObj == null || propInput == null)
             return;
@@ -162,35 +162,35 @@ const Inspector = {
         });
     },
     resetProperties() {
-        Inspector.inspectingProperties = Inspector.inspectingProperties.default;
-        const inputs = document.querySelector('.inspector > .properties');
+        PropertiesPanel.inspectingProperties = PropertiesPanel.inspectingProperties.default;
+        const inputs = document.querySelector('#properties-panel > .properties');
 
         let i = -1;
-        for (const currentProperty in Inspector.inspectingProperties) {
+        for (const currentProperty in PropertiesPanel.inspectingProperties) {
             i++;
 
-            const prop = Inspector.inspectingProperties[currentProperty];
+            const prop = PropertiesPanel.inspectingProperties[currentProperty];
 
             if (currentProperty == 'setProperty' || currentProperty == 'delete' || prop.type.endsWith('header'))
                 continue;
 
-            Inspector.inspectingProperties.setProperty(currentProperty, propVal);
+            PropertiesPanel.inspectingProperties.setProperty(currentProperty, propVal);
 
             const currentInput = inputs.children[i].querySelector('input');
             currentInput.value = currentInput.type == 'button' ? '' : prop.val;
             currentInput.className = prop.iClass == null ? currentInput.type + 'Input' : prop.iClass;
         }
 
-        Inspector.inspectingProperties.default = {
-            ...Inspector.inspectingProperties
+        PropertiesPanel.inspectingProperties.default = {
+            ...PropertiesPanel.inspectingProperties
         };
     },
     deleteItem() {
-        Inspector.inspectingProperties.delete();
-        Inspector.activate(false);
-        Inspector.inspectingProperties = null;
+        PropertiesPanel.inspectingProperties.delete();
+        PropertiesPanel.activate(false);
+        PropertiesPanel.inspectingProperties = null;
     },
-    propertyChanged: (name, val, index) => Inspector.inspectingProperties.setProperty(name, val, index)
+    propertyChanged: (name, val, index) => PropertiesPanel.inspectingProperties.setProperty(name, val, index)
 };
 const createProperty = (name, type, value, options = {
     remove: null,

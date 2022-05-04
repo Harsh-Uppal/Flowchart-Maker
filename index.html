@@ -24,9 +24,9 @@
 
 <body>
     <link rel="stylesheet" type="text/css" href="Style/flowchart.css" />
-    <link rel="stylesheet" type="text/css" href="Style/inspector.css" />
+    <link rel="stylesheet" type="text/css" href="Style/properties-panel.css" />
 
-    <script src="./Scripts/inspector.js"></script>
+    <script src="./Scripts/properties-panel.js"></script>
     <script src="./Scripts/encoder.js"></script>
     <script src="./Scripts/curves.js"></script>
     <script src="./Scripts/flowchart.js"></script>
@@ -34,11 +34,14 @@
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
         <div class="titleOptions">
+            <button title="Load flowchart" onclick="loadFlowchart()">
+                <img class="img" src="Assets/Load.svg" alt="Load" />
+            </button>
             <button title="Save flowchart" onclick="saveFlowchart()">
-                <img class="img" src="Assets/Save.png" alt="Save" />
+                <img class="img" src="Assets/Save.svg" alt="Save" />
             </button>
             <button title="Show in View Mode">
-                <img class="img" src="Assets/ViewMode.png" alt="Save" />
+                <img class="img" src="Assets/ViewMode.svg" alt="Save" />
             </button>
         </div>
     </div>
@@ -53,7 +56,7 @@
         </div>
         <div class="gridlinesColor">
             <label for="gridlinesColorInput" class="title">Grid Color</label>
-            <input id="gridlinesColorInput" type="color" value="#32CD32" onchange="update()" />
+            <input id="gridlinesColorInput" type="color" value="#FFD700" onchange="update()" />
         </div>
         <div class="backgroundColor">
             <label for="backgroundColorInput" class="title">Background</label>
@@ -91,10 +94,10 @@
             <div class="flowchartItems"></div>
         </div>
 
-        <div class="inspector">
+        <div id="properties-panel" class="properties-panel">
             <div class="titlebar">
-                <label class="header">Inspector</label>
-                <button title="Show/Hide Inspector" class="hideBtn" onclick="Inspector.activate(false)" tabindex="-1">
+                <label class="header">Properties Panel</label>
+                <button title="Show/Hide Properties Panel" class="hideBtn" onclick="PropertiesPanel.activate(false)" tabindex="-1">
                     <img src="./Assets/Arrow.png" class="hideArrowImg" alt/>
                 </button>
             </div>
@@ -103,9 +106,9 @@
             </div>
 
             <div class="buttons">
-                <button tabindex="-1" class="resetBtn" onclick="Inspector.resetProperties()"
+                <button tabindex="-1" class="resetBtn" onclick="PropertiesPanel.resetProperties()"
                     title="Reset all properties">Reset</button>
-                <button tabindex="-1" class="deleteBtn" onclick="Inspector.deleteItem()"
+                <button tabindex="-1" class="deleteBtn" onclick="PropertiesPanel.deleteItem()"
                     title="Delete selected item"></button>
             </div>
         </div>

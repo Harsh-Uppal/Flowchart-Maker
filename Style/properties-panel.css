@@ -2,7 +2,7 @@
     --inspector-color: darkgrey;
 }
 
-.inspector {
+.properties-panel {
     position: absolute;
     bottom: -100%;
     right: 0;
@@ -18,17 +18,17 @@
     overflow-y: auto;
 }
 
-.inspector::-webkit-scrollbar {
+.properties-panel::-webkit-scrollbar {
     width: .75vw;
     background: lightblue;
 }
 
-.inspector::-webkit-scrollbar-thumb {
+.properties-panel::-webkit-scrollbar-thumb {
     background: gray;
     border-radius: 100000rem;
 }
 
-.inspector>.titlebar {
+.properties-panel>.titlebar {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,15 +37,15 @@
     margin: 3% 0;
 }
 
-.inspector>.titlebar>.header {
+.properties-panel>.titlebar>.header {
     display: flex;
     justify-content: center;
     font-family: var(--font-header);
-    font-size: calc(3 * var(--v));
+    font-size: calc(2.3 * var(--v));
     width: 80%;
 }
 
-.inspector>.titlebar>.hideBtn {
+.properties-panel>.titlebar>.hideBtn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -57,18 +57,18 @@
     transition: .2s;
 }
 
-.inspector>.titlebar>.hideBtn>.hideArrowImg {
+.properties-panel>.titlebar>.hideBtn>.hideArrowImg {
     margin-top: 5%;
     transform: rotate(90deg);
     width: 70%;
     height: 70%;
 }
 
-.inspector>.titlebar>.hideBtn:hover {
+.properties-panel>.titlebar>.hideBtn:hover {
     background-color: #fff5;
 }
 
-.inspector>.titlebar>.hideBtn:active {
+.properties-panel>.titlebar>.hideBtn:active {
     background-color: #fff3;
 }
 
@@ -82,18 +82,18 @@
     font: bold calc(var(--v) * 1.8) var(--font-header-secondary) !important;
 }
 
-.inspector>.properties {
+.properties-panel>.properties {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     width:100%;
 }
 
-.inspector>.properties>.property-group {
+.properties-panel>.properties>.property-group {
     background-color: var(--inspector-color);
 }
 
-.inspector>.properties>.property-group>* {
+.properties-panel>.properties>.property-group>* {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -101,14 +101,14 @@
     height: calc(var(--v) * 2.4);
 }
 
-.inspector>.properties>.property-group>*>label {
+.properties-panel>.properties>.property-group>*>label {
     display: flex;
     align-items: center;
     font: normal lighter calc(1.6 * var(--v)) var(--font-primary);
 }
 
-.inspector>.properties>.property-group>*>.expandArrow,
-.inspector>.properties>*>.expandArrow {
+.properties-panel>.properties>.property-group>*>.expandArrow,
+.properties-panel>.properties>*>.expandArrow {
     display: flex;
     transition: .5s;
     cursor: pointer;
@@ -116,13 +116,13 @@
     align-items: center;
 }
 
-.inspector>.properties>.property-group>*>.expandArrow::after,
-.inspector>.properties>*>.expandArrow::after {
+.properties-panel>.properties>.property-group>*>.expandArrow::after,
+.properties-panel>.properties>*>.expandArrow::after {
     content: '▼';
 }
 
-.inspector>.properties>.property-group>*>input[type='text'],
-.inspector>.properties>.property-group>*>input[type='number'] {
+.properties-panel>.properties>.property-group>*>input[type='text'],
+.properties-panel>.properties>.property-group>*>input[type='number'] {
     display: flex;
     font-family: var(--font-primary);
     font-weight: lighter;
@@ -131,12 +131,12 @@
     max-width: 50%;
 }
 
-.inspector>.properties>.property-group>*>input[type="checkbox"] {
+.properties-panel>.properties>.property-group>*>input[type="checkbox"] {
     padding: 0;
     height: 90%;
 }
 
-.inspector>.properties>.property-group>*>input[type="color"] {
+.properties-panel>.properties>.property-group>*>input[type="color"] {
     cursor: pointer;
     width: calc(var(--v) * 2.6);
     height: calc(var(--v) * 2.6);
@@ -144,20 +144,20 @@
     padding: 0;
 }
 
-.inspector>.properties>.property-group>*>input[type="color"]::-webkit-color-swatch,
-.inspector>.properties>.property-group>*>input[type="color"]::-webkit-color-swatch-wrapper {
+.properties-panel>.properties>.property-group>*>input[type="color"]::-webkit-color-swatch,
+.properties-panel>.properties>.property-group>*>input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
     border-radius: 100%;
 }
 
-.inspector>.properties>.property-group>*>button {
+.properties-panel>.properties>.property-group>*>button {
     height: 200%;
     width: 8vmin;
     font-size: calc(7 * var(--v));
     transform: scale(.5);
 }
 
-.inspector>.properties>.property-group>*>input {
+.properties-panel>.properties>.property-group>*>input {
     font-family: var(--font-primary);
     font-weight: bold;
     background-color: #0000 !important;
@@ -165,12 +165,12 @@
     border-radius: .5vw;
 }
 
-.inspector>.properties>.property-group>*>input+button,
-.inspector>.properties>.property-group>*>input+input {
+.properties-panel>.properties>.property-group>*>input+button,
+.properties-panel>.properties>.property-group>*>input+input {
     margin-left: .5vw;
 }
 
-.inspector>.properties>.property-group>*>.removeBtn {
+.properties-panel>.properties>.property-group>*>.removeBtn {
     display: flex;
     width: calc(var(--v) * 6);
     height: calc(var(--v) * 5);
@@ -181,11 +181,11 @@
     transition: .5s;
 }
 
-.inspector>.properties>.property-group>*>.removeBtn:hover {
+.properties-panel>.properties>.property-group>*>.removeBtn:hover {
     background-color: #F46F;
 }
 
-.inspector>.properties>.property-group>*>.removeBtn::before {
+.properties-panel>.properties>.property-group>*>.removeBtn::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -197,7 +197,7 @@
     border-radius: 10000px;
 }
 
-.inspector>.properties>.property-group>*>.randomizeBtn {
+.properties-panel>.properties>.property-group>*>.randomizeBtn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -206,13 +206,13 @@
     padding: 0 !important;
 }
 
-.inspector>.properties>.property-group>*>.randomizeBtn>img {
+.properties-panel>.properties>.property-group>*>.randomizeBtn>img {
     padding: 0;
     aspect-ratio: 1 / 1;
     height: 100%;
 }
 
-.inspector>.buttons {
+.properties-panel>.buttons {
     position: sticky;
     bottom: 0;
     display: flex;
@@ -221,7 +221,7 @@
     width: 100%;
 }
 
-.inspector>.buttons>button {
+.properties-panel>.buttons>button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -234,17 +234,17 @@
     transition: .2s;
 }
 
-.inspector>.buttons>.deleteBtn {
+.properties-panel>.buttons>.deleteBtn {
     position: relative;
     aspect-ratio: 1 / 1;
 }
 
-.inspector>.buttons>.deleteBtn:hover {
+.properties-panel>.buttons>.deleteBtn:hover {
     background-color: #F55B;
 }
 
-.inspector>.buttons>.deleteBtn::before,
-.inspector>.buttons>.deleteBtn::after {
+.properties-panel>.buttons>.deleteBtn::before,
+.properties-panel>.buttons>.deleteBtn::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -255,23 +255,23 @@
     border-radius: 10000rem;
 }
 
-.inspector>.buttons>.deleteBtn::before {
+.properties-panel>.buttons>.deleteBtn::before {
     transform: translate(-50%, -50%) rotate(45deg);
 }
 
-.inspector>.buttons>.deleteBtn::after {
+.properties-panel>.buttons>.deleteBtn::after {
     transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-.inspector>.buttons>.resetBtn {
+.properties-panel>.buttons>.resetBtn {
     width: 50%;
 }
 
-.inspector>.buttons>*:hover {
+.properties-panel>.buttons>*:hover {
     background-color: #FFFB;
 }
 
-.inspector>.buttons>*:active {
+.properties-panel>.buttons>*:active {
     background-color: #FFF8;
 }
 

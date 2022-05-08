@@ -1,3 +1,9 @@
+function updateFlowchartPos() {
+    flowchartItems.forEach(item => {
+        item.updatePosition();
+    });
+}
+
 class FlowchartItem {
     constructor(pos, index, addConnectors = true) {
         this.pos = pos;
@@ -44,7 +50,7 @@ class FlowchartItem {
         if (addConnectors)
             this.addConnectors();
     }
-    scale = () => cellSize / 50;
+    scale = () => cellSize / 50 * this.properties.scale.val;
     keyPressed = key => {
         if (key.key == 'Delete') this.delete();
     }
@@ -79,17 +85,19 @@ class FlowchartItem {
         ).mult(this.scale())));
     connectorClicked = index => {
         this.clickEnabled = false;
-        //If some other connector is trying to connect then connect to it
-        if (FlowchartItem.connecting != null) {
-            FlowchartItem.connecting.connectTo(this.index,
-                () => this.calculateCurvePos(this.connectors[index].rotation)
-            );
-            return;
-        }
 
         //Error checking
         if (index == null || !this.connectors || !this.connectors.length)
             return;
+
+        //If some other connector is trying to connect then connect to it
+        if (FlowchartItem.connecting != null) {
+            FlowchartItem.connecting.connectTo(
+                this.index,
+                () => this.calculateCurvePos(this.connectors[index].pos)
+            );
+            return;
+        }
 
         //Otherwise make the clicked connector trying to connect and create a curve for it
         this.connectingCurves.push(
@@ -169,31 +177,36 @@ class FlowchartItem {
         this.node.remove();
     }
     setProperty = (property, val, index) => {
-        switch (property) {
-            case 'color':
-                this.node.style.backgroundColor = val;
-                break;
-            case 'shape':
-                this.node.setAttribute('shape', this.properties.shape.options[val]);
-                break;
-            case 'pos':
-                this.pos = val;
-                break;
-            case 'scale':
-                this.update();
-                break;
-            default:
-                if (property != null && property != 'setProperty' && property != 'default' && property != 'delete') {
-                    if (this.properties[property].multiple) {
-                        if (!this.properties[property].type[index].endsWith('header') && this.properties[property].type != 'select')
-                            this.properties[property].val[index] = val;
-                    }
-                    else if (!this.properties[property].type.endsWith('header') && this.properties[property].type != 'select')
-                        this.properties[property].val = val;
+        if (property == null || !this.properties[property] || property == 'setProperty'
+            || property == 'default' || property == 'delete')
+            return;
 
-                    this.updateProperty(property, val, index);
-                }
+        if (this.templateProps[property])
+            switch (property) {
+                case 'color':
+                    this.node.style.backgroundColor = val;
+                    break;
+                case 'shape':
+                    this.node.setAttribute('shape', this.properties.shape.options[val]);
+                    break;
+                case 'pos':
+                    this.pos = val;
+                    break;
+                case 'scale':
+                    this.update();
+                    break;
+            }
+
+        if (this.properties[property].visible) {
+            if (this.properties[property].multiple) {
+                if (!this.properties[property].type[index].endsWith('header') && this.properties[property].type != 'select')
+                    this.properties[property].val[index] = val;
+            }
+            else if (!this.properties[property].type.endsWith('header') && this.properties[property].type != 'select')
+                this.properties[property].val = val;
         }
+
+        this.updateProperty(property, val, index);
     }
 }
 class FlowchartTextBox extends FlowchartItem {
@@ -344,6 +357,7 @@ class FlowchartBarGraph extends FlowchartItem {
             setProperty: this.setProperty,
             delete: this.delete
         };
+        delete this.properties.color;
 
         this.properties.default = {
             ...this.properties,
@@ -734,9 +748,4 @@ class FlowchartLink extends FlowchartItem {
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
     }
-}
-
-const randomColor = () => {
-    const color = '#' + Math.floor(Math.random() * 16777215).toString(16)
-    return color.length == 7 ? color : color + '0';
 }

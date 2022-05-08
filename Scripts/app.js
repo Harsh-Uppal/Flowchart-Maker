@@ -80,7 +80,7 @@ function mouseClicked(e) {
         return;
 
     if (FlowchartItem.connecting != null)
-        FlowchartItem.connecting.connectTo(FlowchartItem.connecting.index);
+        FlowchartItem.connecting.item.connectTo(FlowchartItem.connecting.item.index);
 
     update();
 }
@@ -114,6 +114,8 @@ function update() {
         drawGridlines();
 
     stroke('#fff');
+    drawCurves();
+
     for (let i = 0; i < flowchartItems.length; i++)
         flowchartItems[i].update();
 }

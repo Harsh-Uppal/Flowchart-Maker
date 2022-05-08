@@ -92,7 +92,8 @@ class FlowchartItem {
 
         //If some other connector is trying to connect then connect to it
         if (FlowchartItem.connecting != null) {
-            FlowchartItem.connecting.connectTo(
+            this.connectingCurves.push(FlowchartItem.connecting.curveIndex);
+            FlowchartItem.connecting.item.connectTo(
                 this.index,
                 () => this.calculateCurvePos(this.connectors[index].pos)
             );
@@ -100,15 +101,18 @@ class FlowchartItem {
         }
 
         //Otherwise make the clicked connector trying to connect and create a curve for it
-        this.connectingCurves.push(
+        let curveIndex = curves.length;
+        this.connectingCurves.push(curveIndex);
+        curves.push(
             new Curve(
                 () => this.calculateCurvePos(this.connectors[index].pos),
                 () => vec(mouseX, mouseY),
                 false
             )
         );
+        curves[curves.length - 1].i = curveIndex;
 
-        FlowchartItem.connecting = this;
+        FlowchartItem.connecting = { item: this, curveIndex: curveIndex };
     }
     addConnectors = () => {
         let addConnector = (x, y) => {
@@ -134,10 +138,6 @@ class FlowchartItem {
 
         this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
 
-        this.connectingCurves.forEach((curve) => {
-            curve.draw();
-        });
-
         if (this.newConnector != null) {
             const dirVec = vector(mouseX, mouseY).sub(this.pos.mult(cellSize).add(pos));
             const angle = Math.atan2(dirVec.x, dirVec.y);
@@ -162,16 +162,38 @@ class FlowchartItem {
         this.node.style.left = this.pos.x * cellSize + pos.x + 'px';
     }
     connectTo = (flowchartIndex, pos2Calculator) => {
+        const curveIndex = this.connectingCurves[this.connectingCurves.length - 1];
         FlowchartItem.connecting = null;
 
-        if (flowchartIndex == this.index)
+        if (flowchartIndex == this.index) {
+            let remIndex = null;
+            curves.forEach((curve, index) => {
+                if (curve.i == curveIndex) {
+                    remIndex = index;
+                    return true;
+                }
+            });
+
+            if (remIndex != null)
+                curves.splice(remIndex, 1);
             this.connectingCurves.splice(this.connectingCurves.length - 1, 1);
+        }
         else {
-            this.connectingCurves[this.connectingCurves.length - 1].p1f = pos2Calculator;
-            this.connectingCurves[this.connectingCurves.length - 1].fixed = true;
+            curves[curveIndex].p1f = pos2Calculator;
+            curves[curveIndex].fixed = true;
         }
     }
     delete = () => {
+        for (let i = 0; i < curves.length; i++) {
+            if (this.connectingCurves.length == 0)
+                break;
+
+            if (curves[i].i == this.connectingCurves[0]) {
+                curves.splice(this.connectingCurves.shift(), 1);
+                i--;
+            }
+        }
+
         PropertiesPanel.activate(false);
         flowchartItems.splice(this.index, 1);
         this.node.remove();

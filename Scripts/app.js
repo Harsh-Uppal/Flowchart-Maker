@@ -80,7 +80,7 @@ function mouseClicked(e) {
         return;
 
     if (FlowchartItem.connecting != null)
-        FlowchartItem.connecting.item.connectTo(FlowchartItem.connecting.item.index);
+        FlowchartItem.connecting.connectTo(FlowchartItem.connecting.index);
 
     update();
 }

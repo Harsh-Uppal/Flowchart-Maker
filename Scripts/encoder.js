@@ -28,7 +28,7 @@ const Encoder = {
             let itemObj = { type: item.constructor.name, properties: {} };
             for (const prop in item.properties) {
                 const obj = item.properties[prop];
-                if (!(obj.dontEncode ||
+                if (obj.multiple || !(obj.dontEncode ||
                     (typeof (obj) == 'function') ||
                     (typeof (obj.val) == 'function') ||
                     (obj.type && obj.type.endsWith('header'))))
@@ -37,7 +37,11 @@ const Encoder = {
             return itemObj;
         }
 
-        let obj = { pos: pos, general: {}, flowchartItems: [] };
+        let obj = { pos: pos, curves: [], general: {}, flowchartItems: [] };
+        curves.forEach(curve => {
+            if (curve.fixed)
+                obj.curves.push(curve.data);
+        });
         for (const generalInput in generalInputs) {
             if (Object.hasOwnProperty.call(generalInputs, generalInput)) {
                 const inputElem = generalInputs[generalInput];
@@ -86,7 +90,28 @@ const Encoder = {
                     }
             }
 
+        if (Array.isArray(data.curves))
+            data.curves.forEach(curve => {
+                curves.push(Encoder.decodeCurve(curve));
+            });
+
         update();
         updateFlowchartPos();
+    },
+    encodeCurve: (flowchartItem0Index, flowchartItem1Index, connectorPos0, connectorPos1, isCurveStraight) =>
+        [flowchartItem0Index, flowchartItem1Index, connectorPos0, connectorPos1, isCurveStraight],
+    decodeCurve: (curveData) => {
+        return new Curve(
+            () => flowchartItems[curveData[0]].calculateCurvePos(vec(curveData[2].x, curveData[2].y)),
+            () => flowchartItems[curveData[1]].calculateCurvePos(vec(curveData[3].x, curveData[3].y)),
+            true, curveData, curveData[4]
+        );
+    },
+    changeCurveData: (data, flowchartItem0Index, flowchartItem1Index, connectorPos0, connectorPos1, isCurveStraight) => {
+        data[0] = flowchartItem0Index ?? data[0];
+        data[1] = flowchartItem1Index ?? data[1];
+        data[2] = connectorPos0 ?? data[2];
+        data[3] = connectorPos1 ?? data[3];
+        data[4] = isCurveStraight ?? data[4];
     }
 }

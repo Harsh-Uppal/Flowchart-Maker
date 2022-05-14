@@ -19,7 +19,7 @@ class FlowchartItem {
             head0: createPropertyHeader('General'),
             scale: createProperty('Scale', 'number', 1),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Triangle']),
+            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle']),
         };
 
         const itemsContainer = document.querySelector('.flowchartItems');
@@ -51,8 +51,8 @@ class FlowchartItem {
             this.addConnectors();
     }
     scale = () => cellSize / 50 * this.properties.scale.val;
-    keyPressed = key => {
-        if (key.key == 'Delete') this.delete();
+    keyPressed = e => {
+        if (e.key == 'Delete') this.delete();
     }
     mouseClicked = () => {
         if (!this.clickEnabled) {
@@ -79,7 +79,7 @@ class FlowchartItem {
         dragEnabled = true;
     }
     calculateCurvePos = connectorPos =>
-        this.pos.mult(cellSize).add(pos).add(connectorPos.sub(vector(50, 50)).mult(vector(
+        this.pos.mult(cellSize).add(pos).add(connectorPos.sub(vec(50, 50)).mult(vec(
             this.connectorContainer.offsetWidth / 100,
             this.connectorContainer.offsetHeight / 100
         ).mult(this.scale())));
@@ -92,10 +92,11 @@ class FlowchartItem {
 
         //If some other connector is trying to connect then connect to it
         if (FlowchartItem.connecting != null) {
-            this.connectingCurves.push(FlowchartItem.connecting.curveIndex);
-            FlowchartItem.connecting.item.connectTo(
+            this.connectingCurves.push(curves.length - 1);
+            FlowchartItem.connecting.connectTo(
                 this.index,
-                () => this.calculateCurvePos(this.connectors[index].pos)
+                () => this.calculateCurvePos(this.connectors[index].pos),
+                this.connectors[index].pos
             );
             return;
         }
@@ -107,12 +108,12 @@ class FlowchartItem {
             new Curve(
                 () => this.calculateCurvePos(this.connectors[index].pos),
                 () => vec(mouseX, mouseY),
-                false
+                false, Encoder.encodeCurve(null, null, this.connectors[index].pos)
             )
         );
         curves[curves.length - 1].i = curveIndex;
 
-        FlowchartItem.connecting = { item: this, curveIndex: curveIndex };
+        FlowchartItem.connecting = this;
     }
     addConnectors = () => {
         let addConnector = (x, y) => {
@@ -161,9 +162,8 @@ class FlowchartItem {
         this.node.style.top = this.pos.y * cellSize + pos.y + 'px';
         this.node.style.left = this.pos.x * cellSize + pos.x + 'px';
     }
-    connectTo = (flowchartIndex, pos2Calculator) => {
+    connectTo = (flowchartIndex, pos2Calculator, connectorPos) => {
         const curveIndex = this.connectingCurves[this.connectingCurves.length - 1];
-        FlowchartItem.connecting = null;
 
         if (flowchartIndex == this.index) {
             let remIndex = null;
@@ -181,7 +181,10 @@ class FlowchartItem {
         else {
             curves[curveIndex].p1f = pos2Calculator;
             curves[curveIndex].fixed = true;
+            Encoder.changeCurveData(curves[curveIndex].data, this.index, flowchartIndex, null, connectorPos, curves[curveIndex].straight);
         }
+
+        FlowchartItem.connecting = null;
     }
     delete = () => {
         for (let i = 0; i < curves.length; i++) {
@@ -221,8 +224,12 @@ class FlowchartItem {
 
         if (this.properties[property].visible) {
             if (this.properties[property].multiple) {
-                if (!this.properties[property].type[index].endsWith('header') && this.properties[property].type != 'select')
-                    this.properties[property].val[index] = val;
+                if (index != null) {
+                    if (!this.properties[property].type[index].endsWith('header') && this.properties[property].type != 'select')
+                        this.properties[property].val[index] = val;
+                }
+                else
+                    this.properties[property].val = val;
             }
             else if (!this.properties[property].type.endsWith('header') && this.properties[property].type != 'select')
                 this.properties[property].val = val;
@@ -582,9 +589,6 @@ class FlowchartPieChart extends FlowchartItem {
             case 'stroke':
                 this.sections.forEach(section => section.setAttribute("stroke", val));
                 break;
-            case 'fill':
-                this.sections.forEach(section => section.setAttribute("fill", val));
-                break;
             case 'strokeWeight':
                 this.sections.forEach(section => section.setAttribute("stroke-width", val));
                 this.updateSize();
@@ -594,14 +598,24 @@ class FlowchartPieChart extends FlowchartItem {
                 if (property.startsWith('sec')) {
                     const index = this.properties[property].index;
 
-                    switch (i) {
-                        case 0:
-                            this.sections[index].name.textContent = val;
-                            break;
-                        case 1: this.sections[index].size = parseFloat(val) || 0;
-                            break;
-                        case 2: this.sections[index].color = val;
-                            break;
+                    if (i != null) {
+                        switch (i) {
+                            case 0:
+                                this.sections[index].name.textContent = val;
+                                break;
+                            case 1: this.sections[index].size = parseFloat(val) || 0;
+                                break;
+                            case 2:
+                                this.sections[index].color = val;
+                                this.sections[index].name.style.backgroundColor = val;
+                                break;
+                        }
+                    }
+                    else {
+                        this.sections[index].name.textContent = val[0];
+                        this.sections[index].size = val[1];
+                        this.sections[index].color = val[2];
+                        this.sections[index].name.style.backgroundColor = val[2];
                     }
 
                     this.updateSVG();
@@ -618,13 +632,13 @@ class FlowchartPieChart extends FlowchartItem {
                 inputContent: '<img src="./Assets/Shuffle.svg" alt="Randomize Section Colors"/>',
                 inputClass: 'randomizeBtn'
             }),
-            fill: createProperty('Background Color', 'color', '#000000'),
             stroke: createProperty('Stroke Color', 'color', '#FFFFFF'),
             strokeWeight: createProperty('Stroke Weight', 'number', '3'),
             head2: createPropertyBtnHeader('Sections', ['addBtn'], this.addSection),
             setProperty: this.setProperty,
             delete: this.delete
         };
+        delete this.properties.shape;
 
         this.properties.default = {
             ...this.properties,
@@ -649,8 +663,8 @@ class FlowchartPieChart extends FlowchartItem {
             toCoordX = this.center + this.r * Math.cos(toAngle);
             toCoordY = this.center + this.r * Math.sin(toAngle);
 
-            //d = 'M' + this.center + ',' + this.center + ' L' + fromCoordX + ',' + fromCoordY + ' A' + this.r + ',' + this.r + ' 0 0,1 ' + toCoordX + ',' + toCoordY + 'z';
             d = `M${this.center},${this.center} L${fromCoordX},${fromCoordY} A${this.r},${this.r} 0 ${toAngle - fromAngle > Math.PI ? 1 : 0},1 ${toCoordX},${toCoordY}z`
+
             section.setAttributeNS(null, "d", d);
             section.setAttribute('fill', section.color);
         });
@@ -688,14 +702,13 @@ class FlowchartPieChart extends FlowchartItem {
         this.sectionNames.appendChild(sectionName);
         this.sections.push(newSection);
 
-        this.properties[propName] = {
-            ...createProperty(
-                null,
-                ['text', 'number', 'color'],
-                [newSection.text, 1, newSection.color],
-                { multiple: true, remove: this.removeSection }),
-            index
-        }
+        this.properties[propName] = createProperty(
+            null, ['text', 'number', 'color'],
+            [newSection.text, 1, newSection.color],
+            { multiple: true, visible: true, remove: this.removeSection }
+        );
+        this.properties[propName].index = index;
+
         PropertiesPanel.load();
 
         if (update)

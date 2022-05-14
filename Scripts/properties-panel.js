@@ -9,13 +9,9 @@ const PropertiesPanel = {
         if (PropertiesPanel.inspectingProperties == null)
             PropertiesPanel.node = document.querySelector('#properties-panel');
 
-        if (val) {
+        if (val)
             PropertiesPanel.load();
-            PropertiesPanel.node.style.display = '';
-        } else
-            PropertiesPanel.noDisplayTimeout = setTimeout(() => {
-                PropertiesPanel.node.style.display = 'none'
-            }, 1000);
+
         PropertiesPanel.node.style.bottom = val ? '0' : '-100%';
         PropertiesPanel.active = val;
     },

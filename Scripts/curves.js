@@ -1,11 +1,12 @@
 const curves = [];
 
 class Curve {
-    constructor(p0, p1, fixed) {
+    constructor(p0, p1, fixed, data, straight = false) {
         this.p0f = p0;
         this.p1f = p1;
         this.fixed = fixed;
-        this.straight = false;
+        this.straight = straight;
+        this.data = data;
     }
     draw() {
         if (!this.fixed)

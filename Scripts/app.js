@@ -8,7 +8,8 @@ var pos = vector(0, 0),
     generalInputs,
     canvas,
     shiftPressed = false,
-    updateOnMouseMoved = true;
+    updateOnMouseMoved = true,
+    titleOptions;
 
 const flowchartItems = [],
     connectorQuality = 30;
@@ -16,6 +17,8 @@ const flowchartItems = [],
 window.addEventListener('resize', setup);
 
 function setup() {
+    titleOptions = document.getElementById('titleOptions');
+
     const p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
     p5Canvas.mouseWheel(changeZoom);
 
@@ -76,6 +79,11 @@ function mouseMoved(e) {
 }
 
 function mouseClicked(e) {
+    if (titleOptions)
+        titleOptions.style.display =
+            e.srcElement.parentNode.id == 'titleOptionsBtn' || e.srcElement.id == 'titleOptionsBtn' ?
+                (titleOptions.style.display == '' ? 'none' : '') : 'none';
+
     if (e.srcElement.nodeName != 'CANVAS')
         return;
 

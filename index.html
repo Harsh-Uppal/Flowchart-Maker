@@ -34,22 +34,34 @@
 
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
-        <div class="titleOptions">
-            <button title="Load flowchart" onclick="loadFlowchart()">
-                <img class="img" src="Assets/Load.svg" alt="Load" />
-            </button>
-            <button title="Save flowchart" onclick="saveFlowchart()">
-                <img class="img" src="Assets/Save.svg" alt="Save" />
-            </button>
-            <button title="Show in View Mode">
-                <img class="img" src="Assets/ViewMode.svg" alt="Save" />
+        <div class="dock-right content-center flex height-6p">
+            <div class="titleOptions height-6p">
+                <button id="titleOptionsBtn" title="Options">
+                    <img src="Assets/Waffle.svg" alt />
+                </button>
+                <div class="options" id="titleOptions" style="display:none;">
+                    <button class="title-option" title="Load flowchart" onclick="loadFlowchart()">
+                        <img src="Assets/Load.svg" alt />
+                    </button>
+                    <button class="title-option" title="Save flowchart" onclick="saveFlowchart()">
+                        <img src="Assets/Save.svg" alt />
+                    </button>
+                    <button class="title-option" title="Show in View Mode">
+                        <img src="Assets/ViewMode.svg" alt />
+                    </button>
+                </div>
+            </div>
+            <button class="settings">
+                <img src="Assets/Settings.svg" alt />
             </button>
         </div>
+    </div>
     </div>
     <div class="generalProperties">
         <div class="zoom">
             <label for="zoomInput" class="title">Zoom</label>
-            <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()" ontouchmove="changeZoom()" />
+            <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()"
+                ontouchmove="changeZoom()" />
         </div>
         <div class="gridlines">
             <label for="gridlinesCheckbox" class="title">Gridlines</label>
@@ -69,24 +81,25 @@
             <div class="toolbarContent">
                 <div class="header">Toolbar</div>
                 <div class="tools">
-                    <button title="Add a TextBox" onclick="newFlowchartItem(FlowchartTextBox)" id="TextBox">Text</button>
+                    <button title="Add a TextBox" onclick="newFlowchartItem(FlowchartTextBox)"
+                        id="TextBox">Text</button>
                     <button title="Add a Image" onclick="newFlowchartItem(FlowchartImage)" id="Image">
-                        <img src="Assets/ImageIcon.png" alt="Image Icon"/>
+                        <img src="Assets/ImageIcon.png" alt="Image Icon" />
                     </button>
                     <button title="Add a Bar Graph" onclick="newFlowchartItem(FlowchartBarGraph)" id="Graph">
                         <img src="Assets/BarGraph.png" alt="Bar Graph">
                     </button>
                     <button title="Add a List" onclick="newFlowchartItem(FlowchartList)" id="ListNode">
-                        <img src="Assets/ListIcon.png" alt="List"/>
+                        <img src="Assets/ListIcon.png" alt="List" />
                     </button>
                     <button title="Add a Pie Chart" onclick="newFlowchartItem(FlowchartPieChart)" id="Pie Chart">
-                        <img src="Assets/PieChart.png" alt="Pie Chart"/>
+                        <img src="Assets/PieChart.png" alt="Pie Chart" />
                     </button>
                     <button title="Add a Link" onclick="newFlowchartItem(FlowchartLink)" id="Link">Link</button>
                 </div>
             </div>
             <button title="Show/Hide the toolbar" class="arrow" onclick="moveToolbar()">
-                <img class="image" src="Assets/Arrow.png" alt/>
+                <img class="image" src="Assets/Arrow.png" alt />
             </button>
         </div>
 
@@ -98,8 +111,9 @@
         <div id="properties-panel" class="properties-panel">
             <div class="titlebar">
                 <label class="header">Properties Panel</label>
-                <button title="Show/Hide Properties Panel" class="hideBtn" onclick="PropertiesPanel.activate(false)" tabindex="-1">
-                    <img src="./Assets/Arrow.png" class="hideArrowImg" alt/>
+                <button title="Show/Hide Properties Panel" class="hideBtn" onclick="PropertiesPanel.activate(false)"
+                    tabindex="-1">
+                    <img src="./Assets/Arrow.png" class="hideArrowImg" alt />
                 </button>
             </div>
             <div class="properties">

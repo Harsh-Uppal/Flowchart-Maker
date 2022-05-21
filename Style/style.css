@@ -1,4 +1,4 @@
-:root{
+:root {
     --v: calc((1vh + 1vw) / 2);
 }
 
@@ -6,86 +6,126 @@ img {
     display: block;
 }
 
-button, input[type='button'], input[type='Button'], input[type='Color'], input[type='Checkbox']{
+button,
+input[type='button'],
+input[type='Button'],
+input[type='Color'],
+input[type='Checkbox'] {
     cursor: pointer;
 }
 
-body, html {
+body,
+html {
     overflow: hidden;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
 
-body{
+body {
     position: relative;
-    margin:0;
-    padding:0;
-    display:flex;
+    margin: 0;
+    padding: 0;
+    display: flex;
     flex-direction: column;
 }
 
-a.no-underline{
+a.no-underline {
     text-decoration: none;
 }
 
-.container{
+.container {
     position: relative;
-    display:flex;
+    display: flex;
     align-items: center;
     flex-grow: 1;
-    width:100%;
+    width: 100%;
 }
 
-.copyright{
+.copyright {
     display: grid;
     place-items: center;
     position: relative;
-    z-index: 1;    
-    width:100%;
-    height:4vh;
+    z-index: 1;
+    width: 100%;
+    height: 4vh;
     background-color: #5b6c75;
     font: 1vw var(--font-secondary);
-    color:rgb(188 255 115);
+    color: rgb(188 255 115);
 }
 
-.titleBar{
-    position:relative;
-    z-index: 2;
-    display:flex;
+.dock-right {
+    position: absolute;
+    right: 0;
+}
+
+.content-center {
+    display: grid;
+    place-items: center;
+}
+
+.flex {
+    display: flex;
+}
+
+.height-6p {
+    height: 6vh;
+}
+
+.titleBar {
+    position: relative;
+    z-index: 3;
+    display: flex;
     align-items: center;
     justify-content: center;
     background-color: #444;
-    width:100vw;
-    height:8vh;
+    width: 100vw;
+    height: 8vh;
 }
 
-.titleBar > .title{
-    color:White;
+.titleBar>.title {
+    color: White;
     font-family: var(--font-header);
     font-size: 3vw;
 }
 
-.titleOptions{
-    display:flex;
-    position: absolute;
+.titleOptions {
+    display: flex;
     align-items: center;
-    right:0;
-    width:max-content;
-    height:6vh;
+    width: max-content;
 }
 
-.titleOptions > button{
+.titleOptions button,
+.settings {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: gray;
-    border:none;
-    height:90%;
-    width:5.4vh;
-    margin-right:.6vh;
-    border-radius: .75vmin;
+    border: none;
+    height: 95%;
+    width: 5.4vh;
+    margin-right: .6vh;
+    border-radius: 100rem;
+    background-color: #FFFB;
+    transform: rotate(0);
+    transition: .6s;
 }
 
-.titleOptions > button > .img{
-    height:80%;
+.titleOptions>button:hover,
+.settings:hover {
+    background-color: #FFDD66BB;
+    transform: rotate(360deg);
+}
+
+.titleOptions button img,
+.settings img {
+    height: 80%;
+}
+
+.titleOptions>.options {
+    position: absolute;
+    top: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.titleOptions>.options button {
+    margin-top: 5px;
 }

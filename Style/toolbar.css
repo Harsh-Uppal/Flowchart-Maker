@@ -21,9 +21,9 @@
     cursor: pointer;
 }
 
-.toolbar>.arrow>.image {
-    aspect-ratio: 1 / 1.5;
-    width: 60%;
+.toolbar>.arrow>img {
+    aspect-ratio: 1 / 1;
+    width: 200%;
 }
 
 .toolbarContent {

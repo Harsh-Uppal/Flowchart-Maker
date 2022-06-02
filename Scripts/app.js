@@ -9,7 +9,9 @@ var pos = vector(0, 0),
     canvas,
     shiftPressed = false,
     updateOnMouseMoved = true,
-    titleOptions;
+    titleOptions,
+    editBtn,
+    editingEnabled = true;
 
 const flowchartItems = [],
     connectorQuality = 30;
@@ -18,6 +20,9 @@ window.addEventListener('resize', setup);
 
 function setup() {
     titleOptions = document.getElementById('titleOptions');
+    editBtn = document.getElementById('editBtn');
+
+    editBtn.addEventListener('click', editBtnClicked);
 
     const p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
     p5Canvas.mouseWheel(changeZoom);
@@ -31,6 +36,21 @@ function setup() {
     setCursor('grab');
     update();
     noLoop();
+}
+
+function editBtnClicked() {
+    editingEnabled = !editingEnabled;
+
+    if (editingEnabled) editBtn.classList.remove('striked');
+    else editBtn.classList.add('striked');
+
+    editBtn.title = editingEnabled ? 'Disable Editing' : 'Enable Editing';
+    PropertiesPanel.activate(editingEnabled);
+    Toolbar.enable(editingEnabled);
+    generalInputs.gridlines.checked = editingEnabled;
+    generalInputs.gridlines.disabled = !editingEnabled;
+
+    update();
 }
 
 function loadInputs() {

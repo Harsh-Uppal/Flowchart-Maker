@@ -12,6 +12,7 @@ class FlowchartItem {
         this.connectingCurves = [];
         this.connectedItems = [];
         this.connectors = [];
+        this.connectorsVisible = true;
         this.clickEnabled = this.dragEnabled = true;
         this.lastMouseAngle = null;
         this.templateProps = {
@@ -55,6 +56,8 @@ class FlowchartItem {
         if (e.key == 'Delete') this.delete();
     }
     mouseClicked = () => {
+        if (!editingEnabled)
+            return;
         if (!this.clickEnabled) {
             this.clickEnabled = true;
             return;
@@ -66,7 +69,9 @@ class FlowchartItem {
         PropertiesPanel.activate(true);
     }
     mouseDragStart = () => {
-        dragEnabled = false;
+        //If editing is not enabled then do not move this item
+        dragEnabled = false || !editingEnabled;
+        this.dragEnabled = editingEnabled;
     }
     mouseDragged = () => {
         if (!this.dragEnabled)
@@ -137,22 +142,15 @@ class FlowchartItem {
             this.updatePosition();
         }
 
-        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
-
-        if (this.newConnector != null) {
-            const dirVec = vector(mouseX, mouseY).sub(this.pos.mult(cellSize).add(pos));
-            const angle = Math.atan2(dirVec.x, dirVec.y);
-            const roundedAngle = Math.round(angle / (Math.PI / 2)) * 50;
-
-            if (roundedAngle != this.lastMouseAngle) {
-                this.lastMouseAngle = roundedAngle;
-
-                const calculatedPos = this.calculateConnectorPos(roundedAngle);
-                this.connectors[this.newConnector].style.top = calculatedPos.y + '%';
-                this.connectors[this.newConnector].style.left = calculatedPos.x + '%';
-                this.connectors[this.newConnector].rotation = roundedAngle;
-            }
+        if (this.connectorsVisible != editingEnabled) {
+            this.connectors.forEach(connector => {
+                connector.style.display = editingEnabled ? '' : 'none';
+            });
+            this.node.draggable = editingEnabled;
+            this.connectorsVisible = editingEnabled;
         }
+
+        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
     }
     moveToMouse() {
         const newPos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);

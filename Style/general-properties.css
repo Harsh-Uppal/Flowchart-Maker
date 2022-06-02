@@ -1,0 +1,49 @@
+.generalProperties {
+    display: grid;
+    position: relative;
+    z-index: 2;
+    width: 100vw;
+    background-color: rgb(91, 108, 117);
+    grid-template-columns: repeat(4, 1fr);
+    height: max-content;
+    padding: var(--v);
+}
+
+.generalProperties>* {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.generalProperties>*>.title {
+    font: bold calc(2 * var(--v)) var(--font-header-secondary);
+    color: cornsilk;
+}
+
+.generalProperties>*>input {
+    height: 75%;
+    margin-left: 1vw;
+}
+
+.generalProperties>*>input[type="checkbox"] {
+    aspect-ratio: 1/1;
+}
+
+.generalProperties>*>input[type="color"] {
+    width: calc(var(--v) * 3);
+    aspect-ratio: 1 / 1;
+    border-radius: var(--v);
+    background-color: darkslategray;
+}
+
+.generalProperties>*>input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: calc(var(--v) / 10);
+    border-radius: var(--v);
+}
+
+.generalProperties>*>input[type="color"]::-webkit-color-swatch {
+    aspect-ratio: 1 / 1;
+    border: none;
+    border-radius: var(--v);
+}

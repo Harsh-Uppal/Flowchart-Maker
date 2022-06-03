@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="Style/style.css" />
     <link rel="stylesheet" type="text/css" href="Style/general-properties.css" />
     <link rel="stylesheet" type="text/css" href="Style/toolbar.css" />
+    <link rel="stylesheet" type="text/css" href="Style/multiple-input.css" />
 
     <script src="./Scripts/util.js"></script>
     <script src="./Scripts/app.js"></script>
@@ -31,6 +32,7 @@
     <script src="./Scripts/encoder.js"></script>
     <script src="./Scripts/curves.js"></script>
     <script src="./Scripts/flowchart.js"></script>
+    <script src="./Scripts/mulitpleInput.js"></script>
 
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
@@ -71,9 +73,24 @@
             <label for="gridlinesColorInput" class="title">Grid Color</label>
             <input id="gridlinesColorInput" type="color" value="#FFD700" onchange="update()" />
         </div>
-        <div class="backgroundColor">
-            <label for="backgroundColorInput" class="title">Background</label>
-            <input id="backgroundColorInput" type="color" value="#111111" onchange="update()" />
+        <div class="background">
+            <label for="backgroundInput" class="title">Background</label>
+            <multiple-input id="backgroundInput" onchange="update()">
+                <img src="./Assets/BackgroundInput.svg" alt>
+                <div class="selector">
+                    <div class="container">
+                        <div class="types">
+                            <button>Color</button>
+                            <button>Image</button>
+                        </div>
+                        <div class="inputs">
+                            <input type="color" value="#111111" style="display:none;" title="Select Color" />
+                            <input type="image" src="./Assets/ImageInput.svg" alt="Select Image" title="Select Image"
+                                image />
+                        </div>
+                    </div>
+                </div>
+            </multiple-input>
         </div>
     </div>
     <div class="container">
@@ -104,7 +121,9 @@
         </div>
 
         <div class="canvas">
-            <main></main>
+            <main>
+                <img alt style="display:none;" id="imageBackground" class="imageBackground">
+            </main>
             <div class="flowchartItems"></div>
         </div>
 

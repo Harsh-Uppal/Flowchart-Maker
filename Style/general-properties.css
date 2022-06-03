@@ -21,9 +21,12 @@
     color: cornsilk;
 }
 
+.generalProperties>*>label {
+    margin-right: 1vw;
+}
+
 .generalProperties>*>input {
     height: 75%;
-    margin-left: 1vw;
 }
 
 .generalProperties>*>input[type="checkbox"] {

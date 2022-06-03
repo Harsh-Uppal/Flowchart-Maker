@@ -45,7 +45,7 @@ const Encoder = {
         for (const generalInput in generalInputs) {
             if (Object.hasOwnProperty.call(generalInputs, generalInput)) {
                 const inputElem = generalInputs[generalInput];
-                obj.general[generalInput] = inputElem.value;
+                obj.general[generalInput] = { value: inputElem.value, type: inputElem.type };
             }
         }
         flowchartItems.forEach((item) => {
@@ -63,7 +63,11 @@ const Encoder = {
                 if (generalInputs[general] == null)
                     continue;
 
-                generalInputs[general].value = generalVal;
+                if (generalVal.type)
+                    generalInputs[general].type = generalVal.type;
+                if (generalVal.value)
+                    generalInputs[general].value = generalVal.value;
+
                 generalInputs[general].dispatchEvent(new Event("change"));
             }
         }

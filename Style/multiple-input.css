@@ -1,0 +1,50 @@
+multiple-input>img {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: .2s;
+}
+
+multiple-input>img:hover {
+    background-color: #0003;
+}
+
+multiple-input>.selector {
+    display: flex;
+    position: relative;
+}
+
+multiple-input>.selector>.container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    background-color: white;
+    padding: 1.5rem;
+    border: 1px solid lightcoral;
+    width: 9.5rem;
+    height: 4rem;
+    align-items: center;
+}
+
+multiple-input .types {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin-right: .7rem;
+}
+
+multiple-input .types>* {
+    border-radius: 0;
+    padding: .35rem 1rem;
+    border: solid .5px gray;
+    background-color: #0000;
+}
+
+multiple-input .types>*+* {
+    margin-top: .3rem;
+}
+
+multiple-input .inputs>* {
+    width: 4rem;
+    height: 4rem;
+}

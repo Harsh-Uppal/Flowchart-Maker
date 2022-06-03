@@ -11,7 +11,8 @@ var pos = vector(0, 0),
     updateOnMouseMoved = true,
     titleOptions,
     editBtn,
-    editingEnabled = true;
+    editingEnabled = true,
+    imgBg;
 
 const flowchartItems = [],
     connectorQuality = 30;
@@ -19,6 +20,7 @@ const flowchartItems = [],
 window.addEventListener('resize', setup);
 
 function setup() {
+    imgBg = document.getElementById('imageBackground');
     titleOptions = document.getElementById('titleOptions');
     editBtn = document.getElementById('editBtn');
 
@@ -26,12 +28,17 @@ function setup() {
 
     const p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
     p5Canvas.mouseWheel(changeZoom);
+    canvas = document.querySelector('canvas');
 
     generalInputs = loadInputs();
     generalInputs.zoom.max = maxCellSize;
     generalInputs.zoom.min = minCellSize;
-
-    canvas = document.querySelector('canvas');
+    generalInputs.bg.addEventListener('change', () => {
+        imgBg.src = generalInputs.bg.type == 'image' ? generalInputs.bg.value : null;
+        imgBg.style.display = generalInputs.bg.type == 'image' ? '' : 'none';
+        if (generalInputs.bg.type == 'color')
+            document.body.style.backgroundColor = generalInputs.bg.value;
+    });
 
     setCursor('grab');
     update();
@@ -58,7 +65,7 @@ function loadInputs() {
         zoom: document.querySelector('.generalProperties > .zoom > input'),
         gridlines: document.querySelector('.generalProperties > .gridlines > input'),
         gridColor: document.querySelector('.generalProperties > .gridlinesColor > input'),
-        bgColor: document.querySelector('.generalProperties > .backgroundColor > input')
+        bg: document.getElementById('backgroundInput')
     };
 }
 
@@ -135,7 +142,7 @@ function setCursor(type) {
 }
 
 function update() {
-    background(generalInputs.bgColor.value);
+    clear();
 
     stroke(generalInputs.gridColor.value);
     if (generalInputs.gridlines.checked)

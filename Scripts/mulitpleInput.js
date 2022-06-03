@@ -50,6 +50,8 @@ class MultipleInput {
         this.types[this.selectedType].style.backgroundColor = '#BBFFFF';
     }
     onclick = e => {
+        if (this.node.disabled)
+            return;
         if (e.target != this.selector && (e.target == this.node || e.target.parentNode == this.node))
             this.selector.style.display = this.selector.style.display == '' ? 'none' : '';
     }

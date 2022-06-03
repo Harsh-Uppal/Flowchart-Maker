@@ -56,6 +56,7 @@ function editBtnClicked() {
     Toolbar.enable(editingEnabled);
     generalInputs.gridlines.checked = editingEnabled;
     generalInputs.gridlines.disabled = !editingEnabled;
+    generalInputs.bg.disabled = !editingEnabled;
 
     update();
 }

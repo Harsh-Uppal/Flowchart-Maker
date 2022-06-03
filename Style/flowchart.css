@@ -107,8 +107,6 @@ canvas,
     aspect-ratio: 1 / 1;
 }
 
-.flowchartItem[shape="Triangle"] {}
-
 .flowchartItem>.dataContainer {
     position: relative;
     border-radius: inherit;

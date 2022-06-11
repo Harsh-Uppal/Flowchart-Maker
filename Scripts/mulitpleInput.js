@@ -16,6 +16,11 @@ window.addEventListener('load', () => {
     });
 });
 
+document.body.addEventListener('click', e => {
+    if (!tagPresentInParentTree(e.target, 'multiple-input') && MultipleInput.open)
+        MultipleInput.open.close();
+})
+
 class MultipleInput {
     constructor(node) {
         this.node = node;
@@ -23,7 +28,7 @@ class MultipleInput {
         this.types = this.selector.children[0].children[0].children;
         this.inputs = this.selector.children[0].children[1].children;
         this.selectedType = 0;
-        this.close = true;
+        this.closed = true;
         this.size = vec()
 
         if (this.types.length != this.inputs.length) {
@@ -34,7 +39,8 @@ class MultipleInput {
         this.types.forEach((type, index) => {
             type.addEventListener('click', () => this.selectType(index));
         });
-        this.inputs.forEach((input) => {
+
+        this.inputs.forEach(input => {
             input.style.display = 'none';
             input.addEventListener('change', () => {
                 this.node.value = input.value;
@@ -52,8 +58,12 @@ class MultipleInput {
     onclick = e => {
         if (this.node.disabled)
             return;
-        if (e.target != this.selector && (e.target == this.node || e.target.parentNode == this.node))
+        if (e.target != this.selector && (e.target == this.node || e.target.parentNode == this.node)) {
             this.selector.style.display = this.selector.style.display == '' ? 'none' : '';
+            if (MultipleInput.open)
+                MultipleInput.open.close();
+            MultipleInput.open = this.selector.style.display == '' ? this : null;
+        }
     }
     selectType = typeIndex => {
         this.types[this.selectedType].style.backgroundColor = '';
@@ -64,4 +74,25 @@ class MultipleInput {
 
         this.selectedType = typeIndex;
     }
+    open() {
+        if (this.selector.style.display == '')
+            return;
+
+        if (MultipleInput.open)
+            MultipleInput.open.close();
+
+        this.selector.style.display = '';
+        MultipleInput.open = this;
+    }
+    close() {
+        if (this.selector.style.display == 'none')
+            return;
+
+        this.selector.style.display = 'none';
+        MultipleInput.open = null;
+    }
+}
+
+function tagPresentInParentTree(e, tag) {
+    return e.tagName == tag.toUpperCase() || (e.parentNode && tagPresentInParentTree(e.parentNode, tag));
 }

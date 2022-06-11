@@ -15,25 +15,17 @@ const createProperty = (name, type, value, options = {
         inputContent,
         visible
     } = options;
-    return type == 'select' ? {
+
+    return {
         name,
         type,
-        val: 0,
+        val: type == 'select' ? 0 : value,
         options: value,
-        remF: remove,
+        remF: type == 'select' ? remove : undefined,
         iClass: inputClass,
         content: inputContent,
         multiple,
-        visible: visible
-    } : {
-        name,
-        type,
-        val: value,
-        remF: remove,
-        iClass: inputClass,
-        content: inputContent,
-        multiple,
-        visible: visible
+        visible: isNaN(visible) ? true : visible
     }
 };
 const createDynamicProperty = (name, type, valueFn, options = {
@@ -41,7 +33,8 @@ const createDynamicProperty = (name, type, valueFn, options = {
     inputClass: '',
     multiple: false,
     inputContent: '',
-    visible: true}) => {
+    visible: true
+}) => {
     try {
         type = type.toLowerCase();
     } catch { }

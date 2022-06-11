@@ -449,7 +449,6 @@ class FlowchartBarGraph extends FlowchartItem {
         this.properties[propName] = {
             ...createProperty(null, ['text', 'number'], ['Bar ' + i, barHeight], {
                 remove: this.removeBar,
-                inputClass: 'transparentInput',
                 multiple: true
             }),
             index: i
@@ -533,13 +532,11 @@ class FlowchartList extends FlowchartItem {
         this.listNode.appendChild(newItem);
         this.items.push(newItem);
 
-        this.properties[propName] = {
-            ...createProperty(null, 'text', 'Item ' + itemIndex, {
-                remove: n => this.removeItem(this.properties[n].index),
-                inputClass: 'transparentInput'
-            }),
-            index: itemIndex
-        };
+        this.properties[propName] = createProperty(null, 'text', 'Item ' + itemIndex, {
+            remove: n => this.removeItem(this.properties[n].index),
+            inputClass: 'long'
+        });
+        this.properties[propName].index = itemIndex
 
         PropertiesPanel.load();
     }

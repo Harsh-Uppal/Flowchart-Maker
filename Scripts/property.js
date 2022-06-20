@@ -21,7 +21,7 @@ const createProperty = (name, type, value, options = {
         type,
         val: type == 'select' ? 0 : value,
         options: value,
-        remF: type == 'select' ? remove : undefined,
+        remF: type == 'select' ? undefined : remove,
         iClass: inputClass,
         content: inputContent,
         multiple,

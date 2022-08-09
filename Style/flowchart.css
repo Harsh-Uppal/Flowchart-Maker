@@ -90,19 +90,34 @@ canvas,
     background-color: lightblue;
     transform: translate(-50%, -50%);
     user-select: none;
+    --border-color: #4683b2;
+    border: 2px solid var(--border-color);
 }
 
 .flowchartItem[draggable="false"] {
     cursor: unset;
 }
 
-.flowchartItem[shape="Rectangle"] {
-    border: 2px solid steelblue;
-}
-
 .flowchartItem[shape="Circle"] {
     display: grid;
     place-content: center;
+    border-radius: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.flowchartItem[shape="Diamond"]::before {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    content: '';
+    height: 100%;
+    aspect-ratio: 1/1;
+    background: url(../Assets/Arrow.svg);
+    transform: translate(0, -50%);
+}
+
+.flowchartItem[shape="Circle"] img {
+    height: unset !important;
     border-radius: 100%;
     aspect-ratio: 1 / 1;
 }
@@ -126,15 +141,12 @@ canvas,
 }
 
 .flowchartItem>.dataContainer>* {
+    --padding: 2;
     white-space: nowrap;
     width: max-content;
     height: max-content;
     font: bold 1.2vw var(--font-primary);
-    margin: 2vmin;
-}
-
-.flowchartItem>.dataContainer>*[fill="true"] {
-    margin: 0 !important;
+    margin: calc(var(--padding) * 1vmin);
 }
 
 .flowchartItem>.dataContainer>a {
@@ -222,4 +234,11 @@ canvas,
 
 .temp {
     background-color: #8888 !important;
+}
+
+.flowchartItem .selection-checkbox {
+    position: absolute;
+    top: calc(var(--v) / 2);
+    left: calc(var(--v) / 2);
+    z-index: 2;
 }

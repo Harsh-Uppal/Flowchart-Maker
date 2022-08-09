@@ -40,7 +40,7 @@ function setup() {
             document.body.style.backgroundColor = generalInputs.bg.value;
     });
 
-    setCursor('grab');
+    setCursor('crosshair');
     update();
     noLoop();
 }
@@ -81,17 +81,26 @@ function drawGridlines() {
 }
 
 function mouseDragged(e) {
-    if (e.srcElement.nodeName != 'CANVAS' || !dragEnabled)
-        return;
+    switch (e.which) {
+        case 1:
+            SelectionManager.mouseDragged(e);
+            break;
+        case 2:
+            if (!dragEnabled || e.srcElement.nodeName != 'CANVAS')
+                return;
 
-    pos = vector(pos.x - (pmouseX - mouseX) * panSpeed, pos.y - (pmouseY - mouseY) * panSpeed);
-    pmouseX = mouseX;
-    pmouseY = mouseY;
+            pos = vector(pos.x - (pmouseX - mouseX) * panSpeed, pos.y - (pmouseY - mouseY) * panSpeed);
+
+            updateFlowchartPos();
+
+            setCursor('grabbing');
+            break;
+    }
+
     update();
 
-    updateFlowchartPos();
-
-    setCursor('grabbing');
+    pmouseX = mouseX;
+    pmouseY = mouseY;
 }
 
 function mouseMoved(e) {
@@ -122,10 +131,12 @@ function mouseClicked(e) {
 }
 
 function mouseReleased(e) {
+    SelectionManager.mouseReleased();
+
     if (e.srcElement.nodeName != 'CANVAS')
         return;
 
-    setCursor('grab');
+    setCursor('crosshair');
 }
 
 function changeZoom(e) {
@@ -154,4 +165,6 @@ function update() {
 
     for (let i = 0; i < flowchartItems.length; i++)
         flowchartItems[i].update();
+
+    SelectionManager.update();
 }

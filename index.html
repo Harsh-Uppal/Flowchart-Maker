@@ -33,6 +33,7 @@
     <script src="./Scripts/curves.js"></script>
     <script src="./Scripts/flowchart.js"></script>
     <script src="./Scripts/mulitpleInput.js"></script>
+    <script src="./Scripts/selectionManager.js"></script>
 
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
@@ -127,23 +128,25 @@
             <div class="flowchartItems"></div>
         </div>
 
-        <div id="properties-panel" class="properties-panel">
-            <div class="titlebar">
-                <label class="header">Properties Panel</label>
-                <button title="Show/Hide Properties Panel" class="hideBtn" onclick="PropertiesPanel.activate(false)"
-                    tabindex="-1">
-                    <img src="./Assets/Arrow.png" class="hideArrowImg" alt />
-                </button>
-            </div>
-            <div class="properties">
-                <div id="1"></div>
-            </div>
+        <div class="right-panel">
+            <div id="properties-panel" class="properties-panel">
+                <div class="titlebar">
+                    <label class="header">Properties Panel</label>
+                    <button title="Show/Hide Properties Panel" class="hideBtn" onclick="PropertiesPanel.activate(false)"
+                        tabindex="-1">
+                        <img src="./Assets/Arrow.svg" class="hideArrowImg" alt />
+                    </button>
+                </div>
+                <div class="properties">
+                    <div id="1"></div>
+                </div>
 
-            <div class="buttons">
-                <button tabindex="-1" class="resetBtn" onclick="PropertiesPanel.resetProperties()"
-                    title="Reset all properties">Reset</button>
-                <button tabindex="-1" class="deleteBtn" onclick="PropertiesPanel.deleteItem()"
-                    title="Delete selected item"></button>
+                <div class="buttons">
+                    <button tabindex="-1" class="resetBtn" onclick="PropertiesPanel.resetProperties()"
+                        title="Reset all properties">Reset</button>
+                    <button tabindex="-1" class="deleteBtn" onclick="PropertiesPanel.deleteItem()"
+                        title="Delete selected item"></button>
+                </div>
             </div>
         </div>
     </div>

@@ -3,17 +3,11 @@
 }
 
 .properties-panel {
-    position: absolute;
-    bottom: -100%;
-    right: 0;
     display: flex;
     flex-direction: column;
-    z-index: 1;
-    width: max-content;
-    padding: 0 min(1vw, 1rem);
+    min-width: 100%;
     height: 100%;
     background-color: var(--inspector-color);
-    transition: 1s;
     align-items: center;
     overflow-y: auto;
 }
@@ -60,8 +54,8 @@
 .properties-panel>.titlebar>.hideBtn>.hideArrowImg {
     margin-top: 5%;
     transform: rotate(90deg);
-    width: 70%;
-    height: 70%;
+    width: 100%;
+    aspect-ratio: 1 / 1;
 }
 
 .properties-panel>.titlebar>.hideBtn:hover {
@@ -86,7 +80,8 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    width: 100%;
+    max-width: 100%;
+    margin: 0 min(1vw, 1rem);
 }
 
 .properties-panel>.properties>.property-group {

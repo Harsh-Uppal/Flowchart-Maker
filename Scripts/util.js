@@ -1,3 +1,42 @@
+class Rectangle {
+    constructor(x, y, w, h, pivot = vec(1, 1)) {
+        this.x = x + (pivot.x - 1) * w;
+        this.y = y + (pivot.y - 1) * h;
+        this.width = w;
+        this.height = h;
+        this.pivot = pivot;
+    }
+
+    repos(x, y) {
+        this.x = x + (this.pivot.x - 1) * this.width;
+        this.y = y + (this.pivot.y - 1) * this.height;
+    }
+
+    resize(w, h) {
+        this.x = x + (pivot.x - 1) * w;
+        this.y = y + (pivot.y - 1) * h;
+        this.width = w;
+        this.height = h;
+    }
+
+    draw() {
+        rect(this.x, this.y, this.width, this.height);
+    }
+
+    touches(other) {
+        if (other.constructor.name != 'Rectangle')
+            return console.error('Error');
+
+        let x = Math.min(this.x, this.x + this.width);
+        let y = Math.min(this.y, this.y + this.height);
+        let oX = Math.min(other.x, other.x + other.width);
+        let oY = Math.min(other.y, other.y + other.height);
+
+        return x < oX + Math.abs(other.width) && x + Math.abs(this.width) > oX &&
+            y < oY + Math.abs(other.height) && y + Math.abs(this.height) > oY;
+    }
+}
+
 const vec = vector = (x, y) => {
     return {
         x: x,

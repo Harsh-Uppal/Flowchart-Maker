@@ -4,6 +4,7 @@ function updateFlowchartPos() {
     });
 }
 
+//Base Class
 class FlowchartItem {
     constructor(pos, index, addConnectors = true) {
         this.pos = pos;
@@ -15,17 +16,21 @@ class FlowchartItem {
         this.connectorsVisible = true;
         this.clickEnabled = this.dragEnabled = true;
         this.lastMouseAngle = null;
+        this.selected = false;
         this.templateProps = {
             pos: createDynamicProperty(null, null, () => this.pos, { visible: false }),
             head0: createPropertyHeader('General'),
             scale: createProperty('Scale', 'number', 1),
             color: createProperty('Background Color', 'color', '#ADD8E6'),
-            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle']),
+            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Diamond']),
+            borderColor: createProperty('Border Color', 'color', '#4682b3'),
+            cornerRadius: createProperty('Corner Radius', 'number', 0)
         };
 
         const itemsContainer = document.querySelector('.flowchartItems');
         const newItem = document.createElement('div');
         const dataContainer = document.createElement('div');
+        const selectionCheckbox = document.createElement('input');
 
         newItem.className = 'flowchartItem';
         newItem.tabIndex = 0;
@@ -41,12 +46,22 @@ class FlowchartItem {
 
         dataContainer.className = 'dataContainer';
 
+        selectionCheckbox.title = 'Select Item';
+        selectionCheckbox.type = 'checkbox';
+        selectionCheckbox.className = 'selection-checkbox';
+        selectionCheckbox.addEventListener('click', () => {
+            this.selected = selectionCheckbox.checked;
+            SelectionManager.itemSelectChanged(this);
+        });
+
+        newItem.appendChild(selectionCheckbox);
         newItem.appendChild(dataContainer);
         itemsContainer.appendChild(newItem);
 
         this.node = newItem;
         this.dataContainer = dataContainer;
         this.connectorContainer = this.node;
+        this.selectionCheckbox = selectionCheckbox;
 
         if (addConnectors)
             this.addConnectors();
@@ -218,6 +233,12 @@ class FlowchartItem {
                 case 'scale':
                     this.update();
                     break;
+                case 'borderColor':
+                    this.node.style.setProperty('--border-color', val);
+                    break;
+                case 'cornerRadius':
+                    this.node.style.borderRadius = val + 'vmin';
+                    break;
             }
 
         if (this.properties[property].visible) {
@@ -235,7 +256,16 @@ class FlowchartItem {
 
         this.updateProperty(property, val, index);
     }
+    touches(rectangle) {
+        this.collider = new Rectangle(this.node.offsetLeft, this.node.offsetTop, this.node.offsetWidth, this.node.offsetHeight, vec(.5, .5));
+        return this.collider.touches(rectangle);
+    }
+    setSelected = val => {
+        this.selectionCheckbox.checked = val;
+    }
 }
+
+//Primitive
 class FlowchartTextBox extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index);
@@ -300,8 +330,8 @@ class FlowchartImage extends FlowchartItem {
             case 'imageSrc':
                 this.innerNode.setAttribute('src', val);
                 break;
-            case 'fill':
-                this.innerNode.setAttribute('fill', val);
+            case 'padding':
+                this.innerNode.style.setProperty('--padding', val);
                 break;
         }
     }
@@ -312,7 +342,7 @@ class FlowchartImage extends FlowchartItem {
             imageSrc: createProperty('Image Source', 'text', './Assets/ImageIcon.png'),
             width: createProperty('Image Width', 'number', 100),
             height: createProperty('Image Height', 'number', 80),
-            fill: createProperty('Fill Entire Box', 'checkbox', false),
+            padding: createProperty('Padding', 'number', 2),
             setProperty: this.setProperty,
             delete: this.delete
         };
@@ -326,6 +356,138 @@ class FlowchartImage extends FlowchartItem {
             this.setProperty(prop, this.properties[prop].val);
     }
 }
+class FlowchartList extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
+
+        this.innerNode = document.createElement('div');
+        this.items = [];
+        this.dataContainer.appendChild(this.innerNode);
+        this.listNode = document.createElement('ul');
+        this.listNode.className = 'flowchartList';
+        this.dataContainer.appendChild(this.listNode);
+
+        this.resetProperties();
+
+        for (let i = 0; i < 3; i++)
+            this.addItem();
+    }
+    updateProperty = (property, val) => {
+        switch (property) {
+            case 'fontColor':
+                this.listNode.style.color = val;
+                break;
+            case 'fontSize':
+                this.listNode.style.fontSize = val + 'vw';
+                break;
+        }
+
+        if (property.startsWith('item')) {
+            const itemNum = parseInt(property.slice(4, property.length));
+            this.items[itemNum].innerText = val;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            ...this.templateProps,
+            head1: createPropertyHeader('List'),
+            fontSize: createProperty('Font Size', 'number', 1.4),
+            fontColor: createProperty('Font Color', 'color', '#000000'),
+            head2: createPropertyBtnHeader('Items', ['addBtn'], this.addItem),
+            setProperty: this.setProperty,
+            delete: this.delete
+        };
+
+        this.properties.default = {
+            ...this.properties,
+            dontEncode: true
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+    addItem = () => {
+        let nameI = 0;
+        while (this.properties['item' + nameI] != null)
+            nameI++;
+
+        const propName = 'item' + nameI;
+        const itemIndex = this.items.length;
+        const newItem = document.createElement('li');
+        newItem.innerText = 'Item ' + itemIndex;
+
+        this.listNode.appendChild(newItem);
+        this.items.push(newItem);
+
+        this.properties[propName] = createProperty(null, 'text', 'Item ' + itemIndex, {
+            remove: n => this.removeItem(this.properties[n].index),
+            inputClass: 'long'
+        });
+        this.properties[propName].index = itemIndex
+
+        PropertiesPanel.load();
+    }
+    removeItem = index => {
+        this.items[index].remove();
+        for (const p in this.properties)
+            if (this.properties[p] != null && this.properties[p].index > index)
+                this.properties[p].index--;
+        this.items.splice(index, 1);
+        delete this.properties['item' + index];
+    }
+}
+class FlowchartLink extends FlowchartItem {
+    constructor(pos, index) {
+        super(pos, index);
+
+        this.innerNode = document.createElement('a');
+        this.dataContainer.appendChild(this.innerNode);
+
+        this.resetProperties();
+    }
+    updateProperty = (property, val) => {
+        switch (property) {
+            case 'text':
+                this.innerNode.textContent = val;
+                break;
+            case 'fontColor':
+                this.innerNode.style.color = val;
+                break;
+            case 'fontSize':
+                this.innerNode.style.fontSize = val + 'vw';
+                break;
+            case 'underline':
+                if (val)
+                    this.innerNode.classList.remove('no-underline');
+                else
+                    this.innerNode.classList.add('no-underline');
+                break;
+        }
+    }
+    resetProperties() {
+        this.properties = {
+            ...this.templateProps,
+            head1: createPropertyHeader('Link'),
+            text: createProperty('Text', 'text', 'Open Google'),
+            link: createProperty('Link', 'text', 'https://google.com'),
+            fontSize: createProperty('Font Size', 'number', 1.2),
+            fontColor: createProperty('Font Color', 'color', '#000000'),
+            underline: createProperty('Underline Link', 'checkbox', false),
+            setProperty: this.setProperty,
+            delete: this.delete
+        };
+
+        this.properties.default = {
+            ...this.properties,
+            dontEncode: true
+        };
+
+        for (const prop in this.properties)
+            this.setProperty(prop, this.properties[prop].val);
+    }
+}
+
+//Sophisticated
 class FlowchartBarGraph extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index, false);
@@ -385,6 +547,9 @@ class FlowchartBarGraph extends FlowchartItem {
             delete: this.delete
         };
         delete this.properties.color;
+        delete this.properties.shape;
+        delete this.properties.borderColor;
+        delete this.properties.cornerRadius;
 
         this.properties.default = {
             ...this.properties,
@@ -469,86 +634,6 @@ class FlowchartBarGraph extends FlowchartItem {
         this.header.style.height = Math.min(Math.max(1.5, .5 * this.bars.length - 1 + .5), 3) + 'rem';
     }
 }
-class FlowchartList extends FlowchartItem {
-    constructor(pos, index) {
-        super(pos, index);
-
-        this.innerNode = document.createElement('div');
-        this.items = [];
-        this.dataContainer.appendChild(this.innerNode);
-        this.listNode = document.createElement('ul');
-        this.listNode.className = 'flowchartList';
-        this.dataContainer.appendChild(this.listNode);
-
-        this.resetProperties();
-
-        for (let i = 0; i < 3; i++)
-            this.addItem();
-    }
-    updateProperty = (property, val) => {
-        switch (property) {
-            case 'fontColor':
-                this.listNode.style.color = val;
-                break;
-            case 'fontSize':
-                this.listNode.style.fontSize = val + 'vw';
-                break;
-        }
-
-        if (property.startsWith('item')) {
-            const itemNum = parseInt(property.slice(4, property.length));
-            this.items[itemNum].innerText = val;
-        }
-    }
-    resetProperties() {
-        this.properties = {
-            ...this.templateProps,
-            head1: createPropertyHeader('List'),
-            fontSize: createProperty('Font Size', 'number', 1.4),
-            fontColor: createProperty('Font Color', 'color', '#000000'),
-            head2: createPropertyBtnHeader('Items', ['addBtn'], this.addItem),
-            setProperty: this.setProperty,
-            delete: this.delete
-        };
-
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
-
-        for (const prop in this.properties)
-            this.setProperty(prop, this.properties[prop].val);
-    }
-    addItem = () => {
-        let nameI = 0;
-        while (this.properties['item' + nameI] != null)
-            nameI++;
-
-        const propName = 'item' + nameI;
-        const itemIndex = this.items.length;
-        const newItem = document.createElement('li');
-        newItem.innerText = 'Item ' + itemIndex;
-
-        this.listNode.appendChild(newItem);
-        this.items.push(newItem);
-
-        this.properties[propName] = createProperty(null, 'text', 'Item ' + itemIndex, {
-            remove: n => this.removeItem(this.properties[n].index),
-            inputClass: 'long'
-        });
-        this.properties[propName].index = itemIndex
-
-        PropertiesPanel.load();
-    }
-    removeItem = index => {
-        this.items[index].remove();
-        for (const p in this.properties)
-            if (this.properties[p] != null && this.properties[p].index > index)
-                this.properties[p].index--;
-        this.items.splice(index, 1);
-        delete this.properties['item' + index];
-    }
-}
 class FlowchartPieChart extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index, false);
@@ -562,6 +647,7 @@ class FlowchartPieChart extends FlowchartItem {
         this.dataContainer.appendChild(this.svg);
         this.connectorContainer = this.dataContainer;
         this.node.appendChild(this.sectionNames);
+        this.node.style.setProperty('--border-color', 'none');
         this.sections = [];
         this.resizerDragging = null;
 
@@ -575,6 +661,8 @@ class FlowchartPieChart extends FlowchartItem {
 
         this.connectors[3].remove();
         this.connectors[3] = undefined;
+
+        this.collider = new Rectangle(0, 0, this.node.offsetWidth, this.node.offsetHeight);
     }
     scale = () => cellSize / 50 * this.properties.scale.val;
     updateProperty = (property, val, i) => {
@@ -634,6 +722,8 @@ class FlowchartPieChart extends FlowchartItem {
             delete: this.delete
         };
         delete this.properties.shape;
+        delete this.properties.borderColor;
+        delete this.properties.cornerRadius;
 
         this.properties.default = {
             ...this.properties,
@@ -727,55 +817,5 @@ class FlowchartPieChart extends FlowchartItem {
         }
 
         this.updateSVG();
-    }
-}
-class FlowchartLink extends FlowchartItem {
-    constructor(pos, index) {
-        super(pos, index);
-
-        this.innerNode = document.createElement('a');
-        this.dataContainer.appendChild(this.innerNode);
-
-        this.resetProperties();
-    }
-    updateProperty = (property, val) => {
-        switch (property) {
-            case 'text':
-                this.innerNode.textContent = val;
-                break;
-            case 'fontColor':
-                this.innerNode.style.color = val;
-                break;
-            case 'fontSize':
-                this.innerNode.style.fontSize = val + 'vw';
-                break;
-            case 'underline':
-                if (val)
-                    this.innerNode.classList.remove('no-underline');
-                else
-                    this.innerNode.classList.add('no-underline');
-                break;
-        }
-    }
-    resetProperties() {
-        this.properties = {
-            ...this.templateProps,
-            head1: createPropertyHeader('Link'),
-            text: createProperty('Text', 'text', 'Open Google'),
-            link: createProperty('Link', 'text', 'https://google.com'),
-            fontSize: createProperty('Font Size', 'number', 1.2),
-            fontColor: createProperty('Font Color', 'color', '#000000'),
-            underline: createProperty('Underline Link', 'checkbox', false),
-            setProperty: this.setProperty,
-            delete: this.delete
-        };
-
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
-
-        for (const prop in this.properties)
-            this.setProperty(prop, this.properties[prop].val);
     }
 }

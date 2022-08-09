@@ -26,7 +26,7 @@
 }
 
 .generalProperties>*>input {
-    height: 75%;
+    height: 50%;
 }
 
 .generalProperties>*>input[type="checkbox"] {
@@ -34,19 +34,19 @@
 }
 
 .generalProperties>*>input[type="color"] {
-    width: calc(var(--v) * 3);
-    aspect-ratio: 1 / 1;
-    border-radius: var(--v);
+    width: calc(var(--v) * 3.5);
+    height: auto;
+    border-radius: 100%;
     background-color: darkslategray;
 }
 
 .generalProperties>*>input[type="color"]::-webkit-color-swatch-wrapper {
     padding: calc(var(--v) / 10);
-    border-radius: var(--v);
+    border-radius: 100%;
 }
 
 .generalProperties>*>input[type="color"]::-webkit-color-swatch {
     aspect-ratio: 1 / 1;
     border: none;
-    border-radius: var(--v);
+    border-radius: 100%;
 }

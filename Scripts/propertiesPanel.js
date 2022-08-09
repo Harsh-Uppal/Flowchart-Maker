@@ -12,7 +12,6 @@ const PropertiesPanel = {
         if (val)
             PropertiesPanel.load();
 
-        PropertiesPanel.node.style.bottom = val ? '0' : '-100%';
         PropertiesPanel.active = val;
     },
     load() {
@@ -121,7 +120,8 @@ const PropertiesPanel = {
 
                         if (inpData.type != 'select')
                             input.innerHTML = currentProp.content == undefined ? '' : currentProp.content;
-                        input.className = currentProp.iClass;
+                        if (currentProp.iClass)
+                            input.className = currentProp.iClass;
                         input.addEventListener('keyup', inputChangeHandler);
                         input.addEventListener('change', inputChangeHandler);
                         newPropertyContainer.appendChild(input);

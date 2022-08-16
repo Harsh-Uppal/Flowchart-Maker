@@ -17,15 +17,10 @@ class FlowchartItem {
         this.clickEnabled = this.dragEnabled = true;
         this.lastMouseAngle = null;
         this.selected = false;
-        this.templateProps = {
+        this.templateProps = expandPropertySets({
             pos: createDynamicProperty(null, null, () => this.pos, { visible: false }),
-            head0: createPropertyHeader('General'),
-            scale: createProperty('Scale', 'number', 1),
-            color: createProperty('Background Color', 'color', '#ADD8E6'),
-            shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Diamond']),
-            borderColor: createProperty('Border Color', 'color', '#4682b3'),
-            cornerRadius: createProperty('Corner Radius', 'number', 0)
-        };
+            general: BasePropertySets.general
+        });
 
         const itemsContainer = document.querySelector('.flowchartItems');
         const newItem = document.createElement('div');
@@ -67,9 +62,6 @@ class FlowchartItem {
             this.addConnectors();
     }
     scale = () => cellSize / 50 * this.properties.scale.val;
-    keyPressed = e => {
-        if (e.key == 'Delete') this.delete();
-    }
     mouseClicked = () => {
         if (!editingEnabled)
             return;
@@ -80,13 +72,15 @@ class FlowchartItem {
         if (!this.added)
             this.added = true;
 
-        PropertiesPanel.inspectingProperties = this.properties;
+        this.setSelected(true);
+        SelectionManager.itemSelectChanged(this);
+        PropertiesPanel.inspectingProperties = [this.properties];
         PropertiesPanel.activate(true);
     }
     mouseDragStart = () => {
         //If editing is not enabled then do not move this item
         dragEnabled = false || !editingEnabled;
-        this.dragEnabled = editingEnabled;
+        this.dragEnabled = editingEnabled && this.dragEnabled;
     }
     mouseDragged = () => {
         if (!this.dragEnabled)
@@ -261,6 +255,7 @@ class FlowchartItem {
         return this.collider.touches(rectangle);
     }
     setSelected = val => {
+        this.selected = val;
         this.selectionCheckbox.checked = val;
     }
 }
@@ -487,7 +482,7 @@ class FlowchartLink extends FlowchartItem {
     }
 }
 
-//Sophisticated
+//Complicated
 class FlowchartBarGraph extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index, false);

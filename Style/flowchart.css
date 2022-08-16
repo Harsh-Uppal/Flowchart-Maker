@@ -53,8 +53,8 @@ canvas,
 .barScaler {
     z-index: 1;
     width: 75%;
-    height: 2px;
-    background-color: blue;
+    height: 3px;
+    background-color: cyan;
     cursor: ns-resize;
 }
 

@@ -32,14 +32,30 @@ const SelectionManager = (function () {
 
                 selectionRect = null;
             }
+
+            const properties = [];
+            selectedItems.forEach(item => {
+                properties.push(item.properties);
+            });
+            PropertiesPanel.inspectingProperties = properties;
+            PropertiesPanel.activate(true);
+            delete properties;
         },
         itemSelectChanged: item => {
             if (item.selected)
                 selectedItems.push(item);
             else
                 selectedItems = selectedItems.splice(selectedItems.findIndex(i => i.index == item.index) - 1, 1);
-
-            console.log(selectedItems);
+        },
+        getSelectedItems: () => {
+            return selectedItems;
+        },
+        nothingSelected: () => {
+            selectedItems.forEach(item => {
+                item.setSelected(false);
+            });
+            selectedItems = [];
+            PropertiesPanel.activate(false);
         }
     };
 })();

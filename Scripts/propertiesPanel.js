@@ -1,5 +1,15 @@
 window.addEventListener('load', () => PropertiesPanel.node = document.querySelector('#properties-panel'));
 
+const BasePropertySets = {
+    general: createPropertySet('General', {
+        scale: createProperty('Scale', 'number', 1),
+        color: createProperty('Background Color', 'color', '#ADD8E6'),
+        shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Diamond']),
+        borderColor: createProperty('Border Color', 'color', '#4682b3'),
+        cornerRadius: createProperty('Corner Radius', 'number', 0)
+    })
+}
+
 const PropertiesPanel = {
     node: null,
     active: false,
@@ -9,20 +19,56 @@ const PropertiesPanel = {
         if (PropertiesPanel.inspectingProperties == null)
             PropertiesPanel.node = document.querySelector('#properties-panel');
 
-        if (val)
-            PropertiesPanel.load();
+        PropertiesPanel.load(val ? this.inspectingProperties : null);
+        if (isMobile)
+            this.node.style.top = val ? '0' : '100%';
 
         PropertiesPanel.active = val;
     },
-    load() {
-        if (PropertiesPanel.inspectingProperties == null)
-            return;
+    load(allProperties) {
+        console.log(allProperties);
 
         const propertyObjContainer = document.querySelector('#properties-panel > .properties');
         propertyObjContainer.innerHTML = '';
+
+        if (allProperties == null || !Array.isArray(allProperties) || allProperties.length == 0)
+            return;
+
+        const groupSimilarProperties = () => {
+            const groupedProperties = allProperties[0];
+
+            for (let i = 1; i < allProperties.length; i++) {
+                const propertySet = allProperties[i];
+
+                for (const property in groupedProperties) {
+                    if (Object.hasOwnProperty.call(groupedProperties, property)) {
+                        const id = groupedProperties[property].id;
+                        let found = false;
+
+                        for (const property1 in propertySet) {
+                            if (Object.hasOwnProperty.call(propertySet, property1)) {
+                                if (id == propertySet[property1].id) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!found)
+                            delete groupedProperties[property];
+                    }
+                }
+            }
+
+            return groupedProperties;
+        }
+
+        const properties = allProperties.length == 1 ? allProperties[0] : groupSimilarProperties();
+
+
         let propGroup = null;
-        for (const property in PropertiesPanel.inspectingProperties) {
-            const currentProp = PropertiesPanel.inspectingProperties[property];
+        for (const property in properties) {
+            const currentProp = properties[property];
 
             if (!currentProp.visible ||
                 property == 'default' ||
@@ -134,7 +180,7 @@ const PropertiesPanel = {
                         removeBtn.addEventListener('click', () => {
                             currentProp.remF(property);
                             newPropertyContainer.remove();
-                            delete PropertiesPanel.inspectingProperties[property];
+                            delete properties[property];
                         });
                         newPropertyContainer.appendChild(removeBtn);
                     }

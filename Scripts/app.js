@@ -15,7 +15,8 @@ var pos = vector(0, 0),
     imgBg;
 
 const flowchartItems = [],
-    connectorQuality = 30;
+    connectorQuality = 30,
+    isMobile = window.innerWidth <= 560;
 
 window.addEventListener('resize', setup);
 
@@ -81,12 +82,15 @@ function drawGridlines() {
 }
 
 function mouseDragged(e) {
+    if (!dragEnabled)
+        return;
+
     switch (e.which) {
         case 1:
             SelectionManager.mouseDragged(e);
             break;
         case 2:
-            if (!dragEnabled || e.srcElement.nodeName != 'CANVAS')
+            if (e.srcElement.nodeName != 'CANVAS')
                 return;
 
             pos = vector(pos.x - (pmouseX - mouseX) * panSpeed, pos.y - (pmouseY - mouseY) * panSpeed);
@@ -123,6 +127,8 @@ function mouseClicked(e) {
 
     if (e.srcElement.nodeName != 'CANVAS')
         return;
+
+    SelectionManager.nothingSelected();
 
     if (FlowchartItem.connecting != null)
         FlowchartItem.connecting.connectTo(FlowchartItem.connecting.index);
@@ -167,4 +173,11 @@ function update() {
         flowchartItems[i].update();
 
     SelectionManager.update();
+}
+
+function keyPressed(e) {
+    if (e.keyCode == 46)
+        SelectionManager.getSelectedItems().forEach(item => {
+            item.delete();
+        });
 }

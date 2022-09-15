@@ -30,6 +30,7 @@ function setup() {
     const p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
     p5Canvas.mouseWheel(changeZoom);
     canvas = document.querySelector('canvas');
+    canvas.addEventListener('dblclick', SelectionManager.nothingSelected);
 
     generalInputs = loadInputs();
     generalInputs.zoom.max = maxCellSize;
@@ -127,8 +128,6 @@ function mouseClicked(e) {
 
     if (e.srcElement.nodeName != 'CANVAS')
         return;
-
-    SelectionManager.nothingSelected();
 
     if (FlowchartItem.connecting != null)
         FlowchartItem.connecting.connectTo(FlowchartItem.connecting.index);

@@ -23,29 +23,22 @@ const SelectionManager = (function () {
                     while (selectedItems.length)
                         selectedItems.shift().setSelected(false);
 
-                flowchartItems.forEach(item => {
-                    if (item.touches(selectionRect) && !item.selected) {
-                        item.setSelected(true);
-                        selectedItems.push(item);
-                    }
+                flowchartItems.filter(item => item.touches(selectionRect) && !item.selected).forEach(item => {
+                    item.setSelected(true);
+                    selectedItems.push(item);
                 });
 
                 selectionRect = null;
+                SelectionManager.updatePropertiesPanel();
             }
-
-            const properties = [];
-            selectedItems.forEach(item => {
-                properties.push(item.properties);
-            });
-            PropertiesPanel.inspectingProperties = properties;
-            PropertiesPanel.activate(true);
-            delete properties;
         },
         itemSelectChanged: item => {
             if (item.selected)
                 selectedItems.push(item);
             else
                 selectedItems = selectedItems.splice(selectedItems.findIndex(i => i.index == item.index) - 1, 1);
+
+            SelectionManager.updatePropertiesPanel();
         },
         getSelectedItems: () => {
             return selectedItems;
@@ -56,6 +49,15 @@ const SelectionManager = (function () {
             });
             selectedItems = [];
             PropertiesPanel.activate(false);
+        },
+        updatePropertiesPanel: () => {
+            const properties = [];
+            selectedItems.forEach(item => {
+                properties.push(item.properties);
+            });
+            PropertiesPanel.inspectingProperties = properties;
+            PropertiesPanel.activate(true);
+            delete properties;
         }
     };
 })();

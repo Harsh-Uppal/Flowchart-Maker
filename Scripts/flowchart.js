@@ -44,7 +44,7 @@ class FlowchartItem {
         selectionCheckbox.title = 'Select Item';
         selectionCheckbox.type = 'checkbox';
         selectionCheckbox.className = 'selection-checkbox';
-        selectionCheckbox.addEventListener('click', () => {
+        selectionCheckbox.addEventListener('change', () => {
             this.selected = selectionCheckbox.checked;
             SelectionManager.itemSelectChanged(this);
         });
@@ -65,17 +65,18 @@ class FlowchartItem {
     mouseClicked = () => {
         if (!editingEnabled)
             return;
+
         if (!this.clickEnabled) {
             this.clickEnabled = true;
             return;
         }
-        if (!this.added)
+
+        if (!this.added) {
             this.added = true;
 
-        this.setSelected(true);
-        SelectionManager.itemSelectChanged(this);
-        PropertiesPanel.inspectingProperties = [this.properties];
-        PropertiesPanel.activate(true);
+            this.setSelected(true);
+            SelectionManager.itemSelectChanged(this);
+        }
     }
     mouseDragStart = () => {
         //If editing is not enabled then do not move this item
@@ -255,6 +256,7 @@ class FlowchartItem {
         return this.collider.touches(rectangle);
     }
     setSelected = val => {
+        console.error(val);
         this.selected = val;
         this.selectionCheckbox.checked = val;
     }

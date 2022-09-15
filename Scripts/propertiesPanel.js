@@ -26,8 +26,6 @@ const PropertiesPanel = {
         PropertiesPanel.active = val;
     },
     load(allProperties) {
-        console.log(allProperties);
-
         const propertyObjContainer = document.querySelector('#properties-panel > .properties');
         propertyObjContainer.innerHTML = '';
 

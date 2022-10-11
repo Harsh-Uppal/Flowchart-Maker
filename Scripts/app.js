@@ -56,9 +56,12 @@ function editBtnClicked() {
     editBtn.title = editingEnabled ? 'Disable Editing' : 'Enable Editing';
     PropertiesPanel.activate(editingEnabled);
     Toolbar.enable(editingEnabled);
+    PropertiesPanel.node.style.display = editingEnabled ? '' : 'none';
     generalInputs.gridlines.checked = editingEnabled;
     generalInputs.gridlines.disabled = !editingEnabled;
     generalInputs.bg.disabled = !editingEnabled;
+
+    flowchartItems.forEach(item => item.connector)
 
     update();
 }
@@ -141,7 +144,7 @@ function mouseReleased(e) {
     if (e.srcElement.nodeName != 'CANVAS')
         return;
 
-    setCursor('crosshair');
+    setCursor(editingEnabled ? 'crosshair' : '');
 }
 
 function changeZoom(e) {
@@ -172,6 +175,7 @@ function update() {
         flowchartItems[i].update();
 
     SelectionManager.update();
+    setCursor(editingEnabled ? 'crosshair' : '');
 }
 
 function keyPressed(e) {

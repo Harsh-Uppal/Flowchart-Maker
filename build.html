@@ -10,33 +10,43 @@
 
     <title>Flowchart Maker</title>
 
-    <script src="./out/util.min.js"></script>
-    <script src="./out/app.min.js"></script>
-    <script src="./out/toolbar.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Style/style.min.css" />
+    <script src="Scripts/p5.min.js"></script>
 </head>
 
-<body bgcolor="#000">
-    <script src="./out/inspector.min.js"></script>
-    <script src="./out/encoder.min.js"></script>
-    <script src="./out/curves.min.js"></script>
-    <script src="./out/flowchart.min.js"></script>
+<body>
+    <script src="./Scripts/app.min.js"></script>
 
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
-        <div class="titleOptions">
-            <button title="Save flowchart">
-                <img class="img" src="Assets/Save.png" alt="Save" />
-            </button>
-            <button title="Show in View Mode">
-                <img class="img" src="Assets/ViewMode.png" alt="Save" />
+        <div class="dock-right content-center flex height-6p">
+            <div class="titleOptions height-6p">
+                <button id="titleOptionsBtn" title="Options">
+                    <img src="Assets/Waffle.svg" alt />
+                </button>
+                <div class="options" id="titleOptions" style="display:none;">
+                    <button class="title-option" title="Load flowchart" onclick="loadFlowchart()">
+                        <img src="Assets/Load.svg" alt />
+                    </button>
+                    <button class="title-option" title="Save flowchart" onclick="saveFlowchart()">
+                        <img src="Assets/Save.svg" alt />
+                    </button>
+                    <button class="title-option edit-btn" id="editBtn" title="Disable Editing">
+                        <img src="Assets/EditMode.svg" alt />
+                    </button>
+                </div>
+            </div>
+            <button class="settings" title="Settings">
+                <img src="Assets/Settings.svg" alt />
             </button>
         </div>
+    </div>
     </div>
     <div class="generalProperties">
         <div class="zoom">
             <label for="zoomInput" class="title">Zoom</label>
-            <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()" ontouchmove="changeZoom()" />
+            <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()"
+                ontouchmove="changeZoom()" />
         </div>
         <div class="gridlines">
             <label for="gridlinesCheckbox" class="title">Gridlines</label>
@@ -44,76 +54,90 @@
         </div>
         <div class="gridlinesColor">
             <label for="gridlinesColorInput" class="title">Grid Color</label>
-            <input id="gridlinesColorInput" type="color" value="#32CD32" onchange="update()" />
+            <input id="gridlinesColorInput" type="color" value="#FFD700" onchange="update()" />
         </div>
-        <div class="backgroundColor">
-            <label for="backgroundColorInput" class="title">Background</label>
-            <input id="backgroundColorInput" type="color" value="#111111" onchange="update()" />
+        <div class="background">
+            <label for="backgroundInput" class="title">Background</label>
+            <multiple-input id="backgroundInput" onchange="update()">
+                <img src="./Assets/BackgroundInput.svg" alt>
+                <div class="selector">
+                    <div class="container">
+                        <div class="types">
+                            <button>Color</button>
+                            <button>Image</button>
+                        </div>
+                        <div class="inputs">
+                            <input type="color" value="#111111" style="display:none;" title="Select Color" />
+                            <input type="image" src="./Assets/ImageInput.svg" alt="Select Image" title="Select Image"
+                                image />
+                        </div>
+                    </div>
+                </div>
+            </multiple-input>
         </div>
     </div>
     <div class="container">
-        <div class="toolbar" style="margin-left: 0;">
+        <div id="toolbar" class="toolbar">
             <div class="toolbarContent">
                 <div class="header">Toolbar</div>
                 <div class="tools">
-                    <button title="Add a TextBox" onclick="newFlowchartItem('text')" id="TextBox">Text</button>
-                    <button title="Add a Image" onclick="newFlowchartItem('image')" id="Image">
-                        <img src="Assets/ImageIcon.png" alt="Image Icon"/>
+                    <button title="Add a TextBox" onclick="newFlowchartItem(FlowchartTextBox)"
+                        id="TextBox">Text</button>
+                    <button title="Add a Image" onclick="newFlowchartItem(FlowchartImage)" id="Image">
+                        <img src="Assets/ImageIcon.png" alt="Image Icon" />
                     </button>
-                    <button title="Add a Bar Graph" onclick="newFlowchartItem('bar-graph')" id="Graph">
+                    <button title="Add a Bar Graph" onclick="newFlowchartItem(FlowchartBarGraph)" id="Graph">
                         <img src="Assets/BarGraph.png" alt="Bar Graph">
                     </button>
-                    <button title="Add a List" onclick="newFlowchartItem('list')" id="ListNode">
-                        <img src="Assets/ListIcon.png" alt="List"/>
+                    <button title="Add a List" onclick="newFlowchartItem(FlowchartList)" id="ListNode">
+                        <img src="Assets/ListIcon.png" alt="List" />
                     </button>
-                    <button title="Add a Pie Chart" onclick="newFlowchartItem('pie-chart')" id="Pie Chart">
-                        <img src="Assets/PieChart.png" alt="Pie Chart"/>
+                    <button title="Add a Pie Chart" onclick="newFlowchartItem(FlowchartPieChart)" id="Pie Chart">
+                        <img src="Assets/PieChart.png" alt="Pie Chart" />
                     </button>
+                    <button title="Add a Link" onclick="newFlowchartItem(FlowchartLink)" id="Link">Link</button>
                 </div>
             </div>
-            <button title="Show/Hide the toolbar" class="arrow" onclick="moveToolbar()">
-                <img class="image" src="Assets/Arrow.png" alt/>
+            <button title="Show/Hide the toolbar" id="toolbarArrow" class="arrow" onclick="Toolbar.move()">
+                <img src="Assets/Arrow.svg" alt />
             </button>
         </div>
 
         <div class="canvas">
-            <main></main>
+            <main>
+                <img alt style="display:none;" id="imageBackground" class="imageBackground">
+            </main>
             <div class="flowchartItems"></div>
         </div>
 
-        <div class="inspector">
-            <div class="titlebar">
-                <label class="header">Inspector</label>
-                <button title="Show/Hide Inspector" class="hideBtn" onclick="Inspector.activate(false)" tabindex="-1">
-                    <img src="./Assets/Arrow.png" class="hideArrowImg" alt/>
-                </button>
-            </div>
-            <div class="properties">
-                <div id="1"></div>
-            </div>
-
-            <div class="buttons">
-                <button tabindex="-1" class="resetBtn" onclick="Inspector.resetProperties()"
-                    title="Reset all properties">Reset</button>
-                <button tabindex="-1" class="deleteBtn" onclick="Inspector.deleteItem()"
-                    title="Delete selected item"></button>
+        <div class="right-panel">
+            <div id="properties-panel" class="properties-panel">
+                <div class="titlebar">
+                    <label class="header">Properties Panel</label>
+                    <button title="Show/Hide Properties Panel" class="hideBtn" onclick="PropertiesPanel.activate(false)"
+                        tabindex="-1">
+                        <img src="./Assets/Arrow.svg" class="hideArrowImg" alt />
+                    </button>
+                </div>
+                <span class="no-item-selected">
+                    Select an item to see it's properties
+                </span>
+                <div class="properties">
+                </div>
+                <div class="buttons">
+                    <button tabindex="-1" class="resetBtn" onclick="PropertiesPanel.resetProperties()"
+                        title="Reset all properties">Reset</button>
+                    <button tabindex="-1" class="deleteBtn" onclick="PropertiesPanel.deleteItem()"
+                        title="Delete selected item"></button>
+                </div>
             </div>
         </div>
     </div>
-
     <footer>
         <div class="copyright">
-            &copy; Copyright 2021 All Rights reserved
+            &copy; Copyright 2022 All Rights reserved
         </div>
     </footer>
-
-    <link rel="stylesheet" type="text/css" href="Style/fonts.css" />
-    <link rel="stylesheet" type="text/css" href="Style/style.css" />
-    <link rel="stylesheet" type="text/css" href="Style/generalProperties.css" />
-    <link rel="stylesheet" type="text/css" href="Style/toolbar.css" />
-    <link rel="stylesheet" type="text/css" href="Style/flowchart.css" />
-    <link rel="stylesheet" type="text/css" href="Style/inspector.css" />
-
 </body>
 
 </html>

@@ -101,19 +101,20 @@ canvas,
 .flowchartItem[shape="Circle"] {
     display: grid;
     place-content: center;
-    border-radius: 100%;
+    border-radius: 100% !important;
     aspect-ratio: 1 / 1;
 }
 
-.flowchartItem[shape="Diamond"]::before {
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    content: '';
-    height: 100%;
+.flowchartItem[shape="Diamond"] {
+    display: grid;
+    place-content: center;
     aspect-ratio: 1/1;
-    background: url(../Assets/Arrow.svg);
-    transform: translate(0, -50%);
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.flowchartItem[shape="Diamond"] .dataContainer,
+.flowchartItem[shape="Diamond"] .selection-checkbox {
+    rotate: -45deg;
 }
 
 .flowchartItem[shape="Circle"] img {

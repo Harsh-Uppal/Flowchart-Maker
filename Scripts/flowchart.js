@@ -160,7 +160,11 @@ class FlowchartItem {
             this.connectorsVisible = editingEnabled;
         }
 
-        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`;
+        if ((this.selectionCheckbox.style.display != 'none') != editingEnabled)
+            this.selectionCheckbox.style.display = editingEnabled ? '' : 'none';
+
+        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`
+            + this.properties.shape == "diamond" ? " rotate(45deg)" : "";
     }
     moveToMouse() {
         const newPos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
@@ -256,7 +260,6 @@ class FlowchartItem {
         return this.collider.touches(rectangle);
     }
     setSelected = val => {
-        console.error(val);
         this.selected = val;
         this.selectionCheckbox.checked = val;
     }

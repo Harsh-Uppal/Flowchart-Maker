@@ -19,7 +19,7 @@ const PropertiesPanel = {
         if (PropertiesPanel.inspectingProperties == null)
             PropertiesPanel.node = document.querySelector('#properties-panel');
 
-        PropertiesPanel.load(val ? this.inspectingProperties : null);
+        PropertiesPanel.load(val ? PropertiesPanel.inspectingProperties : null);
         if (isMobile)
             this.node.style.top = val ? '0' : '100%';
 
@@ -35,6 +35,7 @@ const PropertiesPanel = {
         const groupSimilarProperties = () => {
             const groupedProperties = allProperties[0];
 
+            groupedProperties.setProperty = [groupedProperties.setProperty];
             for (let i = 1; i < allProperties.length; i++) {
                 const propertySet = allProperties[i];
 
@@ -55,14 +56,17 @@ const PropertiesPanel = {
                         if (!found)
                             delete groupedProperties[property];
                     }
+
                 }
+
+                groupedProperties.setProperty.push(propertySet.setProperty);
             }
 
             return groupedProperties;
         }
 
         const properties = allProperties.length == 1 ? allProperties[0] : groupSimilarProperties();
-
+        PropertiesPanel.inspectingProperties = properties;
 
         let propGroup = null;
         for (const property in properties) {
@@ -199,7 +203,7 @@ const PropertiesPanel = {
             return;
 
         propInput.input.forEach((input, index) => {
-            input.value = this.inspectingProperties[prop].val[index];
+            input.value = PropertiesPanel.inspectingProperties[prop].val[index];
         });
     },
     resetProperties() {
@@ -231,5 +235,7 @@ const PropertiesPanel = {
         PropertiesPanel.activate(false);
         PropertiesPanel.inspectingProperties = null;
     },
-    propertyChanged: (name, val, index) => PropertiesPanel.inspectingProperties.setProperty(name, val, index)
+    propertyChanged: (name, val, index) => Array.isArray(PropertiesPanel.inspectingProperties.setProperty) ?
+        PropertiesPanel.inspectingProperties.setProperty.forEach(f => f(name, val, index)) :
+        PropertiesPanel.inspectingProperties.setProperty(name, val, index)
 };

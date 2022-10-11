@@ -2,13 +2,16 @@ const SelectionManager = (function () {
     let selectedItems = [], selectionRect = null;
     return {
         update: () => {
-            if (selectionRect) {
+            if (editingEnabled && selectionRect) {
                 stroke('lime');
                 fill('#00FFFF55');
                 selectionRect.draw();
             }
         },
         mouseDragged: e => {
+            if (!editingEnabled)
+                return;
+
             if (!selectionRect && e.srcElement.nodeName == 'CANVAS')
                 selectionRect = new Rectangle(mouseX, mouseY, 0, 0);
 
@@ -18,6 +21,9 @@ const SelectionManager = (function () {
             }
         },
         mouseReleased: () => {
+            if (!editingEnabled)
+                return;
+
             if (selectionRect) {
                 if (!keyIsDown(16)) //16: Keycode for SHIFT
                     while (selectedItems.length)

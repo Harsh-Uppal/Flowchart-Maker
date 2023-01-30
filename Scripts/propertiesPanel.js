@@ -10,7 +10,6 @@ const BasePropertySets = {
 
 const PropertiesPanel = (() => {
     let node;
-    let active = false;
     let propertyInputs = {};
     let inspectingProperties;
 
@@ -30,8 +29,6 @@ const PropertiesPanel = (() => {
             PropertiesPanel.load(val ? inspectingProperties : null);
             if (isMobile)
                 node.style.top = val ? '0' : '100%';
-
-            active = val;
         },
         load(allProperties) {
             const propertyObjContainer = document.querySelector('#properties-panel > .properties');
@@ -247,7 +244,7 @@ const PropertiesPanel = (() => {
             PropertiesPanel.inspectingProperties = null;
         },
         propertyChanged: (name, val, index) => Array.isArray(inspectingProperties.setProperty) ?
-            PropertiesPanel.inspectingProperties.setProperty.forEach(f => f(name, val, index)) :
+            inspectingProperties.setProperty.forEach(f => f(name, val, index)) :
             inspectingProperties.setProperty(name, val, index)
     };
 })();

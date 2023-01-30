@@ -56,12 +56,12 @@ function editBtnClicked() {
     editBtn.title = editingEnabled ? 'Disable Editing' : 'Enable Editing';
     PropertiesPanel.activate(editingEnabled);
     Toolbar.enable(editingEnabled);
-    PropertiesPanel.node.style.display = editingEnabled ? '' : 'none';
+    PropertiesPanel.editingChanged(editingEnabled);
     generalInputs.gridlines.checked = editingEnabled;
     generalInputs.gridlines.disabled = !editingEnabled;
     generalInputs.bg.disabled = !editingEnabled;
 
-    flowchartItems.forEach(item => item.connector)
+    flowchartItems.forEach(item => { if (item.editingChanged) item.editingChanged(editingEnabled); });
 
     update();
 }
@@ -100,7 +100,6 @@ function mouseDragged(e) {
             pos = vector(pos.x - (pmouseX - mouseX) * panSpeed, pos.y - (pmouseY - mouseY) * panSpeed);
 
             updateFlowchartPos();
-
             setCursor('grabbing');
             break;
     }
@@ -175,7 +174,6 @@ function update() {
         flowchartItems[i].update();
 
     SelectionManager.update();
-    setCursor(editingEnabled ? 'crosshair' : '');
 }
 
 function keyPressed(e) {

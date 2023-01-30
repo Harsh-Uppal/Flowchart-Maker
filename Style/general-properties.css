@@ -5,7 +5,6 @@
     width: 100vw;
     background-color: rgb(91, 108, 117);
     grid-template-columns: repeat(4, 1fr);
-    height: max-content;
     padding: var(--v);
 }
 
@@ -27,6 +26,10 @@
 
 .generalProperties>*>input {
     height: 50%;
+}
+
+.generalProperties>*>multiple-input>* {
+    scale: .8;
 }
 
 .generalProperties>*>input[type="checkbox"] {

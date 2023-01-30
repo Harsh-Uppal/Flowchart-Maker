@@ -98,9 +98,9 @@ a.no-underline {
 }
 
 .titleBar>.title {
-    color: White;
+    color: gold;
     font-family: var(--font-header);
-    font-size: 3vw;
+    font-size: 2vw;
 }
 
 .titleOptions {

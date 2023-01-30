@@ -42,7 +42,7 @@ const SelectionManager = (function () {
             if (item.selected)
                 selectedItems.push(item);
             else
-                selectedItems = selectedItems.splice(selectedItems.findIndex(i => i.index == item.index) - 1, 1);
+                selectedItems.splice(selectedItems.findIndex(i => i.index == item.index), 1);
 
             SelectionManager.updatePropertiesPanel();
         },
@@ -61,7 +61,7 @@ const SelectionManager = (function () {
             selectedItems.forEach(item => {
                 properties.push(item.properties);
             });
-            PropertiesPanel.inspectingProperties = properties;
+            PropertiesPanel.feedProps(properties);
             PropertiesPanel.activate(true);
             delete properties;
         }

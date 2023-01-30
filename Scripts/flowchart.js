@@ -163,8 +163,8 @@ class FlowchartItem {
         if ((this.selectionCheckbox.style.display != 'none') != editingEnabled)
             this.selectionCheckbox.style.display = editingEnabled ? '' : 'none';
 
-        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale()})`
-            + this.properties.shape == "diamond" ? " rotate(45deg)" : "";
+        this.node.style.transform = `translate(-50%, -50%) scale(${this.scale() / (this.properties.shape == "diamond" ? 1.4 : 1)})`
+            + (this.properties.shape == "diamond" ? " rotate(45deg)" : "");
     }
     moveToMouse() {
         const newPos = vector(mouseX - pos.x, mouseY - pos.y).divide(cellSize);
@@ -265,7 +265,6 @@ class FlowchartItem {
     }
 }
 
-//Primitive
 class FlowchartTextBox extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index);
@@ -485,9 +484,11 @@ class FlowchartLink extends FlowchartItem {
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
     }
+    editingChanged(val) {
+        this.innerNode.href = val ? '' : this.properties.link.val
+    }
 }
 
-//Complicated
 class FlowchartBarGraph extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index, false);

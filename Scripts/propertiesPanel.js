@@ -30,6 +30,42 @@ const PropertiesPanel = (() => {
             if (isMobile)
                 node.style.top = val ? '0' : '100%';
         },
+        groupSimilarProperties(allProperties) {
+            const groupedProperties = { ...allProperties[0] };
+
+            groupedProperties.setProperty = [groupedProperties.setProperty];
+            for (let i = 1; i < allProperties.length; i++) {
+                const propertySet = allProperties[i];
+
+                for (const property in groupedProperties) {
+                    if (Object.hasOwnProperty.call(groupedProperties, property)) {
+                        const name = groupedProperties[property].name;
+
+                        if (name == null)
+                            continue;
+                        let found = false;
+
+                        for (const property1 in propertySet) {
+                            if (Object.hasOwnProperty.call(propertySet, property1)) {
+                                if (name == propertySet[property1].name) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!found)
+                            delete groupedProperties[property];
+                    }
+
+                }
+
+                groupedProperties.setProperty.push(propertySet.setProperty);
+            }
+            groupedProperties.default = { ...groupedProperties };
+
+            return groupedProperties;
+        },
         load(allProperties) {
             const propertyObjContainer = document.querySelector('#properties-panel > .properties');
             propertyObjContainer.innerHTML = '';
@@ -37,43 +73,8 @@ const PropertiesPanel = (() => {
             if (allProperties == null || !Array.isArray(allProperties) || allProperties.length == 0)
                 return;
 
-            const groupSimilarProperties = () => {
-                const groupedProperties = { ...allProperties[0] };
-
-                groupedProperties.setProperty = [groupedProperties.setProperty];
-                for (let i = 1; i < allProperties.length; i++) {
-                    const propertySet = allProperties[i];
-
-                    for (const property in groupedProperties) {
-                        if (Object.hasOwnProperty.call(groupedProperties, property)) {
-                            const name = groupedProperties[property].name;
-
-                            if (name == null)
-                                continue;
-                            let found = false;
-
-                            for (const property1 in propertySet) {
-                                if (Object.hasOwnProperty.call(propertySet, property1)) {
-                                    if (name == propertySet[property1].name) {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (!found)
-                                delete groupedProperties[property];
-                        }
-
-                    }
-
-                    groupedProperties.setProperty.push(propertySet.setProperty);
-                }
-
-                return groupedProperties;
-            }
-
-            const properties = allProperties.length == 1 ? allProperties[0] : groupSimilarProperties();
+            const properties = allProperties.length == 1 ?
+                allProperties[0] : this.groupSimilarProperties(allProperties);
             inspectingProperties = properties;
 
             let propGroup = null;
@@ -200,6 +201,8 @@ const PropertiesPanel = (() => {
                 if (currentProp.multiple || !currentProp.type.endsWith('header'))
                     propGroup.appendChild(newPropertyContainer);
             }
+
+            console.log(inspectingProperties.default);
         },
         refresh(prop) {
             if (propertyInputs == null)
@@ -215,33 +218,35 @@ const PropertiesPanel = (() => {
             });
         },
         resetProperties() {
-            PropertiesPanel.inspectingProperties = PropertiesPanel.inspectingProperties.default;
+            inspectingProperties = inspectingProperties.default;
             const inputs = document.querySelector('#properties-panel > .properties');
 
             let i = -1;
-            for (const currentProperty in PropertiesPanel.inspectingProperties) {
+            for (const currentProperty in inspectingProperties) {
                 i++;
 
-                const prop = PropertiesPanel.inspectingProperties[currentProperty];
+                const prop = inspectingProperties[currentProperty];
 
                 if (currentProperty == 'setProperty' || currentProperty == 'delete' || prop.type.endsWith('header'))
                     continue;
 
-                PropertiesPanel.inspectingProperties.setProperty(currentProperty, propVal);
+                Array.isArray(inspectingProperties.setProperty) ?
+                    inspectingProperties.setProperty.forEach(f => f(currentProperty, propVal)) :
+                    inspectingProperties.setProperty(currentProperty, propVal);
 
                 const currentInput = inputs.children[i].querySelector('input');
                 currentInput.value = currentInput.type == 'button' ? '' : prop.val;
                 currentInput.className = prop.iClass == null ? currentInput.type + 'Input' : prop.iClass;
             }
 
-            PropertiesPanel.inspectingProperties.default = {
-                ...PropertiesPanel.inspectingProperties
+            inspectingProperties.default = {
+                ...inspectingProperties
             };
         },
         deleteItem() {
-            PropertiesPanel.inspectingProperties.delete();
+            inspectingProperties.delete();
             PropertiesPanel.activate(false);
-            PropertiesPanel.inspectingProperties = null;
+            inspectingProperties = null;
         },
         propertyChanged: (name, val, index) => Array.isArray(inspectingProperties.setProperty) ?
             inspectingProperties.setProperty.forEach(f => f(name, val, index)) :

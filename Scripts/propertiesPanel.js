@@ -9,11 +9,14 @@ const BasePropertySets = {
 }
 
 const PropertiesPanel = (() => {
-    let node;
+    let node, noItemSelected;
     let propertyInputs = {};
     let inspectingProperties;
 
-    window.addEventListener('load', () => node = document.querySelector('#properties-panel'));
+    window.addEventListener('load', () => {
+        node = document.querySelector('#properties-panel');
+        noItemSelected = document.querySelector('.no-item-selected');
+    });
 
     return {
         editingChanged(val) {
@@ -26,6 +29,7 @@ const PropertiesPanel = (() => {
             if (inspectingProperties == null)
                 node = document.querySelector('#properties-panel');
 
+            noItemSelected.style.display = val ? 'none' : '';
             PropertiesPanel.load(val ? inspectingProperties : null);
             if (isMobile)
                 node.style.top = val ? '0' : '100%';
@@ -254,7 +258,10 @@ const PropertiesPanel = (() => {
             };
         },
         deleteItem() {
-            inspectingProperties.delete.forEach(f => f());
+            if (Array.isArray(inspectingProperties.delete))
+                inspectingProperties.delete.forEach(f => f());
+            else
+                inspectingProperties.delete();
             PropertiesPanel.activate(false);
             inspectingProperties = null;
         },

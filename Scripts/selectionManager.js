@@ -62,9 +62,9 @@ const SelectionManager = (function () {
             selectedItems.forEach(item => {
                 properties.push(item.properties);
             });
-            console.log(properties);
+
             PropertiesPanel.feedProps(properties);
-            PropertiesPanel.activate(true);
+            PropertiesPanel.activate(properties.length);
             delete properties;
         }
     };

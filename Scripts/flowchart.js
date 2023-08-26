@@ -154,7 +154,8 @@ class FlowchartItem {
 
         if (this.connectorsVisible != editingEnabled) {
             this.connectors.forEach(connector => {
-                connector.style.display = editingEnabled ? '' : 'none';
+                if (connector)
+                    connector.style.display = editingEnabled ? '' : 'none';
             });
             this.node.draggable = editingEnabled;
             this.connectorsVisible = editingEnabled;

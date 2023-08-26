@@ -28,7 +28,7 @@ const { createProperty, createDynamicProperty, createPropertyHeader, createPrope
                     name,
                     type,
                     val: type == 'select' ? 0 : value,
-                    options: value,
+                    options: type == 'select' ? value : null,
                     remF: type == 'select' ? undefined : remove,
                     iClass: inputClass,
                     content: inputContent,

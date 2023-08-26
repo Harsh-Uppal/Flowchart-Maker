@@ -1,6 +1,7 @@
 const SelectionManager = (function () {
     let selectedItems = [], selectionRect = null;
     return {
+        getItemCount: () => selectedItems.length,
         update: () => {
             if (editingEnabled && selectionRect) {
                 stroke('lime');
@@ -61,6 +62,7 @@ const SelectionManager = (function () {
             selectedItems.forEach(item => {
                 properties.push(item.properties);
             });
+            console.log(properties);
             PropertiesPanel.feedProps(properties);
             PropertiesPanel.activate(true);
             delete properties;

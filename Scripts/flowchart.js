@@ -198,6 +198,9 @@ class FlowchartItem {
 
         FlowchartItem.connecting = null;
     }
+    focus = () => {
+        pos = this.pos.mult(-cellSize).add(vec(width / 2 - this.node.offsetWidth / 2, height / 2 - this.node.offsetHeight / 2));
+    }
     delete = () => {
         for (let i = 0; i < curves.length; i++) {
             if (this.connectingCurves.length == 0)
@@ -263,6 +266,18 @@ class FlowchartItem {
         this.selected = val;
         this.selectionCheckbox.checked = val;
     }
+    createDefaultPropsObj = () => {
+        this.properties.default = JSON.parse(JSON.stringify(this.properties));
+        this.properties.default.setProperty = this.properties.setProperty;
+        this.properties.default.delete = this.properties.delete;
+        this.properties.default.dontEncode = true;
+
+
+        // this.properties.default = {
+        //     ...this.properties,
+        //     dontEncode: true
+        // };
+    }
 }
 
 class FlowchartTextBox extends FlowchartItem {
@@ -298,10 +313,7 @@ class FlowchartTextBox extends FlowchartItem {
             delete: this.delete
         };
 
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
+        this.createDefaultPropsObj();
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
@@ -346,10 +358,7 @@ class FlowchartImage extends FlowchartItem {
             delete: this.delete
         };
 
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
+        this.createDefaultPropsObj();
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
@@ -397,10 +406,7 @@ class FlowchartList extends FlowchartItem {
             delete: this.delete
         };
 
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
+        this.createDefaultPropsObj();
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
@@ -476,10 +482,7 @@ class FlowchartLink extends FlowchartItem {
             delete: this.delete
         };
 
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
+        this.createDefaultPropsObj();
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
@@ -488,7 +491,6 @@ class FlowchartLink extends FlowchartItem {
         this.innerNode.href = val ? '' : this.properties.link.val
     }
 }
-
 class FlowchartBarGraph extends FlowchartItem {
     constructor(pos, index) {
         super(pos, index, false);
@@ -552,10 +554,7 @@ class FlowchartBarGraph extends FlowchartItem {
         delete this.properties.borderColor;
         delete this.properties.cornerRadius;
 
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
+        this.createDefaultPropsObj();
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);
@@ -726,10 +725,7 @@ class FlowchartPieChart extends FlowchartItem {
         delete this.properties.borderColor;
         delete this.properties.cornerRadius;
 
-        this.properties.default = {
-            ...this.properties,
-            dontEncode: true
-        };
+        this.createDefaultPropsObj();
 
         for (const prop in this.properties)
             this.setProperty(prop, this.properties[prop].val);

@@ -34,6 +34,7 @@ const PropertiesPanel = (() => {
             const groupedProperties = { ...allProperties[0] };
 
             groupedProperties.setProperty = [groupedProperties.setProperty];
+            groupedProperties.delete = [groupedProperties.delete];
             for (let i = 1; i < allProperties.length; i++) {
                 const propertySet = allProperties[i];
 
@@ -60,6 +61,7 @@ const PropertiesPanel = (() => {
 
                 }
 
+                groupedProperties.delete.push(propertySet.delete);
                 groupedProperties.setProperty.push(propertySet.setProperty);
             }
             groupedProperties.default = { ...groupedProperties };
@@ -93,6 +95,7 @@ const PropertiesPanel = (() => {
                 propertyInputs[property] = {};
 
                 const newPropertyContainer = document.createElement('div');
+                newPropertyContainer.className = 'property-container';
 
                 if (currentProp.name != null && currentProp.name.toString().trim() != '') {
                     const propertyLabel = document.createElement('label');
@@ -201,8 +204,6 @@ const PropertiesPanel = (() => {
                 if (currentProp.multiple || !currentProp.type.endsWith('header'))
                     propGroup.appendChild(newPropertyContainer);
             }
-
-            console.log(inspectingProperties.default);
         },
         refresh(prop) {
             if (propertyInputs == null)
@@ -219,23 +220,32 @@ const PropertiesPanel = (() => {
         },
         resetProperties() {
             inspectingProperties = inspectingProperties.default;
-            const inputs = document.querySelector('#properties-panel > .properties');
+            const inputs = document.querySelectorAll('.property-container>input');
+            const selects = document.querySelectorAll('.property-container>select');
 
-            let i = -1;
+            let i = 0, u = 0;
             for (const currentProperty in inspectingProperties) {
-                i++;
 
                 const prop = inspectingProperties[currentProperty];
 
-                if (currentProperty == 'setProperty' || currentProperty == 'delete' || prop.type.endsWith('header'))
+                if (currentProperty == 'setProperty' || currentProperty == 'delete' || !prop.type || prop.type.endsWith('header'))
                     continue;
 
                 Array.isArray(inspectingProperties.setProperty) ?
-                    inspectingProperties.setProperty.forEach(f => f(currentProperty, propVal)) :
-                    inspectingProperties.setProperty(currentProperty, propVal);
+                    inspectingProperties.setProperty.forEach(f => f(currentProperty, prop.val)) :
+                    inspectingProperties.setProperty(currentProperty, prop.val);
 
-                const currentInput = inputs.children[i].querySelector('input');
-                currentInput.value = currentInput.type == 'button' ? '' : prop.val;
+                const currentInput = (prop.type == 'select') ? selects[u] : inputs[i];
+
+                if (prop.type == 'select') {
+                    currentInput.selectedIndex = prop.val;
+                    ++u;
+                }
+                else {
+                    currentInput.value = currentInput.type == 'button' ? '' : prop.val;
+                    ++i;
+                }
+
                 currentInput.className = prop.iClass == null ? currentInput.type + 'Input' : prop.iClass;
             }
 
@@ -244,7 +254,7 @@ const PropertiesPanel = (() => {
             };
         },
         deleteItem() {
-            inspectingProperties.delete();
+            inspectingProperties.delete.forEach(f => f());
             PropertiesPanel.activate(false);
             inspectingProperties = null;
         },

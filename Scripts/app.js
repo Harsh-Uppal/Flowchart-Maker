@@ -177,8 +177,12 @@ function update() {
 }
 
 function keyPressed(e) {
-    if (e.keyCode == 46)
-        SelectionManager.getSelectedItems().forEach(item => {
-            item.delete();
-        });
+    switch (e.keyCode) {
+        case 46: SelectionManager.getSelectedItems().forEach(item => item.delete());
+            break;
+        case 70:
+            if (SelectionManager.getItemCount() > 0) SelectionManager.getSelectedItems()[0].focus();
+            updateFlowchartPos();
+            break;
+    }
 }

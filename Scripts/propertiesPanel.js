@@ -1,8 +1,10 @@
 const BasePropertySets = {
     general: createPropertySet('General', {
         scale: createProperty('Scale', 'number', 1),
+        transparentBG: createProperty('Transparent Background', 'checkbox', false),
         color: createProperty('Background Color', 'color', '#ADD8E6'),
         shape: createProperty('Shape', 'select', ['Rectangle', 'Circle', 'Diamond']),
+        border: createProperty('Border', 'checkbox', true),
         borderColor: createProperty('Border Color', 'color', '#4682b3'),
         cornerRadius: createProperty('Corner Radius', 'number', 0)
     })

@@ -1,0 +1,12 @@
+shortcuts
+	toolbar
+	straight connector
+	check properties
+	
+	restrict movement when not in edit mode
+	show quick action tab in edit mode
+
+font
+
+connector
+	connector color

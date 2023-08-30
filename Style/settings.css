@@ -1,0 +1,115 @@
+.settings-modal {
+    z-index: 3;
+    width: 70vw;
+    height: 80vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid salmon;
+    border-radius: var(--v);
+    background-color: #FFF9;
+    box-shadow: 3px 3px 10px 4px rgb(90, 90, 90);
+}
+
+.settings-modal h1 {
+    font-family: var(--font-header);
+    font-weight: 200;
+    color: darkslategray;
+    text-decoration: underline;
+}
+
+.settings-modal .exit {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: calc(5 * var(--v));
+    height: calc(5 * var(--v));
+    border-radius: 100%;
+    border: 1px solid red;
+}
+
+.settings-modal .exit img {
+    width: 100%;
+    height: 100%;
+}
+
+.settings-modal .bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    z-index: -1;
+    border-radius: inherit;
+}
+
+.settings-modal .flex {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.divisions {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    flex: 1;
+    margin-block: calc(var(--v) * 3);
+    justify-content: space-around;
+}
+
+.divisions>* {
+    height: 100%;
+    margin: calc(var(--v) * 2);
+}
+
+.selectors {
+    text-align: center;
+    min-width: 20%;
+    max-width: 30%;
+    width: max-content;
+    border-right: 1px solid salmon;
+}
+
+.selectors>* {
+    display: block;
+    padding: var(--v);
+    border: 1px solid lightcoral;
+    background-color: #FFF;
+    cursor: pointer;
+    width: auto;
+    margin: var(--v);
+    border-radius: var(--v);
+}
+
+.setting-options {
+    display: flex;
+    flex-direction: column;
+    min-width: 70%;
+    max-width: 80%;
+    width: max-content;
+    align-items: center;
+}
+
+.setting-options>* {
+    display: flex;
+    width: 90%;
+    height: max-content;
+    justify-content: space-between;
+    align-items: center;
+    margin: var(--v);
+}
+
+.setting-options>* label {
+    font-size: calc(var(--v) * 2.5);
+}
+
+.settings-modal select {
+    padding: var(--v);
+    margin-inline: calc(.4 * var(--v));
+    cursor: pointer;
+    border-radius: var(--v);
+}

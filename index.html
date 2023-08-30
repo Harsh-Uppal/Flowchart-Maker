@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="Style/general-properties.css" />
     <link rel="stylesheet" type="text/css" href="Style/toolbar.css" />
     <link rel="stylesheet" type="text/css" href="Style/multiple-input.css" />
+    <link rel="stylesheet" type="text/css" href="Style/settings.css" />
 
     <script src="./Scripts/util.js"></script>
     <script src="./Scripts/app.js"></script>
@@ -33,7 +34,9 @@
     <script src="./Scripts/curves.js"></script>
     <script src="./Scripts/flowchart.js"></script>
     <script src="./Scripts/multipleInput.js"></script>
+    <script src="./Scripts/settings.js"></script>
     <script src="./Scripts/selectionManager.js"></script>
+    <script src="./Scripts/shortcutManager.js"></script>
 
     <div class="titleBar">
         <div class="title">Flowchart Maker</div>
@@ -54,13 +57,13 @@
                     </button>
                 </div>
             </div>
-            <button class="settings" title="Settings">
+            <button id="settingsBtn" class="settings" title="Settings">
                 <img src="Assets/Settings.svg" alt />
             </button>
         </div>
     </div>
     </div>
-    <div class="generalProperties">
+    <div id="gProps" class="generalProperties">
         <div class="zoom">
             <label for="zoomInput" class="title">Zoom</label>
             <input id="zoomInput" type="range" onmousemove="changeZoom()" onchange="changeZoom()"
@@ -153,6 +156,52 @@
             </div>
         </div>
     </div>
+    <dialog id="settingsModal" class="settings-modal">
+        <div class="bg"></div>
+        <button class="exit" onclick="closeSettings()">
+            <img src="Assets/close.svg" alt="">
+        </button>
+        <div class="flex">
+            <h1>Settings</h1>
+            <div class="divisions">
+                <div id="settings-selectors" class="selectors">
+                    <label data-div="shortcuts">Shortcuts</label>
+                    <label data-div="fonts">Fonts</label>
+                </div>
+                <div class="setting-options" data-div="shortcuts">
+                    <div>
+                        <label for="toolbar-shortcut">
+                            Toolbar
+                        </label>
+                        <shortcut-input id="toolbar-shortcut" data-shortcut="toolbar"></shortcut-input>
+                    </div>
+                    <div>
+                        <label for="properties-shortcut">
+                            Check Properties
+                        </label>
+                        <shortcut-input id="properties-shortcut" data-shortcut="properties"></shortcut-input>
+                    </div>
+                    <div>
+                        <label for="focus-shortcut">
+                            Focus
+                        </label>
+                        <shortcut-input id="focus-shortcut" data-shortcut="focus"></shortcut-input>
+                    </div>
+                </div>
+                <div class="setting-options" data-div="fonts">
+                    <div>
+                        <label for="primary-font">
+                            Primary Font
+                        </label>
+                        <select name="primary-font" id="primary-font-setting">
+                            <option value="'Itim', 'sans serif'">Default</option>
+                            <option value="sans serif">Serif</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
     <footer>
         <div class="copyright">
             &copy; Copyright 2022 All Rights reserved

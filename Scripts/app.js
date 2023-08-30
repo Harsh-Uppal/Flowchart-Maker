@@ -11,6 +11,8 @@ var pos = vector(0, 0),
     updateOnMouseMoved = true,
     titleOptions,
     editBtn,
+    settingsBtn,
+    settingsModal,
     editingEnabled = true,
     imgBg;
 
@@ -24,8 +26,11 @@ function setup() {
     imgBg = document.getElementById('imageBackground');
     titleOptions = document.getElementById('titleOptions');
     editBtn = document.getElementById('editBtn');
+    settingsBtn = document.getElementById('settingsBtn');
+    settingsModal = document.getElementById('settingsModal');
 
     editBtn.addEventListener('click', editBtnClicked);
+    settingsBtn.addEventListener('click', openSettings);
 
     const p5Canvas = createCanvas(window.innerWidth, window.innerHeight);
     p5Canvas.mouseWheel(changeZoom);
@@ -57,6 +62,7 @@ function editBtnClicked() {
     PropertiesPanel.activate(editingEnabled);
     Toolbar.enable(editingEnabled);
     PropertiesPanel.editingChanged(editingEnabled);
+    document.getElementById('gProps').style.display = editingEnabled ? '' : 'none';
     generalInputs.gridlines.checked = editingEnabled;
     generalInputs.gridlines.disabled = !editingEnabled;
     generalInputs.bg.disabled = !editingEnabled;
@@ -68,9 +74,9 @@ function editBtnClicked() {
 
 function loadInputs() {
     return {
-        zoom: document.querySelector('.generalProperties > .zoom > input'),
-        gridlines: document.querySelector('.generalProperties > .gridlines > input'),
-        gridColor: document.querySelector('.generalProperties > .gridlinesColor > input'),
+        zoom: document.querySelector('#gProps > .zoom > input'),
+        gridlines: document.querySelector('#gProps > .gridlines > input'),
+        gridColor: document.querySelector('#gProps > .gridlinesColor > input'),
         bg: document.getElementById('backgroundInput')
     };
 }
@@ -133,6 +139,8 @@ function mouseClicked(e) {
 
     if (FlowchartItem.connecting != null)
         FlowchartItem.connecting.connectTo(FlowchartItem.connecting.index);
+    else
+        SelectionManager.nothingSelected();
 
     update();
 }
@@ -177,12 +185,5 @@ function update() {
 }
 
 function keyPressed(e) {
-    switch (e.keyCode) {
-        case 46: SelectionManager.getSelectedItems().forEach(item => item.delete());
-            break;
-        case 70:
-            if (SelectionManager.getItemCount() > 0) SelectionManager.getSelectedItems()[0].focus();
-            updateFlowchartPos();
-            break;
-    }
+    ShortcutManager.keyDown(e.keyCode);
 }

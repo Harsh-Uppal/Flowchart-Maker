@@ -27,6 +27,7 @@ class FlowchartItem {
         const dataContainer = document.createElement('div');
         const selectionCheckbox = document.createElement('input');
 
+        newItem.flowchartObj = this;
         newItem.className = 'flowchartItem';
         newItem.tabIndex = 0;
         newItem.addEventListener('click', this.mouseClicked);
@@ -75,6 +76,7 @@ class FlowchartItem {
             this.added = true;
 
             this.setSelected(true);
+            SelectionManager.nothingSelected();
             SelectionManager.itemSelectChanged(this);
         }
     }
@@ -238,6 +240,12 @@ class FlowchartItem {
                     break;
                 case 'borderColor':
                     this.node.style.setProperty('--border-color', val);
+                    break;
+                case 'border':
+                    this.node.style.border = val ? '' : 'none';
+                    break;
+                case 'transparentBG':
+                    this.node.style.backgroundColor = val ? '#FFFFFF00' : '';
                     break;
                 case 'cornerRadius':
                     this.node.style.borderRadius = val + 'vmin';

@@ -128,7 +128,7 @@ function mouseMoved(e) {
     update();
 }
 
-function mouseClicked(e) {
+function mousePressed(e) {
     if (titleOptions)
         titleOptions.style.display =
             e.srcElement.parentNode.id == 'titleOptionsBtn' || e.srcElement.id == 'titleOptionsBtn' ?

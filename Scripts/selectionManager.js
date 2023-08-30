@@ -26,10 +26,6 @@ const SelectionManager = (function () {
                 return;
 
             if (selectionRect) {
-                if (!keyIsDown(16)) //16: Keycode for SHIFT
-                    while (selectedItems.length)
-                        selectedItems.shift().setSelected(false);
-
                 flowchartItems.filter(item => item.touches(selectionRect) && !item.selected).forEach(item => {
                     item.setSelected(true);
                     selectedItems.push(item);

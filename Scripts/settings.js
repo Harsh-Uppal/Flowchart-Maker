@@ -41,6 +41,11 @@ class ShortcutInput {
 
         const change = (e, index) => {
             val[index] = e.target.selectedIndex;
+            let keys = [];
+            node.value.keys.forEach(key => {
+                keys.push(key[1]);
+            })
+            ShortcutManager.setShortcutKeys(name, keys)
             node.dispatchEvent(new Event('change'));
         }
 

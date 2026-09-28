@@ -1,5 +1,4 @@
 <h1 style="font:sans serif;">Flowchart Maker</h1>
-<div style="font:monospace">Demo</div>
-<img width="400" height="279" alt="demo" src="https://github.com/user-attachments/assets/40241b3d-57d4-4eb2-8a68-4f96c372f843" />
-<br/>
-<a style="font:monospace" href="https://harsh-uppal.github.io/Flowchart-Maker">Try it out</a>
+<div style="font-family:monospace;">Demo</div>
+<img width="700" height="487" alt="demo+" src="https://github.com/user-attachments/assets/53f7c239-fbdf-4401-9bbd-5357398b3d3a" />
+<a style="font-family:monospace;" href="https://harsh-uppal.github.io/Flowchart-Maker">Try it out</a>

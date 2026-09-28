@@ -28,7 +28,6 @@ function setup() {
     editBtn = document.getElementById('editBtn');
     settingsBtn = document.getElementById('settingsBtn');
     settingsModal = document.getElementById('settingsModal');
-
     editBtn.addEventListener('click', editBtnClicked);
     settingsBtn.addEventListener('click', openSettings);
 
@@ -53,6 +52,7 @@ function setup() {
 }
 
 function editBtnClicked() {
+    console.log('editBtnClicked');
     editingEnabled = !editingEnabled;
 
     if (editingEnabled) editBtn.classList.remove('striked');
@@ -129,11 +129,19 @@ function mouseMoved(e) {
 }
 
 function mousePressed(e) {
-    if (titleOptions)
+    if (titleOptions){
+        let display = titleOptions.style.display == '';
+        
+        if (e.srcElement.parentNode.id == 'titleOptions'
+             || e.srcElement.parentNode.parentNode.id == 'titleOptions'
+        )
+            return;
+        
         titleOptions.style.display =
             e.srcElement.parentNode.id == 'titleOptionsBtn' || e.srcElement.id == 'titleOptionsBtn' ?
-                (titleOptions.style.display == '' ? 'none' : '') : 'none';
-
+                (display ? 'none' : '') : 'none';
+    }
+    
     if (e.srcElement.nodeName != 'CANVAS')
         return;
 

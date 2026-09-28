@@ -116,7 +116,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: calc(var(--v) * 2.4);
+    height: calc(var(--v) * 3.1);
 }
 
 .properties-panel>.properties>.property-group>*>label {

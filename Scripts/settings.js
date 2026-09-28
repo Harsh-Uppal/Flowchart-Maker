@@ -1,4 +1,5 @@
 const load = () => {
+
     document.querySelectorAll('shortcut-input').forEach(s => {
         new ShortcutInput(s);
     });
